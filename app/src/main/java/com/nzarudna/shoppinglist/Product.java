@@ -22,4 +22,27 @@ public class Product {
     @ColumnInfo(name = "category_id")
     private int categoryID;
 
+    public int getProductID() {
+        return productID;
+    }
+
+    public void setProductID(int productID) {
+        this.productID = productID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
 }
