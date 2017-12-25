@@ -3,11 +3,10 @@ package com.nzarudna.shoppinglist;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ShoppingListsActivity extends AppCompatActivity {
+public class ShoppingListsActivity extends SingleFragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shopping_lists);
     }
 }
