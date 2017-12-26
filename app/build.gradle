@@ -42,4 +42,5 @@ dependencies {
     testImplementation "android.arch.persistence.room:testing:1.0.0"
 
     testCompile 'junit:junit:4.12'
+    androidTestCompile 'org.mockito:mockito-android:2.13.0'
 }
