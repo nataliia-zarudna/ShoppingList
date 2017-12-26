@@ -16,7 +16,6 @@ public class ProductTemplate {
 
     @PrimaryKey(autoGenerate = true)
     private int templateID;
-    private int productID;
 
     private String name;
 

@@ -18,10 +18,10 @@ import java.util.List;
 public interface ProductDao {
 
     @Insert
-    LiveData<Product> insert(Product product);
+    long insert(Product product);
 
     @Update
-    LiveData<Product> update(Product product);
+    void update(Product product);
 
     @Delete
     void delete(Product product);
@@ -30,5 +30,5 @@ public interface ProductDao {
     LiveData<Product> findByID(int productID);
 
     @Query(value = "SELECT * FROM products WHERE list_id = :listID")
-    List<LiveData<Product>> findByListID(int listID);
+    LiveData<List<Product>> findByListID(int listID);
 }

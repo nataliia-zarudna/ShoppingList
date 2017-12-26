@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity(tableName = "shopping_lists")
 public class ShoppingList {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
     private int listID;
 
