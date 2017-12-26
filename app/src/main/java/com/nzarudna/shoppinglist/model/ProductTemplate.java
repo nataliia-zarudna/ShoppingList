@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist;
+package com.nzarudna.shoppinglist.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -8,13 +8,14 @@ import android.arch.persistence.room.PrimaryKey;
 /**
  * Product item user can add to his shopping card
  */
-@Entity(tableName = "products",
+@Entity(tableName = "product_templates",
         foreignKeys = @ForeignKey(entity = Category.class,
                 parentColumns = "category_id",
                 childColumns = "category_id"))
-public class Product {
+public class ProductTemplate {
 
     @PrimaryKey(autoGenerate = true)
+    private int templateID;
     private int productID;
 
     private String name;
@@ -22,12 +23,12 @@ public class Product {
     @ColumnInfo(name = "category_id")
     private int categoryID;
 
-    public int getProductID() {
-        return productID;
+    public int getTemplateID() {
+        return templateID;
     }
 
-    public void setProductID(int productID) {
-        this.productID = productID;
+    public void setTemplateID(int templateID) {
+        this.templateID = templateID;
     }
 
     public String getName() {
