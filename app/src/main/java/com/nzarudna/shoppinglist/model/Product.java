@@ -13,7 +13,7 @@ import android.support.annotation.NonNull;
         foreignKeys = {@ForeignKey(entity = Category.class,
                 parentColumns = "category_id",
                 childColumns = "category_id"),
-                @ForeignKey(entity = ShoppingList.class,
+                @ForeignKey(entity = ProductsList.class,
                         parentColumns = "list_id", childColumns = "list_id")})
 public class Product {
 

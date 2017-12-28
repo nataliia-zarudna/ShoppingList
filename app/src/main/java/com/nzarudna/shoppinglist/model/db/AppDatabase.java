@@ -7,17 +7,19 @@ import android.arch.persistence.room.TypeConverters;
 import com.nzarudna.shoppinglist.model.Category;
 import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductTemplate;
-import com.nzarudna.shoppinglist.model.ShoppingList;
+import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.User;
+import com.nzarudna.shoppinglist.model.dao.ProductDao;
+import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 
 /**
  * Room application database
  */
-@Database(entities = {Product.class, Category.class, ProductTemplate.class, ShoppingList.class, User.class}, version = 1)
+@Database(entities = {Product.class, Category.class, ProductTemplate.class, ProductsList.class, User.class}, version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ProductDao productDao();
 
-    public abstract ShoppingListDao shoppingListDao();
+    public abstract ProductsListDao shoppingListDao();
 }

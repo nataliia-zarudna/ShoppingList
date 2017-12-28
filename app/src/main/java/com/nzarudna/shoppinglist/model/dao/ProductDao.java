@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model.db;
+package com.nzarudna.shoppinglist.model.dao;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
