@@ -7,9 +7,6 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
-import com.nzarudna.shoppinglist.model.ProductsList;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +18,6 @@ import static org.junit.Assert.assertEquals;
  */
 
 public class TestUtils {
-
-    public static List<ProductsList> getProductsLists(int count) {
-
-        List<ProductsList> lists = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            ProductsList productsList = new ProductsList();
-            productsList.setName("Shopping List #" + i);
-            lists.add(productsList);
-        }
-        return lists;
-    }
 
     public static <T> T findByIDSync(LiveData<T> listLiveData) throws InterruptedException {
 
@@ -80,7 +66,8 @@ public class TestUtils {
                 assertEquals(expected.get(i), actual.get(i));
             }
         } catch (AssertionError e) {
-            throw new AssertionError("List is not equals to paged list", e);
+            throw new AssertionError("List is not equals to paged list: " +
+                    "expected: " + expected + ", actual: " + actual, e);
         }
     }
 }

@@ -2,6 +2,8 @@ package com.nzarudna.shoppinglist.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
 
@@ -12,37 +14,60 @@ import java.util.Date;
 /**
  * List of products to buy
  */
-@Entity(tableName = "products_lists")
+@Entity(tableName = "products_lists",
+        foreignKeys = {@ForeignKey(entity = User.class,
+                parentColumns = "user_id",
+                childColumns = "created_by"),
+                @ForeignKey(entity = User.class,
+                        parentColumns = "user_id",
+                        childColumns = "modified_by"),
+                @ForeignKey(entity = User.class,
+                        parentColumns = "user_id",
+                        childColumns = "assigned_id")},
+        indices = @Index("created_by"))
 public class ProductsList {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_ACTIVE, STATUS_ARCHIVED})
-    public @interface ProductListStatus {}
+    public @interface ProductListStatus {
+    }
+
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_ARCHIVED = 2;
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
-    private int listID;
+    private long listID;
 
     private String name;
-
-    @ColumnInfo(name = "created_by")
-    private int createdBy;
 
     @ColumnInfo(name = "created_at")
     private Date createdAt;
 
+    @ColumnInfo(name = "created_by")
+    private Integer createdBy;
+
+    @ColumnInfo(name = "modified_at")
+    private Date modifiedAt;
+
+    @ColumnInfo(name = "modified_by")
+    private Integer modifiedBy;
+
     private int status;
 
     @ColumnInfo(name = "assigned_id")
-    private int assignedID;
+    private Integer assignedID;
 
-    public int getListID() {
+    public ProductsList() {
+        this.createdAt = new Date();
+        this.setStatus(STATUS_ACTIVE);
+    }
+
+    public long getListID() {
         return listID;
     }
 
-    public void setListID(int listID) {
+    public void setListID(long listID) {
         this.listID = listID;
     }
 
@@ -54,14 +79,6 @@ public class ProductsList {
         this.name = name;
     }
 
-    public int getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(int createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -70,7 +87,32 @@ public class ProductsList {
         this.createdAt = createdAt;
     }
 
-    public @ProductListStatus int getStatus() {
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public Integer getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(Integer modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public @ProductListStatus
+    int getStatus() {
         return status;
     }
 
@@ -78,11 +120,11 @@ public class ProductsList {
         this.status = status;
     }
 
-    public int getAssignedID() {
+    public Integer getAssignedID() {
         return assignedID;
     }
 
-    public void setAssignedID(int assignedID) {
+    public void setAssignedID(Integer assignedID) {
         this.assignedID = assignedID;
     }
 
@@ -103,12 +145,24 @@ public class ProductsList {
 
     @Override
     public int hashCode() {
-        int result = listID;
+        int result = (int) listID;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + createdBy;
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + status;
         result = 31 * result + assignedID;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductsList{" +
+                "listID=" + listID +
+                ", name='" + name + '\'' +
+                ", createdBy=" + createdBy +
+                ", createdAt=" + createdAt +
+                ", status=" + status +
+                ", assignedID=" + assignedID +
+                '}';
     }
 }
