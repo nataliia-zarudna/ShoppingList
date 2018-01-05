@@ -6,6 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,12 +40,15 @@ public class ProductsList {
     @ColumnInfo(name = "list_id")
     private long listID;
 
+    @NonNull
     private String name;
 
     @ColumnInfo(name = "created_at")
+    @NonNull
     private Date createdAt;
 
     @ColumnInfo(name = "created_by")
+    @NonNull
     private Integer createdBy;
 
     @ColumnInfo(name = "modified_at")
@@ -71,27 +75,32 @@ public class ProductsList {
         this.listID = listID;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
+    @NonNull
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    @NonNull
+    public void setCreatedAt(@NonNull Date createdAt) {
         this.createdAt = createdAt;
     }
 
+    @NonNull
     public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Integer createdBy) {
+    @NonNull
+    public void setCreatedBy(@NonNull Integer createdBy) {
         this.createdBy = createdBy;
     }
 

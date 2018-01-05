@@ -28,13 +28,19 @@ public interface ProductsListDao {
     @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
     LiveData<ProductsList> findByID(long listID);
 
-    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY created_at")
-    DataSource.Factory<Integer, ProductsList> findByStatusSortByCreatedAt(@ProductsList.ProductListStatus int status);
-
-    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY modified_at")
-    DataSource.Factory<Integer, ProductsList> findByStatusSortByModifiedAt(@ProductsList.ProductListStatus int status);
+    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY name")
+    DataSource.Factory<Integer, ProductsList> findByStatusSortByName(@ProductsList.ProductListStatus int status);
 
     @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY created_by, name")
     DataSource.Factory<Integer, ProductsList> findByStatusSortByCreatedByAndName(@ProductsList.ProductListStatus int status);
+
+    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY created_at DESC")
+    DataSource.Factory<Integer, ProductsList> findByStatusSortByCreatedAtDesc(@ProductsList.ProductListStatus int status);
+
+    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY modified_at DESC")
+    DataSource.Factory<Integer, ProductsList> findByStatusSortByModifiedAtDesc(@ProductsList.ProductListStatus int status);
+
+    @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY assigned_id, name")
+    DataSource.Factory<Integer, ProductsList> findByStatusSortByAssignedAndName(@ProductsList.ProductListStatus int status);
 
 }
