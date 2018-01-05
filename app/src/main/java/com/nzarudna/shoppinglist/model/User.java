@@ -3,6 +3,7 @@ package com.nzarudna.shoppinglist.model;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * App user
@@ -17,10 +18,10 @@ public class User {
     @ColumnInfo(name = "phone_number")
     private String phoneNumber;
 
-    private String token;
+    @NonNull
+    private String name;
 
-    @ColumnInfo(name = "is_me")
-    private boolean isMe;
+    private String token;
 
     public int getUserID() {
         return userID;
@@ -38,19 +39,20 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    @NonNull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(@NonNull String name) {
+        this.name = name;
+    }
+
     public String getToken() {
         return token;
     }
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public boolean isMe() {
-        return isMe;
-    }
-
-    public void setMe(boolean me) {
-        isMe = me;
     }
 }
