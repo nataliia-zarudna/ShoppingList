@@ -49,8 +49,8 @@ public class ProductsListDaoTest {
         mSubjectDao = mDatabase.shoppingListDao();
 
         UserDao userDao = mDatabase.userDao();
-        mUserID_1 = (int) userDao.insert(new User());
-        mUserID_2 = (int) userDao.insert(new User());
+        mUserID_1 = TestUtils.insertUser(userDao);
+        mUserID_2 = TestUtils.insertUser(userDao);
     }
 
     @After

@@ -55,4 +55,37 @@ public class User {
     public void setToken(String token) {
         this.token = token;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (userID != user.userID) return false;
+        if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null)
+            return false;
+        if (!name.equals(user.name)) return false;
+        return token != null ? token.equals(user.token) : user.token == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userID;
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (token != null ? token.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID=" + userID +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

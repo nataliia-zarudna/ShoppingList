@@ -7,6 +7,9 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.model.User;
+import com.nzarudna.shoppinglist.model.dao.UserDao;
+
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -69,5 +72,11 @@ public class TestUtils {
             throw new AssertionError("List is not equals to paged list: " +
                     "expected: " + expected + ", actual: " + actual, e);
         }
+    }
+
+    public static int insertUser(UserDao userDao) {
+        User user = new User();
+        user.setName("new user");
+        return (int) userDao.insert(user);
     }
 }
