@@ -45,7 +45,7 @@ public class ProductsListDaoTest {
 
         Context context = InstrumentationRegistry.getContext();
         mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
-        mSubjectDao = mDatabase.shoppingListDao();
+        mSubjectDao = mDatabase.productsListDao();
 
         UserDao userDao = mDatabase.userDao();
         mUserID_1 = TestUtils.insertUser(userDao);

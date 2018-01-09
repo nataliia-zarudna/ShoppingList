@@ -9,6 +9,7 @@ import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductTemplate;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.User;
+import com.nzarudna.shoppinglist.model.dao.CategoryDao;
 import com.nzarudna.shoppinglist.model.dao.ProductDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;
@@ -22,7 +23,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ProductDao productDao();
 
-    public abstract ProductsListDao shoppingListDao();
+    public abstract ProductsListDao productsListDao();
 
     public abstract UserDao userDao();
+
+    public abstract CategoryDao categoryDao();
 }
