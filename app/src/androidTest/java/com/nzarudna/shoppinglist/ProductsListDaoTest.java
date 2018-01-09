@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -69,12 +71,38 @@ public class ProductsListDaoTest {
     @Test
     public void createAndRead() throws InterruptedException {
 
-        ProductsList list = insertList();
+        ProductsList list = new ProductsList();
+        list.setName("new name");
+        list.setAssignedID(mUserID_1);
+        list.setModifiedAt(new Date());
+        list.setCreatedBy(mUserID_1);
+        list.setModifiedBy(mUserID_2);
 
-        LiveData<ProductsList> listLiveData = mSubjectDao.findByID(list.getListID());
+        long listID = insertList(list);
+        list.setListID(listID);
+
+        LiveData<ProductsList> listLiveData = mSubjectDao.findByID(listID);
         ProductsList insertedList = TestUtils.findByIDSync(listLiveData);
 
         assertThat(insertedList, equalTo(list));
+    }
+
+    @Test
+    public void createWithActiveStatus() throws InterruptedException {
+
+        ProductsList list = insertList();
+
+        assertThat(list.getStatus(), is(ProductsList.STATUS_ACTIVE));
+    }
+
+    @Test
+    public void createWithCurrentCreatedAtTime() throws InterruptedException {
+
+        ProductsList list = insertList();
+        Date currentDate = new Date();
+        boolean diffWithE = list.getCreatedAt().compareTo(currentDate) < 60; // seconds
+
+        assertTrue(diffWithE);
     }
 
     @Test(expected = SQLiteConstraintException.class)
@@ -96,7 +124,7 @@ public class ProductsListDaoTest {
     }
 
     @Test(expected = SQLiteConstraintException.class)
-    public void constrainedExceptionOnCreateWithCreatedAt() throws InterruptedException {
+    public void constrainedExceptionOnCreateWithNullCreatedAt() throws InterruptedException {
 
         ProductsList list = createProductListWithNotNullParams();
         list.setCreatedAt(null);
@@ -321,7 +349,7 @@ public class ProductsListDaoTest {
         return list;
     }
 
-    public List<ProductsList> createProductsLists(int count) {
+    private List<ProductsList> createProductsLists(int count) {
 
         List<ProductsList> lists = new ArrayList<>();
         for (int i = 0; i < count; i++) {

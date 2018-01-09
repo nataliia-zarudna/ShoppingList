@@ -7,7 +7,11 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.model.Category;
+import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.User;
+import com.nzarudna.shoppinglist.model.dao.CategoryDao;
+import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;
 
 import java.util.List;
@@ -70,7 +74,7 @@ public class TestUtils {
             }
         } catch (AssertionError e) {
             throw new AssertionError("List is not equals to paged list: " +
-                    "expected: " + expected + ", actual: " + actual, e);
+                    "\nexpected: " + expected + ",\nactual: " + actual, e);
         }
     }
 
@@ -78,5 +82,22 @@ public class TestUtils {
         User user = new User();
         user.setName("new user");
         return (int) userDao.insert(user);
+    }
+
+    public static int insertProductsList(ProductsListDao productsListDao, int createdBy) {
+
+        ProductsList list = new ProductsList();
+        list.setName("Some name");
+        list.setCreatedBy(createdBy);
+
+        return (int) productsListDao.insert(list);
+    }
+
+    public static int insertCategory(CategoryDao categoryDao) {
+
+        Category category = new Category();
+        category.setName("Some name");
+
+        return (int) categoryDao.insert(category);
     }
 }

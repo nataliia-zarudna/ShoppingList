@@ -4,8 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
 import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -51,6 +51,15 @@ public class CategoryDaoTest {
         long categoryID = mSubjectDao.insert(category);
 
         assertThat(categoryID, not(0l));
+    }
+
+    @Test(expected = SQLiteConstraintException.class)
+    public void constrainedExceptionOnCreateWithNullName() {
+
+        Category category = new Category();
+        category.setName(null);
+
+        mSubjectDao.insert(category);
     }
 
     @Test
