@@ -46,12 +46,14 @@ public class Product {
     private int unitID;
 
     @ColumnInfo(name = "count")
-    private int count;
+    private double count;
 
     @ProductStatus
     private int status;
 
     private String comment;
+
+    private double order;
 
     public Product() {
         this.status = TO_BUY;
@@ -97,11 +99,11 @@ public class Product {
         this.unitID = unitID;
     }
 
-    public int getCount() {
+    public double getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(double count) {
         this.count = count;
     }
 
@@ -122,6 +124,14 @@ public class Product {
         this.comment = comment;
     }
 
+    public double getOrder() {
+        return order;
+    }
+
+    public void setOrder(double order) {
+        this.order = order;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,8 +142,9 @@ public class Product {
         if (productID != product.productID) return false;
         if (listID != product.listID) return false;
         if (unitID != product.unitID) return false;
-        if (count != product.count) return false;
+        if (Double.compare(product.count, count) != 0) return false;
         if (status != product.status) return false;
+        if (Double.compare(product.order, order) != 0) return false;
         if (!name.equals(product.name)) return false;
         if (categoryID != null ? !categoryID.equals(product.categoryID) : product.categoryID != null)
             return false;
@@ -142,14 +153,19 @@ public class Product {
 
     @Override
     public int hashCode() {
-        int result = productID;
+        int result;
+        long temp;
+        result = productID;
         result = 31 * result + name.hashCode();
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
         result = 31 * result + listID;
         result = 31 * result + unitID;
-        result = 31 * result + count;
+        temp = Double.doubleToLongBits(count);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + status;
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        temp = Double.doubleToLongBits(order);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 
@@ -164,6 +180,7 @@ public class Product {
                 ", count=" + count +
                 ", status=" + status +
                 ", comment='" + comment + '\'' +
+                ", order=" + order +
                 '}';
     }
 }
