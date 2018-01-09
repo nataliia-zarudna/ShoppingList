@@ -10,7 +10,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.model.ProductsList;
-import com.nzarudna.shoppinglist.model.User;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;
 import com.nzarudna.shoppinglist.model.db.AppDatabase;

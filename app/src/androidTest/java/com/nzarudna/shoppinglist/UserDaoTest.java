@@ -1,8 +1,9 @@
 package com.nzarudna.shoppinglist;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.PagedList;
 import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.test.InstrumentationRegistry;
@@ -16,6 +17,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -74,14 +78,19 @@ public class UserDaoTest {
     }
 
     @Test
-    public void update() throws InterruptedException {
+    public void findByExcludeID() throws InterruptedException {
 
-        User user = createUser();
-        user.setName("Updated name");
-        user.setPhoneNumber("12345678");
-        user.setToken("987654qwe");
+        List<User> users = createUsers(3);
 
-        mSubjectDao.update(user);
+        int excludeUserID = users.get(1).getUserID();
+        DataSource.Factory<Integer, User> actualUsersDataSourse = mSubjectDao.findByExcludeID(excludeUserID);
+        PagedList<User> actualUsers = TestUtils.findSync(actualUsersDataSourse);
+
+        List<User> expectedUsers = new ArrayList<>();
+        expectedUsers.add(users.get(0));
+        expectedUsers.add(users.get(2));
+
+        TestUtils.assertPagedListEqualsToList(expectedUsers, actualUsers);
     }
 
     @After
@@ -98,5 +107,14 @@ public class UserDaoTest {
 
         LiveData<User> userLiveData = mSubjectDao.findByID((int) userID);
         return TestUtils.findByIDSync(userLiveData);
+    }
+
+    private List<User> createUsers(int count) throws InterruptedException {
+
+        List<User> users = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            users.add(createUser());
+        }
+        return users;
     }
 }
