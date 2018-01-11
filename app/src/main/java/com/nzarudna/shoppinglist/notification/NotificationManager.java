@@ -8,7 +8,7 @@ import java.util.List;
 
 public class NotificationManager {
 
-    public static void sendNotification(Notification notification) {
+    public void sendNotification() {
 
     }
 }

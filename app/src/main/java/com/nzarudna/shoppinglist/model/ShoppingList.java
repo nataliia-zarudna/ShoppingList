@@ -19,40 +19,44 @@ public class ShoppingList {
     private LiveData<ProductsList> productsList;
 
     public static ShoppingList createList() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public static ShoppingList copyList(ProductsList etalonList) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public static LiveData<PagedList<ShoppingList>> getLists(
             @ProductsList.ProductListStatus int status, @ProductsListSorting int sorting) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public LiveData<ProductsList> getListData() {
+        return productsList;
     }
 
     public void removeList() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public LiveData<Product> addProduct(@NonNull String name, String comment) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public LiveData<Product> addProduct(@NonNull String name, double count, int unitID) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public LiveData<Product> addProductFromTemplate(ProductTemplate template) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public void removeProduct(LiveData<Product> product) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public LiveData<PagedList<Product>> getProducts(@ProducstsSorting int sorting) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public static final int SORT_LISTS_BY_NAME = 1;

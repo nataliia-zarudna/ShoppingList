@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist;
+package com.nzarudna.shoppinglist.dao;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;

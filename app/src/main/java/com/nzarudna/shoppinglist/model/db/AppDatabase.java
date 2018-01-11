@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 
 import com.nzarudna.shoppinglist.model.Category;
 import com.nzarudna.shoppinglist.model.Product;
@@ -35,7 +36,8 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    public static synchronized AppDatabase swithToInMemory(Context context) {
+    @VisibleForTesting
+    public static synchronized AppDatabase switchToInMemory(Context context) {
         sInstance = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
         return sInstance;
     }
