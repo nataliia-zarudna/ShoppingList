@@ -1,25 +1,65 @@
 package com.nzarudna.shoppinglist.model;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.paging.PagedList;
+import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.dao.DaoFactory;
+import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
+import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * Class that contains productsList object
  * and operates with it
  */
 
-public class ShoppingList {
+public class ShoppingList implements Observer<ProductsList> {
 
-    private LiveData<ProductsList> productsList;
+    private LiveData<ProductsList> mProductsList;
+    private NotificationManager mNotificationManager;
 
-    public static ShoppingList createList() {
-        throw new UnsupportedOperationException("Not implemented yet");
+    private ShoppingList(LiveData<ProductsList> productsList) {
+        mProductsList = productsList;
+
+        mNotificationManager = NotificationManager.getInstance();
+
+        mProductsList.observeForever(this);
+    }
+
+    public static ShoppingList createList(Context context) {
+
+        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
+        int productsListID = (int) productsListDao.insert(createProductsList(context));
+        LiveData<ProductsList> productsList = productsListDao.findByID(productsListID);
+
+        return new ShoppingList(productsList);
+    }
+
+    private static ProductsList createProductsList(Context context) {
+        ProductsList productsList = new ProductsList();
+
+        String defaultName = context.getString(R.string.default_list_name);
+        productsList.setName(defaultName);
+
+        int selfUserID = UserManager.getSelfUserID(context);
+        productsList.setCreatedBy(selfUserID);
+
+        return productsList;
+    }
+
+    @Override
+    public void onChanged(@Nullable ProductsList productsList) {
+
+        mNotificationManager.sendNotification();
+
     }
 
     public static ShoppingList copyList(ProductsList etalonList) {
@@ -32,7 +72,7 @@ public class ShoppingList {
     }
 
     public LiveData<ProductsList> getListData() {
-        return productsList;
+        return mProductsList;
     }
 
     public void removeList() {

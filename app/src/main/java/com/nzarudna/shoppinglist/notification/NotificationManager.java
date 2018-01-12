@@ -8,6 +8,17 @@ import java.util.List;
 
 public class NotificationManager {
 
+    private static NotificationManager sInstance;
+
+    public static NotificationManager getInstance() {
+        if (sInstance == null) {
+            sInstance = new NotificationManager();
+        }
+        return sInstance;
+    }
+
+    private NotificationManager() {}
+
     public void sendNotification() {
 
     }
