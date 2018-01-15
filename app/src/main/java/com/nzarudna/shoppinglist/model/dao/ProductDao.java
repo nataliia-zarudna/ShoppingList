@@ -30,6 +30,9 @@ public interface ProductDao {
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
     LiveData<Product> findByID(int productID);
 
+    @Query(value = "SELECT * FROM products WHERE list_id = :listID")
+    List<Product> findByListIDSync(int listID);
+
     @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY name")
     DataSource.Factory<Integer, Product> findByListIDSortByName(int listID);
 

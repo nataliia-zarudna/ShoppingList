@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
                 childColumns = "category_id"),
                 @ForeignKey(entity = ProductsList.class,
                         parentColumns = "list_id", childColumns = "list_id")})
-public class Product {
+public class Product implements Cloneable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TO_BUY, ABSENT, BOUGHT})
@@ -130,6 +130,14 @@ public class Product {
 
     public void setOrder(double order) {
         this.order = order;
+    }
+
+    @Override
+    public Product clone() throws CloneNotSupportedException {
+        Product clone = (Product) super.clone();
+        clone.setProductID(0);
+
+        return clone;
     }
 
     @Override

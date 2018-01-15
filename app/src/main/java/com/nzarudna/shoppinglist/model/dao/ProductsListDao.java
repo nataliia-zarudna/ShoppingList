@@ -26,6 +26,9 @@ public interface ProductsListDao {
     void delete(ProductsList productList);
 
     @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
+    ProductsList findByIDSync(long listID);
+
+    @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
     LiveData<ProductsList> findByID(long listID);
 
     @Query(value = "SELECT * FROM products_lists WHERE status = :status ORDER BY name")

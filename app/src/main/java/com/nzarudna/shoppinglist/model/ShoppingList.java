@@ -10,11 +10,13 @@ import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.dao.DaoFactory;
+import com.nzarudna.shoppinglist.model.dao.ProductDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * Class that contains productsList object
@@ -23,13 +25,22 @@ import java.lang.annotation.RetentionPolicy;
 
 public class ShoppingList implements Observer<ProductsList> {
 
-    private LiveData<ProductsList> mProductsList;
-    private NotificationManager mNotificationManager;
+    public static final String TAG = "ShoppingList";
 
-    private ShoppingList(LiveData<ProductsList> productsList) {
+    private LiveData<ProductsList> mProductsList;
+    private int mListID;
+
+    private Context mContext;
+    private NotificationManager mNotificationManager;
+    private ProductsListDao mProductsListDao;
+
+    private ShoppingList(Context context, LiveData<ProductsList> productsList, int listID) {
+        mContext = context;
         mProductsList = productsList;
+        mListID = listID;
 
         mNotificationManager = NotificationManager.getInstance();
+        mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
 
         mProductsList.observeForever(this);
     }
@@ -40,7 +51,7 @@ public class ShoppingList implements Observer<ProductsList> {
         int productsListID = (int) productsListDao.insert(createProductsList(context));
         LiveData<ProductsList> productsList = productsListDao.findByID(productsListID);
 
-        return new ShoppingList(productsList);
+        return new ShoppingList(context, productsList, productsListID);
     }
 
     private static ProductsList createProductsList(Context context) {
@@ -62,8 +73,43 @@ public class ShoppingList implements Observer<ProductsList> {
 
     }
 
-    public static ShoppingList copyList(int etalonListID) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public static ShoppingList copyList(Context context, int etalonListID) throws ShoppingListException {
+
+        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
+        ProductsList etalonList = productsListDao.findByIDSync(etalonListID);
+        if (etalonList == null) {
+            throw new ShoppingListException("List with id " + etalonListID + " does not exist");
+        }
+
+        final ProductsList newProductsList = createProductsList(context);
+        newProductsList.setName(etalonList.getName());
+
+        int newListID = (int) productsListDao.insert(newProductsList);
+        LiveData<ProductsList> newListLiveData = productsListDao.findByID(newListID);
+
+        copyProductsFromList(context, etalonListID, newListID);
+
+        return new ShoppingList(context, newListLiveData, newListID);
+    }
+
+    private static void copyProductsFromList(Context context, int fromListID, int toListID) throws ShoppingListException {
+
+        try {
+            ProductDao productDao = DaoFactory.getInstance().getProductDao(context);
+            List<Product> etalonProducts = productDao.findByListIDSync(fromListID);
+
+            for (Product etalonProduct : etalonProducts) {
+
+                Product newProduct = etalonProduct.clone();
+                newProduct.setListID(toListID);
+                newProduct.setStatus(Product.TO_BUY);
+
+                productDao.insert(newProduct);
+            }
+
+        } catch (CloneNotSupportedException e) {
+            throw new ShoppingListException("Product cannot be copied", e);
+        }
     }
 
     public static LiveData<PagedList<ShoppingList>> getLists(
@@ -73,6 +119,10 @@ public class ShoppingList implements Observer<ProductsList> {
 
     public LiveData<ProductsList> getListData() {
         return mProductsList;
+    }
+
+    public int getListID() {
+        return mListID;
     }
 
     public void removeList() {
