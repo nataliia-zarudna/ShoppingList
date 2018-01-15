@@ -258,9 +258,4 @@ public class ProductDaoTest {
             product.setProductID((int) insertedID);
         }
     }
-
-    /*private ProductsList findListByID(long listID) throws InterruptedException {
-        LiveData<ProductsList> listLiveData = mSubjectDao.findByID(listID);
-        return TestUtils.findByIDSync(listLiveData);
-    }*/
 }

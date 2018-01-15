@@ -8,17 +8,23 @@ import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.Category;
+import com.nzarudna.shoppinglist.model.Product;
+import com.nzarudna.shoppinglist.model.ProductTemplate;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.User;
 import com.nzarudna.shoppinglist.model.dao.CategoryDao;
+import com.nzarudna.shoppinglist.model.dao.ProductDao;
+import com.nzarudna.shoppinglist.model.dao.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Class with utils test methods
@@ -78,6 +84,12 @@ public class TestUtils {
         }
     }
 
+    public static void assertDateEqualsToSeconds(Date expected, Date actual) {
+        boolean diffWithE = expected.compareTo(actual) < 60; // seconds
+
+        assertTrue(diffWithE);
+    }
+
     public static int insertUser(UserDao userDao) {
         User user = new User();
         user.setName("new user");
@@ -99,5 +111,22 @@ public class TestUtils {
         category.setName("Some name");
 
         return (int) categoryDao.insert(category);
+    }
+
+    public static int insertProduct(ProductDao productDao, int listID) {
+
+        Product product = new Product();
+        product.setName("Some name");
+        product.setListID(listID);
+
+        return (int) productDao.insert(product);
+    }
+
+    public static int insertProductTemplate(ProductTemplateDao productTemplateDao) {
+
+        ProductTemplate template = new ProductTemplate();
+        template.setName("Some name");
+
+        return (int) productTemplateDao.insert(template);
     }
 }

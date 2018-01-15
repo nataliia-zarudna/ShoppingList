@@ -62,7 +62,7 @@ public class ShoppingList implements Observer<ProductsList> {
 
     }
 
-    public static ShoppingList copyList(ProductsList etalonList) {
+    public static ShoppingList copyList(int etalonListID) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

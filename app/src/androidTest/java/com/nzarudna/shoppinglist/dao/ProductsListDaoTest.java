@@ -100,10 +100,8 @@ public class ProductsListDaoTest {
     public void createWithCurrentCreatedAtTime() throws InterruptedException {
 
         ProductsList list = insertList();
-        Date currentDate = new Date();
-        boolean diffWithE = list.getCreatedAt().compareTo(currentDate) < 60; // seconds
 
-        assertTrue(diffWithE);
+        TestUtils.assertDateEqualsToSeconds(new Date(), list.getCreatedAt());
     }
 
     @Test(expected = SQLiteConstraintException.class)
