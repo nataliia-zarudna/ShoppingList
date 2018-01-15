@@ -91,7 +91,7 @@ public class UserDaoTest {
         expectedUsers.add(users.get(0));
         expectedUsers.add(users.get(2));
 
-        TestUtils.assertPagedListEqualsToList(expectedUsers, actualUsers);
+        TestUtils.assertEquals(expectedUsers, actualUsers);
     }
 
     @After

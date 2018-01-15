@@ -89,6 +89,24 @@ public class ProductsListDaoTest {
     }
 
     @Test
+    public void createAndReadSync() throws InterruptedException {
+
+        ProductsList list = new ProductsList();
+        list.setName("new name");
+        list.setAssignedID(mUserID_1);
+        list.setModifiedAt(new Date());
+        list.setCreatedBy(mUserID_1);
+        list.setModifiedBy(mUserID_2);
+
+        long listID = insertList(list);
+        list.setListID(listID);
+
+        ProductsList insertedList = mSubjectDao.findByIDSync(listID);
+
+        assertThat(insertedList, equalTo(list));
+    }
+
+    @Test
     public void createWithActiveStatus() throws InterruptedException {
 
         ProductsList list = insertList();
@@ -184,7 +202,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByName(ProductsList.STATUS_ACTIVE);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     @Test
@@ -213,7 +231,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByCreatedAtDesc(ProductsList.STATUS_ACTIVE);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     @Test
@@ -246,7 +264,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByCreatedByAndName(ProductsList.STATUS_ACTIVE);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     @Test
@@ -275,7 +293,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByModifiedAtDesc(ProductsList.STATUS_ACTIVE);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     @Test
@@ -304,7 +322,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByModifiedAtDesc(ProductsList.STATUS_ARCHIVED);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     @Test
@@ -337,7 +355,7 @@ public class ProductsListDaoTest {
                 mSubjectDao.findByStatusSortByAssignedAndName(ProductsList.STATUS_ACTIVE);
         PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
 
-        TestUtils.assertPagedListEqualsToList(activeLists, foundProductsList);
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     private ProductsList createProductListWithNotNullParams() {

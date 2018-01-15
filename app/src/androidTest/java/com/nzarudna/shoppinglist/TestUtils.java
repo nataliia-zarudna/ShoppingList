@@ -18,6 +18,8 @@ import com.nzarudna.shoppinglist.model.dao.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.dao.UserDao;
 
+import org.junit.Assert;
+
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -69,14 +71,14 @@ public class TestUtils {
         return foundProductsList[0];
     }
 
-    public static void assertPagedListEqualsToList(List expected, PagedList actual) {
+    public static void assertEquals(List expected, List actual) {
 
         try {
 
-            assertEquals(expected.size(), actual.size());
+            Assert.assertEquals(expected.size(), actual.size());
 
             for (int i = 0; i < expected.size(); i++) {
-                assertEquals(expected.get(i), actual.get(i));
+                Assert.assertEquals(expected.get(i), actual.get(i));
             }
         } catch (AssertionError e) {
             throw new AssertionError("List is not equals to paged list: " +

@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.ShoppingList;
+import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.dao.CategoryDao;
 import com.nzarudna.shoppinglist.model.dao.DaoFactory;
 import com.nzarudna.shoppinglist.model.dao.ProductDao;
@@ -21,15 +23,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -108,16 +110,18 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void copyList_testData() throws InterruptedException {
+    public void copyList_testEqualsData() throws InterruptedException, ShoppingListException {
 
         int etalonListID = mProductsList2;
-        ShoppingList newList = ShoppingList.copyList(etalonListID);
+        LiveData<ProductsList> etalonListLiveData = mProductsListDao.findByID(etalonListID);
+        ProductsList etalonProductsList = TestUtils.findByIDSync(etalonListLiveData);
+        etalonProductsList.setName("Not default name");
+        mProductsListDao.update(etalonProductsList);
+
+        ShoppingList newList = ShoppingList.copyList(mMockContext, etalonListID);
 
         LiveData<ProductsList> newListLiveData = newList.getListData();
         ProductsList newProductsList = TestUtils.findByIDSync(newListLiveData);
-
-        LiveData<ProductsList> etalonListLiveData = mProductsListDao.findByID(etalonListID);
-        ProductsList etalonProductsList = TestUtils.findByIDSync(etalonListLiveData);
 
         assertThat(newProductsList.getName(), is(etalonProductsList.getName()));
         TestUtils.assertDateEqualsToSeconds(new Date(), newProductsList.getCreatedAt());
@@ -126,18 +130,51 @@ public class ShoppingListTest {
         assertNull(newProductsList.getModifiedBy());
         assertNull(newProductsList.getAssignedID());
         assertThat(newProductsList.getStatus(), is(ProductsList.STATUS_ACTIVE));
+
+        //verify(mNotificationManager).sendNotification();
     }
 
     @Test
-    public void copyList_testProducts() throws InterruptedException {
+    public void copyList_testEqualsProducts() throws InterruptedException, ShoppingListException {
 
         int etalonListID = mProductsList1;
-        ShoppingList list = ShoppingList.copyList(etalonListID);
-        LiveData<ProductsList> listLiveData = list.getListData();
+        List<Product> etalonProductsList = mProductDao.findByListIDSync(etalonListID);
 
-        ProductsList productsList = TestUtils.findByIDSync(listLiveData);
+        Product etalonListProduct = etalonProductsList.get(1);
+        etalonListProduct.setStatus(Product.BOUGHT);
+        etalonListProduct.setName("Custom name");
+        etalonListProduct.setComment("Some comments");
+        etalonListProduct.setCount(5.5);
+        etalonListProduct.setOrder(3);
+        mProductDao.update(etalonListProduct);
 
-        
+        ShoppingList newList = ShoppingList.copyList(mMockContext, etalonListID);
+        List<Product> newProductsList = mProductDao.findByListIDSync(newList.getListID());
+
+        assertEquals(etalonProductsList.size(), newProductsList.size());
+
+        for (int i = 0; i < etalonProductsList.size(); i++) {
+
+            Product etalonProduct = etalonProductsList.get(i);
+            Product newProduct = newProductsList.get(i);
+
+            assertThat(newProduct.getName(), is(etalonProduct.getName()));
+            assertThat(newProduct.getCategoryID(), is(etalonProduct.getCategoryID()));
+            assertThat(newProduct.getComment(), is(etalonProduct.getComment()));
+            assertThat(newProduct.getCount(), is(etalonProduct.getCount()));
+            assertThat(newProduct.getListID(), is(newList.getListID()));
+            assertThat(newProduct.getOrder(), is(etalonProduct.getOrder()));
+            assertThat(newProduct.getStatus(), is(Product.TO_BUY));
+            assertThat(newProduct.getUnitID(), is(etalonProduct.getUnitID()));
+        }
+
+        //verify(mNotificationManager).sendNotification();
+    }
+
+    @Test(expected = ShoppingListException.class)
+    public void copyList_testException_OnNonexistentList() throws InterruptedException, ShoppingListException {
+
+        ShoppingList.copyList(mMockContext, 99);
     }
 
     private void createTestData() {

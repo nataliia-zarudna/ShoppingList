@@ -109,7 +109,7 @@ public class ProductTemplateDaoTest {
                 mSubjectDao.findAllSortByName();
         PagedList<ProductTemplate> foundTemplates = TestUtils.findSync(foundTemplatesDataSource);
 
-        TestUtils.assertPagedListEqualsToList(expectedTemplates, foundTemplates);
+        TestUtils.assertEquals(expectedTemplates, foundTemplates);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ProductTemplateDaoTest {
                 mSubjectDao.findAllSortByCategoryIDAndName();
         PagedList<ProductTemplate> foundTemplates = TestUtils.findSync(foundTemplatesDataSource);
 
-        TestUtils.assertPagedListEqualsToList(expectedTemplates, foundTemplates);
+        TestUtils.assertEquals(expectedTemplates, foundTemplates);
     }
 
     private ProductTemplate createTemplate() throws InterruptedException {

@@ -125,6 +125,27 @@ public class ProductDaoTest {
     }
 
     @Test
+    public void findByListIDSync() throws InterruptedException {
+
+        List<Product> products = createProducts(4);
+        products.get(0).setListID(mProductsListID_1);
+        products.get(1).setListID(mProductsListID_1);
+        products.get(2).setListID(mProductsListID_2);
+        products.get(3).setListID(mProductsListID_1);
+
+        insertProducts(products);
+
+        List<Product> expectedProducts = new ArrayList<>();
+        expectedProducts.add(products.get(0));
+        expectedProducts.add(products.get(1));
+        expectedProducts.add(products.get(3));
+
+        List<Product> foundProducts = mSubjectDao.findByListIDSync(mProductsListID_1);
+
+        TestUtils.assertEquals(expectedProducts, foundProducts);
+    }
+
+    @Test
     public void findByListIDSortByName() throws InterruptedException {
 
         List<Product> products = createProducts(4);
@@ -150,7 +171,7 @@ public class ProductDaoTest {
                 mSubjectDao.findByListIDSortByName(mProductsListID_1);
         PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
 
-        TestUtils.assertPagedListEqualsToList(expectedProducts, foundProducts);
+        TestUtils.assertEquals(expectedProducts, foundProducts);
     }
 
     @Test
@@ -186,7 +207,7 @@ public class ProductDaoTest {
                 mSubjectDao.findByListIDSortByCategoryIDAndName(mProductsListID_1);
         PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
 
-        TestUtils.assertPagedListEqualsToList(expectedProducts, foundProducts);
+        TestUtils.assertEquals(expectedProducts, foundProducts);
     }
 
     @Test
@@ -223,7 +244,7 @@ public class ProductDaoTest {
                 mSubjectDao.findByListIDSortByStatusAndName(mProductsListID_1);
         PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
 
-        TestUtils.assertPagedListEqualsToList(expectedProducts, foundProducts);
+        TestUtils.assertEquals(expectedProducts, foundProducts);
     }
 
     private Product createProduct() throws InterruptedException {

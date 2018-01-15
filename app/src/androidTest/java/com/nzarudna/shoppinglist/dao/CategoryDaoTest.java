@@ -86,7 +86,7 @@ public class CategoryDaoTest {
         DataSource.Factory<Integer, Category> foundCategoriesDataSource = mSubjectDao.findAll();
         PagedList<Category> actualCategories = TestUtils.findSync(foundCategoriesDataSource);
 
-        TestUtils.assertPagedListEqualsToList(createdCategories, actualCategories);
+        TestUtils.assertEquals(createdCategories, actualCategories);
     }
 
     @After
