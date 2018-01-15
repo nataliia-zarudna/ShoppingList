@@ -1,6 +1,8 @@
 package com.nzarudna.shoppinglist;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -25,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +35,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -58,8 +62,6 @@ public class ShoppingListTest {
     private int mCategory2;
     private int mProduct1;
     private int mProduct2;
-    private int mProductsList1;
-    private int mProductsList2;
     private int mProductTemplate1;
     private int mProductTemplate2;
 
@@ -112,7 +114,8 @@ public class ShoppingListTest {
     @Test
     public void copyList_testEqualsData() throws InterruptedException, ShoppingListException {
 
-        int etalonListID = mProductsList2;
+        int etalonListID = TestUtils.insertProductsList(mProductsListDao, mSelfUser);
+
         LiveData<ProductsList> etalonListLiveData = mProductsListDao.findByID(etalonListID);
         ProductsList etalonProductsList = TestUtils.findByIDSync(etalonListLiveData);
         etalonProductsList.setName("Not default name");
@@ -137,7 +140,9 @@ public class ShoppingListTest {
     @Test
     public void copyList_testEqualsProducts() throws InterruptedException, ShoppingListException {
 
-        int etalonListID = mProductsList1;
+        int etalonListID = TestUtils.insertProductsList(mProductsListDao, mSelfUser);
+        TestUtils.insertProduct(mProductDao, etalonListID);
+        TestUtils.insertProduct(mProductDao, etalonListID);
         List<Product> etalonProductsList = mProductDao.findByListIDSync(etalonListID);
 
         Product etalonListProduct = etalonProductsList.get(1);
@@ -177,14 +182,192 @@ public class ShoppingListTest {
         ShoppingList.copyList(mMockContext, 99);
     }
 
+    @Test
+    public void findActiveSortByName() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(0).setName("#1");
+
+        lists.get(1).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(1).setName("#3");
+
+        lists.get(2).setStatus(ProductsList.STATUS_ARCHIVED);
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setName("#2");
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+        activeLists.add(lists.get(1));
+
+        DataSource.Factory<Integer, ProductsList> foundProductsListDS =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_NAME);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundProductsListDS);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findActiveSortByCreatedAtDesc() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(0).setCreatedAt(new Date(3000));
+
+        lists.get(1).setStatus(ProductsList.STATUS_ARCHIVED);
+
+        lists.get(2).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(2).setCreatedAt(new Date(1000));
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setCreatedAt(new Date(2000));
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+        activeLists.add(lists.get(2));
+
+        DataSource.Factory<Integer, ProductsList> foundProductsListDS =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_CREATED_AT);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundProductsListDS);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findActiveSortByCreatedByAndName() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(0).setName("#1");
+        lists.get(0).setCreatedBy(mUser2);
+
+        lists.get(1).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(1).setName("#3");
+        lists.get(1).setCreatedBy(mSelfUser);
+
+        lists.get(2).setStatus(ProductsList.STATUS_ARCHIVED);
+        lists.get(2).setCreatedBy(mSelfUser);
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setName("#2");
+        lists.get(3).setCreatedBy(mUser2);
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(1));
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+
+        DataSource.Factory<Integer, ProductsList> foundLists =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_CREATED_BY);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findActiveSortByModifiedAtDesc() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(0).setModifiedAt(new Date(3000));
+
+        lists.get(1).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(1).setModifiedAt(new Date(1000));
+
+        lists.get(2).setStatus(ProductsList.STATUS_ARCHIVED);
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setModifiedAt(new Date(2000));
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+        activeLists.add(lists.get(1));
+
+        DataSource.Factory<Integer, ProductsList> foundLists =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_MODIFIED_AT);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findArchivedSortByModifiedAtDesc() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ARCHIVED);
+        lists.get(0).setModifiedAt(new Date(3000));
+
+        lists.get(1).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(1).setModifiedAt(new Date(1000));
+
+        lists.get(2).setStatus(ProductsList.STATUS_ARCHIVED);
+        lists.get(2).setModifiedAt(new Date(4000));
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setModifiedAt(new Date(2000));
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(2));
+        activeLists.add(lists.get(0));
+
+        DataSource.Factory<Integer, ProductsList> foundLists =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ARCHIVED, ShoppingList.SORT_LISTS_BY_MODIFIED_AT);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findActiveSortByAssignedAndName() throws InterruptedException, ShoppingListException {
+
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mSelfUser);
+        lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(0).setName("#1");
+        lists.get(0).setAssignedID(mUser2);
+
+        lists.get(1).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(1).setName("#3");
+        lists.get(1).setAssignedID(mSelfUser);
+
+        lists.get(2).setStatus(ProductsList.STATUS_ARCHIVED);
+        lists.get(2).setAssignedID(mSelfUser);
+
+        lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
+        lists.get(3).setName("#2");
+        lists.get(3).setAssignedID(mUser2);
+
+        TestUtils.insertProductsLists(mProductsListDao, lists);
+
+        List<ProductsList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(1));
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+
+        DataSource.Factory<Integer, ProductsList> foundLists =
+                ShoppingList.getLists(mMockContext, ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_ASSIGNED);
+        PagedList<ProductsList> foundProductsList = TestUtils.findSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
     private void createTestData() {
         mUser2 = TestUtils.insertUser(mUserDao);
         mCategory1 = TestUtils.insertCategory(mCategoryDao);
         mCategory2 = TestUtils.insertCategory(mCategoryDao);
-        mProductsList1 = TestUtils.insertProductsList(mProductsListDao, mSelfUser);
-        mProductsList2 = TestUtils.insertProductsList(mProductsListDao, mUser2);
-        mProduct1 = TestUtils.insertProduct(mProductDao, mProductsList1);
-        mProduct2 = TestUtils.insertProduct(mProductDao, mProductsList1);
         mProductTemplate1 = TestUtils.insertProductTemplate(mProductTemplateDao);
         mProductTemplate2 = TestUtils.insertProductTemplate(mProductTemplateDao);
     }

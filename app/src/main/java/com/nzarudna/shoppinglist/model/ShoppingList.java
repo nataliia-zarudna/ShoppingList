@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.model;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -43,6 +44,14 @@ public class ShoppingList implements Observer<ProductsList> {
         mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
 
         mProductsList.observeForever(this);
+    }
+
+    public LiveData<ProductsList> getListData() {
+        return mProductsList;
+    }
+
+    public int getListID() {
+        return mListID;
     }
 
     public static ShoppingList createList(Context context) {
@@ -112,17 +121,26 @@ public class ShoppingList implements Observer<ProductsList> {
         }
     }
 
-    public static LiveData<PagedList<ShoppingList>> getLists(
-            @ProductsList.ProductListStatus int status, @ProductsListSorting int sorting) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    public static DataSource.Factory<Integer, ProductsList> getLists(Context context,
+                                                                     @ProductsList.ProductListStatus int status,
+                                                                     @ProductsListSorting int sorting) throws ShoppingListException {
 
-    public LiveData<ProductsList> getListData() {
-        return mProductsList;
-    }
+        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
+        switch (sorting) {
+            case SORT_LISTS_BY_NAME:
+                return productsListDao.findByStatusSortByName(status);
+            case SORT_LISTS_BY_CREATED_AT:
+                return productsListDao.findByStatusSortByCreatedAtDesc(status);
+            case SORT_LISTS_BY_CREATED_BY:
+                return productsListDao.findByStatusSortByCreatedByAndName(status);
+            case SORT_LISTS_BY_ASSIGNED:
+                return productsListDao.findByStatusSortByAssignedAndName(status);
+            case SORT_LISTS_BY_MODIFIED_AT:
+                return productsListDao.findByStatusSortByModifiedAtDesc(status);
 
-    public int getListID() {
-        return mListID;
+            default:
+                throw new ShoppingListException("Unknown sorting " + sorting);
+        }
     }
 
     public void removeList() {

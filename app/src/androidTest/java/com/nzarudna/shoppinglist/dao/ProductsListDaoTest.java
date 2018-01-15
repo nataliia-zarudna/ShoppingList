@@ -64,7 +64,7 @@ public class ProductsListDaoTest {
     public void create() throws InterruptedException {
 
         ProductsList listToInsert = createProductListWithNotNullParams();
-        long listID = insertList(listToInsert);
+        long listID = mSubjectDao.insert(listToInsert);
 
         assertThat(listID, not(0l));
     }
@@ -79,7 +79,7 @@ public class ProductsListDaoTest {
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
 
-        long listID = insertList(list);
+        long listID = mSubjectDao.insert(list);
         list.setListID(listID);
 
         LiveData<ProductsList> listLiveData = mSubjectDao.findByID(listID);
@@ -98,7 +98,7 @@ public class ProductsListDaoTest {
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
 
-        long listID = insertList(list);
+        long listID = mSubjectDao.insert(list);
         list.setListID(listID);
 
         ProductsList insertedList = mSubjectDao.findByIDSync(listID);
@@ -159,7 +159,7 @@ public class ProductsListDaoTest {
 
         mSubjectDao.update(list);
 
-        ProductsList updatedList = findListByID(list.getListID());
+        ProductsList updatedList = mSubjectDao.findByIDSync(list.getListID());
 
         assertThat(updatedList, equalTo(list));
     }
@@ -171,7 +171,7 @@ public class ProductsListDaoTest {
 
         mSubjectDao.delete(list);
 
-        ProductsList foundList = findListByID(list.getListID());
+        ProductsList foundList = mSubjectDao.findByIDSync(list.getListID());
 
         assertEquals(foundList, null);
     }
@@ -179,7 +179,7 @@ public class ProductsListDaoTest {
     @Test
     public void findActiveSortByName() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(0).setName("#1");
 
@@ -191,7 +191,7 @@ public class ProductsListDaoTest {
         lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(3).setName("#2");
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(0));
@@ -208,7 +208,7 @@ public class ProductsListDaoTest {
     @Test
     public void findActiveSortByCreatedAtDesc() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(0).setCreatedAt(new Date(3000));
 
@@ -220,7 +220,7 @@ public class ProductsListDaoTest {
         lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(3).setCreatedAt(new Date(2000));
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(0));
@@ -237,7 +237,7 @@ public class ProductsListDaoTest {
     @Test
     public void findActiveSortByCreatedByAndName() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(0).setName("#1");
         lists.get(0).setCreatedBy(mUserID_2);
@@ -253,7 +253,7 @@ public class ProductsListDaoTest {
         lists.get(3).setName("#2");
         lists.get(3).setCreatedBy(mUserID_2);
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(1));
@@ -270,7 +270,7 @@ public class ProductsListDaoTest {
     @Test
     public void findActiveSortByModifiedAtDesc() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(0).setModifiedAt(new Date(3000));
 
@@ -282,7 +282,7 @@ public class ProductsListDaoTest {
         lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(3).setModifiedAt(new Date(2000));
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(0));
@@ -299,7 +299,7 @@ public class ProductsListDaoTest {
     @Test
     public void findArchivedSortByModifiedAtDesc() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ARCHIVED);
         lists.get(0).setModifiedAt(new Date(3000));
 
@@ -312,7 +312,7 @@ public class ProductsListDaoTest {
         lists.get(3).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(3).setModifiedAt(new Date(2000));
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(2));
@@ -328,7 +328,7 @@ public class ProductsListDaoTest {
     @Test
     public void findActiveSortByAssignedAndName() throws InterruptedException {
 
-        List<ProductsList> lists = createProductsLists(4);
+        List<ProductsList> lists = TestUtils.createProductsLists(4, mUserID_1);
         lists.get(0).setStatus(ProductsList.STATUS_ACTIVE);
         lists.get(0).setName("#1");
         lists.get(0).setAssignedID(mUserID_2);
@@ -344,7 +344,7 @@ public class ProductsListDaoTest {
         lists.get(3).setName("#2");
         lists.get(3).setAssignedID(mUserID_2);
 
-        insertLists(lists);
+        TestUtils.insertProductsLists(mSubjectDao, lists);
 
         List<ProductsList> activeLists = new ArrayList<>();
         activeLists.add(lists.get(1));
@@ -366,37 +366,11 @@ public class ProductsListDaoTest {
         return list;
     }
 
-    private List<ProductsList> createProductsLists(int count) {
-
-        List<ProductsList> lists = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            ProductsList productsList = createProductListWithNotNullParams();
-            lists.add(productsList);
-        }
-        return lists;
-    }
-
     private ProductsList insertList() {
         ProductsList listToInsert = createProductListWithNotNullParams();
-        long listID = insertList(listToInsert);
+        long listID = mSubjectDao.insert(listToInsert);
         listToInsert.setListID(listID);
 
         return listToInsert;
-    }
-
-    private long insertList(ProductsList listToInsert) {
-        return mSubjectDao.insert(listToInsert);
-    }
-
-    private void insertLists(List<ProductsList> listsToInsert) {
-        for (ProductsList list : listsToInsert) {
-            long insertedID = insertList(list);
-            list.setListID(insertedID);
-        }
-    }
-
-    private ProductsList findListByID(long listID) throws InterruptedException {
-        LiveData<ProductsList> listLiveData = mSubjectDao.findByID(listID);
-        return TestUtils.findByIDSync(listLiveData);
     }
 }

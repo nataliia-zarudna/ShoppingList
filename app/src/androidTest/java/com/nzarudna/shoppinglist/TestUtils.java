@@ -20,6 +20,7 @@ import com.nzarudna.shoppinglist.model.dao.UserDao;
 
 import org.junit.Assert;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -54,21 +55,21 @@ public class TestUtils {
 
     public static <T> PagedList<T> findSync(DataSource.Factory<Integer, T> dataSourceFactory) throws InterruptedException {
 
-        final PagedList<T>[] foundProductsList = new PagedList[1];
+        final PagedList<T>[] foundList = new PagedList[1];
         final CountDownLatch latch = new CountDownLatch(1);
 
-        LiveData<PagedList<T>> livePagedProductsList = new LivePagedListBuilder<>(dataSourceFactory, 4).build();
-        livePagedProductsList.observeForever(new Observer<PagedList<T>>() {
+        LiveData<PagedList<T>> livePagedList = new LivePagedListBuilder<>(dataSourceFactory, 4).build();
+        livePagedList.observeForever(new Observer<PagedList<T>>() {
             @Override
             public void onChanged(@Nullable PagedList<T> list) {
 
-                foundProductsList[0] = list;
+                foundList[0] = list;
                 latch.countDown();
             }
         });
         latch.await(3000, TimeUnit.MILLISECONDS);
 
-        return foundProductsList[0];
+        return foundList[0];
     }
 
     public static void assertEquals(List expected, List actual) {
@@ -105,6 +106,25 @@ public class TestUtils {
         list.setCreatedBy(createdBy);
 
         return (int) productsListDao.insert(list);
+    }
+
+    public static List<ProductsList> createProductsLists(int count, int createdBy) {
+
+        List<ProductsList> lists = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            ProductsList productsList = new ProductsList();
+            productsList.setName("Some name");
+            productsList.setCreatedBy(createdBy);
+            lists.add(productsList);
+        }
+        return lists;
+    }
+
+    public static void insertProductsLists(ProductsListDao productsListDao, List<ProductsList> listsToInsert) {
+        for (ProductsList list : listsToInsert) {
+            long insertedID = productsListDao.insert(list);
+            list.setListID(insertedID);
+        }
     }
 
     public static int insertCategory(CategoryDao categoryDao) {
