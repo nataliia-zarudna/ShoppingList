@@ -6,6 +6,7 @@ import android.content.Context;
 import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.ShoppingList;
+import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.dao.DaoFactory;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.db.AppDatabase;
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test methods on shopping list object
@@ -38,7 +40,7 @@ public class ShoppingListTest {
         mProductsListDao = DaoFactory.getInstance().getProductsListDao(mMockContext);
         AppDatabase.switchToInMemory(mMockContext);
 
-        mShoppingList = ShoppingList.createList(mMockContext);
+        //mShoppingList = ShoppingList.createList(mMockContext);
     }
 
     @Test
@@ -63,6 +65,33 @@ public class ShoppingListTest {
 
         assertEquals(product.getName(), productName);
         assertEquals(product.getComment(), productComment);
+        assertEquals(product.getListID(), mShoppingList.getListID());
+        assertEquals(product.getStatus(), Product.TO_BUY);
+    }
+
+    @Test(expected = ShoppingListException.class)
+    public void exception_onAddProductWithComment_AndEmptyName() throws InterruptedException {
+
+        String emptyName = "";
+        String productComment = "Something about product";
+        LiveData<Product> productLiveData = mShoppingList.addProduct(emptyName, productComment);
+
+        TestUtils.getLiveDataValueSync(productLiveData);
+    }
+
+    @Test
+    public void addProductWithUnits() throws InterruptedException {
+
+        String productName = "Some product";
+        double productCount = 5.5;
+        int productUnitID = 1;
+        LiveData<Product> productLiveData = mShoppingList.addProduct(productName, productCount, productUnitID);
+
+        Product product = TestUtils.getLiveDataValueSync(productLiveData);
+
+        assertEquals(product.getName(), productName);
+        assertTrue(Math.abs(product.getCount() - productCount) < 0.001);
+        assertEquals(product.getUnitID(), productUnitID);
         assertEquals(product.getListID(), mShoppingList.getListID());
         assertEquals(product.getStatus(), Product.TO_BUY);
     }

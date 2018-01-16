@@ -47,4 +47,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-android:2.13.0'
     androidTestCompile 'org.mockito:mockito-android:2.13.0'
+
+    //Dagger 2
+    compile 'com.google.dagger:dagger-android:2.11'
+    compile 'com.google.dagger:dagger-android-support:2.11' // if you use the support libraries
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
 }
