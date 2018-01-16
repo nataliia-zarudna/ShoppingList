@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model;
+package com.nzarudna.shoppinglist.product;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -7,6 +7,8 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+
+import com.nzarudna.shoppinglist.user.User;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -10,9 +10,9 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
-import com.nzarudna.shoppinglist.model.Category;
-import com.nzarudna.shoppinglist.model.dao.CategoryDao;
-import com.nzarudna.shoppinglist.model.db.AppDatabase;
+import com.nzarudna.shoppinglist.product.Category;
+import com.nzarudna.shoppinglist.persistence.CategoryDao;
+import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;

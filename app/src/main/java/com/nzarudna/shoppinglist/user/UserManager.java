@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model;
+package com.nzarudna.shoppinglist.user;
 
 import android.content.Context;
 import android.content.SharedPreferences;

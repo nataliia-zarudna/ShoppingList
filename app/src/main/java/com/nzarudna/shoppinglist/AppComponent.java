@@ -2,8 +2,8 @@ package com.nzarudna.shoppinglist;
 
 import android.content.Context;
 
-import com.nzarudna.shoppinglist.model.ShoppingListRepository;
-import com.nzarudna.shoppinglist.model.dao.RoomDaoModule;
+import com.nzarudna.shoppinglist.product.ShoppingListRepository;
+import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
 
 import javax.inject.Singleton;
 

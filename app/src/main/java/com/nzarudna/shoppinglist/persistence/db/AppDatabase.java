@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model.db;
+package com.nzarudna.shoppinglist.persistence.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -7,16 +7,16 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
-import com.nzarudna.shoppinglist.model.Category;
-import com.nzarudna.shoppinglist.model.Product;
-import com.nzarudna.shoppinglist.model.ProductTemplate;
-import com.nzarudna.shoppinglist.model.ProductsList;
-import com.nzarudna.shoppinglist.model.User;
-import com.nzarudna.shoppinglist.model.dao.CategoryDao;
-import com.nzarudna.shoppinglist.model.dao.ProductDao;
-import com.nzarudna.shoppinglist.model.dao.ProductTemplateDao;
-import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
-import com.nzarudna.shoppinglist.model.dao.UserDao;
+import com.nzarudna.shoppinglist.product.Category;
+import com.nzarudna.shoppinglist.product.Product;
+import com.nzarudna.shoppinglist.product.ProductTemplate;
+import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.user.User;
+import com.nzarudna.shoppinglist.persistence.CategoryDao;
+import com.nzarudna.shoppinglist.persistence.ProductDao;
+import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
+import com.nzarudna.shoppinglist.persistence.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.UserDao;
 
 /**
  * Room application database

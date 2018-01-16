@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model.db;
+package com.nzarudna.shoppinglist.persistence.db;
 
 import android.arch.persistence.room.TypeConverter;
 

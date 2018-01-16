@@ -1,8 +1,8 @@
-package com.nzarudna.shoppinglist.model.dao;
+package com.nzarudna.shoppinglist.persistence;
 
 import android.content.Context;
 
-import com.nzarudna.shoppinglist.model.db.AppDatabase;
+import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 
 import javax.inject.Singleton;
 

@@ -3,12 +3,12 @@ package com.nzarudna.shoppinglist;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
-import com.nzarudna.shoppinglist.model.Product;
-import com.nzarudna.shoppinglist.model.ProductsList;
-import com.nzarudna.shoppinglist.model.ShoppingList;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
-import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
-import com.nzarudna.shoppinglist.model.db.AppDatabase;
+import com.nzarudna.shoppinglist.product.Product;
+import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ShoppingList;
+import com.nzarudna.shoppinglist.product.ShoppingListException;
+import com.nzarudna.shoppinglist.persistence.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;

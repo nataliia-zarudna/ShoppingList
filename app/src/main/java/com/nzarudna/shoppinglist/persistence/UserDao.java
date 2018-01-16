@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model.dao;
+package com.nzarudna.shoppinglist.persistence;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
@@ -8,7 +8,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.nzarudna.shoppinglist.model.User;
+import com.nzarudna.shoppinglist.user.User;
 
 /**
  * Created by Nataliia on 29.12.2017.

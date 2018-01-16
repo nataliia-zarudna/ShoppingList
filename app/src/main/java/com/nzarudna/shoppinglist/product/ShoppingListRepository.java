@@ -1,19 +1,19 @@
-package com.nzarudna.shoppinglist.model;
+package com.nzarudna.shoppinglist.product;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.Context;
 
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.model.dao.ProductDao;
-import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.ProductDao;
+import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static com.nzarudna.shoppinglist.model.ShoppingList.*;
+import static com.nzarudna.shoppinglist.product.ShoppingList.*;
 
 /**
  * Shopping List Repository

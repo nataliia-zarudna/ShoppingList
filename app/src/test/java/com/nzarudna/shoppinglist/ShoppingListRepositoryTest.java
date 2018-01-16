@@ -1,19 +1,18 @@
 package com.nzarudna.shoppinglist;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-import com.nzarudna.shoppinglist.model.ProductsList;
-import com.nzarudna.shoppinglist.model.ShoppingList;
-import com.nzarudna.shoppinglist.model.ShoppingListRepository;
-import com.nzarudna.shoppinglist.model.dao.CategoryDao;
-import com.nzarudna.shoppinglist.model.dao.ProductDao;
-import com.nzarudna.shoppinglist.model.dao.ProductTemplateDao;
-import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
-import com.nzarudna.shoppinglist.model.dao.UserDao;
-import com.nzarudna.shoppinglist.model.db.AppDatabase;
+import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ShoppingList;
+import com.nzarudna.shoppinglist.product.ShoppingListRepository;
+import com.nzarudna.shoppinglist.persistence.CategoryDao;
+import com.nzarudna.shoppinglist.persistence.ProductDao;
+import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
+import com.nzarudna.shoppinglist.persistence.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.UserDao;
+import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import org.junit.After;

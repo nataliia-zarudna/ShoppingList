@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model;
+package com.nzarudna.shoppinglist.product;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
@@ -8,13 +8,11 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import javax.inject.Inject;
 
 /**
  * Class that contains productsList object

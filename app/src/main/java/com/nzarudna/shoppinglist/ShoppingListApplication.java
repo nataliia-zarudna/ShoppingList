@@ -3,8 +3,8 @@ package com.nzarudna.shoppinglist;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.nzarudna.shoppinglist.model.dao.RoomDaoModule;
-import com.nzarudna.shoppinglist.model.db.AppDatabase;
+import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
+import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 
 /**
  * Application class
