@@ -93,7 +93,7 @@ public class ProductDaoTest {
         product.setProductID(productID);
 
         LiveData<Product> productLiveData = mSubjectDao.findByID(productID);
-        Product insertedProduct = TestUtils.findByIDSync(productLiveData);
+        Product insertedProduct = TestUtils.getLiveDataValueSync(productLiveData);
 
         assertThat(insertedProduct, equalTo(product));
     }
@@ -169,7 +169,7 @@ public class ProductDaoTest {
 
         DataSource.Factory<Integer, Product> foundProductsDataSource =
                 mSubjectDao.findByListIDSortByName(mProductsListID_1);
-        PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
+        PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);
     }
@@ -205,7 +205,7 @@ public class ProductDaoTest {
 
         DataSource.Factory<Integer, Product> foundProductsDataSource =
                 mSubjectDao.findByListIDSortByCategoryIDAndName(mProductsListID_1);
-        PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
+        PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);
     }
@@ -242,7 +242,7 @@ public class ProductDaoTest {
 
         DataSource.Factory<Integer, Product> foundProductsDataSource =
                 mSubjectDao.findByListIDSortByStatusAndName(mProductsListID_1);
-        PagedList<Product> foundProducts = TestUtils.findSync(foundProductsDataSource);
+        PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);
     }
@@ -270,7 +270,7 @@ public class ProductDaoTest {
         long productID = mSubjectDao.insert(product);
         LiveData<Product> createdProduct = mSubjectDao.findByID((int) productID);
 
-        return TestUtils.findByIDSync(createdProduct);
+        return TestUtils.getLiveDataValueSync(createdProduct);
     }
 
     private void insertProducts(List<Product> products) {

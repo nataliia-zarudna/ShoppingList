@@ -76,7 +76,7 @@ public class ProductTemplateDaoTest {
         template.setTemplateID(templateID);
 
         LiveData<ProductTemplate> templateLiveData = mSubjectDao.findByID(templateID);
-        ProductTemplate insertedTemplate = TestUtils.findByIDSync(templateLiveData);
+        ProductTemplate insertedTemplate = TestUtils.getLiveDataValueSync(templateLiveData);
 
         assertThat(insertedTemplate, equalTo(template));
     }
@@ -107,7 +107,7 @@ public class ProductTemplateDaoTest {
 
         DataSource.Factory<Integer, ProductTemplate> foundTemplatesDataSource =
                 mSubjectDao.findAllSortByName();
-        PagedList<ProductTemplate> foundTemplates = TestUtils.findSync(foundTemplatesDataSource);
+        PagedList<ProductTemplate> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
         TestUtils.assertEquals(expectedTemplates, foundTemplates);
     }
@@ -137,7 +137,7 @@ public class ProductTemplateDaoTest {
 
         DataSource.Factory<Integer, ProductTemplate> foundTemplatesDataSource =
                 mSubjectDao.findAllSortByCategoryIDAndName();
-        PagedList<ProductTemplate> foundTemplates = TestUtils.findSync(foundTemplatesDataSource);
+        PagedList<ProductTemplate> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
         TestUtils.assertEquals(expectedTemplates, foundTemplates);
     }
@@ -164,7 +164,7 @@ public class ProductTemplateDaoTest {
         long templateID = mSubjectDao.insert(template);
         LiveData<ProductTemplate> createdTemplate = mSubjectDao.findByID((int) templateID);
 
-        return TestUtils.findByIDSync(createdTemplate);
+        return TestUtils.getLiveDataValueSync(createdTemplate);
     }
 
     private void insertTemplates(List<ProductTemplate> templates) {

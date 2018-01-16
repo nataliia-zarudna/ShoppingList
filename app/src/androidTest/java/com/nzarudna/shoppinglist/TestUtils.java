@@ -35,25 +35,25 @@ import static org.junit.Assert.assertTrue;
 
 public class TestUtils {
 
-    public static <T> T findByIDSync(LiveData<T> listLiveData) throws InterruptedException {
+    public static <T> T getLiveDataValueSync(LiveData<T> liveData) throws InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final T[] insertedList = (T[]) new Object[1];
-        listLiveData.observeForever(new Observer<T>() {
+        final T[] valueArr = (T[]) new Object[1];
+        liveData.observeForever(new Observer<T>() {
             @Override
-            public void onChanged(@Nullable T productsList) {
+            public void onChanged(@Nullable T value) {
 
-                insertedList[0] = productsList;
+                valueArr[0] = value;
                 latch.countDown();
             }
         });
 
         latch.await(3000, TimeUnit.MILLISECONDS);
 
-        return insertedList[0];
+        return valueArr[0];
     }
 
-    public static <T> PagedList<T> findSync(DataSource.Factory<Integer, T> dataSourceFactory) throws InterruptedException {
+    public static <T> PagedList<T> getPagedListSync(DataSource.Factory<Integer, T> dataSourceFactory) throws InterruptedException {
 
         final PagedList<T>[] foundList = new PagedList[1];
         final CountDownLatch latch = new CountDownLatch(1);

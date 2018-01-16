@@ -73,7 +73,7 @@ public class CategoryDaoTest {
         category.setCategoryID((int) categoryID);
 
         LiveData<Category> categoryLiveData = mSubjectDao.findByID((int) categoryID);
-        Category foundCategory = TestUtils.findByIDSync(categoryLiveData);
+        Category foundCategory = TestUtils.getLiveDataValueSync(categoryLiveData);
 
         assertEquals(category, foundCategory);
     }
@@ -84,7 +84,7 @@ public class CategoryDaoTest {
         List<Category> createdCategories = createCategories(3);
 
         DataSource.Factory<Integer, Category> foundCategoriesDataSource = mSubjectDao.findAll();
-        PagedList<Category> actualCategories = TestUtils.findSync(foundCategoriesDataSource);
+        PagedList<Category> actualCategories = TestUtils.getPagedListSync(foundCategoriesDataSource);
 
         TestUtils.assertEquals(createdCategories, actualCategories);
     }
@@ -101,7 +101,7 @@ public class CategoryDaoTest {
         long categoryID = mSubjectDao.insert(category);
         LiveData<Category> categoryLiveData = mSubjectDao.findByID((int) categoryID);
 
-        return TestUtils.findByIDSync(categoryLiveData);
+        return TestUtils.getLiveDataValueSync(categoryLiveData);
     }
 
     private List<Category> createCategories(int count) throws InterruptedException {

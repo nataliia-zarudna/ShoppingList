@@ -73,7 +73,7 @@ public class UserDaoTest {
         user.setUserID((int) userID);
 
         LiveData<User> userLiveData = mSubjectDao.findByID((int) userID);
-        User insertedUser = TestUtils.findByIDSync(userLiveData);
+        User insertedUser = TestUtils.getLiveDataValueSync(userLiveData);
 
         assertThat(user, is(insertedUser));
     }
@@ -85,7 +85,7 @@ public class UserDaoTest {
 
         int excludeUserID = users.get(1).getUserID();
         DataSource.Factory<Integer, User> actualUsersDataSourse = mSubjectDao.findByExcludeID(excludeUserID);
-        PagedList<User> actualUsers = TestUtils.findSync(actualUsersDataSourse);
+        PagedList<User> actualUsers = TestUtils.getPagedListSync(actualUsersDataSourse);
 
         List<User> expectedUsers = new ArrayList<>();
         expectedUsers.add(users.get(0));
@@ -107,7 +107,7 @@ public class UserDaoTest {
         long userID = mSubjectDao.insert(user);
 
         LiveData<User> userLiveData = mSubjectDao.findByID((int) userID);
-        return TestUtils.findByIDSync(userLiveData);
+        return TestUtils.getLiveDataValueSync(userLiveData);
     }
 
     private List<User> createUsers(int count) throws InterruptedException {
