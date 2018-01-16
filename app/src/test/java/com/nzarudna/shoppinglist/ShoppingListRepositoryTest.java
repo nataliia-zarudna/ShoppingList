@@ -1,19 +1,14 @@
 package com.nzarudna.shoppinglist;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
-import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.ShoppingList;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.ShoppingListRepository;
 import com.nzarudna.shoppinglist.model.dao.CategoryDao;
-import com.nzarudna.shoppinglist.model.dao.DaoFactory;
 import com.nzarudna.shoppinglist.model.dao.ProductDao;
 import com.nzarudna.shoppinglist.model.dao.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
@@ -29,10 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -47,6 +38,7 @@ import static org.mockito.Mockito.when;
 public class ShoppingListRepositoryTest {
 
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
+    private static final int MOCKED_SELF_USER_ID = 2;
 
     private Context mMockContext;
     private SharedPreferences mSharedPreferences;
@@ -96,23 +88,28 @@ public class ShoppingListRepositoryTest {
         createTestData();
 
         when(mMockContext.getString(R.string.default_list_name)).thenReturn(MOCKED_DEFAULT_LIST_NAME);
-        when(mSharedPreferences.getInt(SharedPreferencesConstants.SELF_USER_ID, 0)).thenReturn(mSelfUser);
+        when(mSharedPreferences.getInt(SharedPreferencesConstants.SELF_USER_ID, 0)).thenReturn(MOCKED_SELF_USER_ID);
 
-        mSubject = new ShoppingListRepository(mProductsListDao);
+        mSubject = new ShoppingListRepository(mMockContext, mProductsListDao, mProductDao);
 
-        mNotificationManager = Mockito.mock(NotificationManager.class);
+        //mNotificationManager = Mockito.mock(NotificationManager.class);
     }
 
     private void createSelfUser() {
-        UserDao userDao = DaoFactory.getInstance().getUserDao(mMockContext);
+        //UserDao userDao = DaoFactory.getInstance().getUserDao(mMockContext);
         //mSelfUser = TestUtils.insertUser(userDao);
     }
 
     @Test
     public void createList() throws InterruptedException {
 
-        ShoppingList list = mSubject.createList(mMockContext);
-        LiveData<ProductsList> listLiveData = list.getListData();
+        ShoppingList list = mSubject.createList();
+
+        ProductsList expectedProductsList = new ProductsList();
+        expectedProductsList.setName(MOCKED_DEFAULT_LIST_NAME);
+        expectedProductsList.setCreatedBy(MOCKED_SELF_USER_ID);
+
+        verify(mProductsListDao).insert(expectedProductsList);
 
         /*ProductsList productsList = TestUtils.getLiveDataValueSync(listLiveData);
 

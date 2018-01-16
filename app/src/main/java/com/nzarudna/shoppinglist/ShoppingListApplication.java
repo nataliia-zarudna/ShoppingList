@@ -1,0 +1,35 @@
+package com.nzarudna.shoppinglist;
+
+import android.app.Application;
+import android.arch.persistence.room.Room;
+
+import com.nzarudna.shoppinglist.model.dao.RoomDaoModule;
+import com.nzarudna.shoppinglist.model.db.AppDatabase;
+
+/**
+ * Application class
+ */
+public class ShoppingListApplication extends Application {
+
+    private static final String DATABASE_NAME = "shopping_list";
+
+    private AppComponent appComponent;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME).build();
+
+        RoomDaoModule daoModule = new RoomDaoModule(database);
+        ContextModule contextModule = new ContextModule(this);
+        appComponent = DaggerAppComponent.builder()
+                .contextModule(contextModule)
+                .roomDaoModule(daoModule)
+                .build();
+    }
+
+    public AppComponent getAppComponent() {
+        return appComponent;
+    }
+}

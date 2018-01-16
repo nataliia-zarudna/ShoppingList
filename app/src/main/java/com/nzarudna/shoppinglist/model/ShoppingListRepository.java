@@ -5,7 +5,6 @@ import android.arch.paging.DataSource;
 import android.content.Context;
 
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.model.dao.DaoFactory;
 import com.nzarudna.shoppinglist.model.dao.ProductDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 
@@ -23,29 +22,32 @@ import static com.nzarudna.shoppinglist.model.ShoppingList.*;
 public class ShoppingListRepository {
 
     private ProductsListDao mProductsListDao;
+    private ProductDao mProductDao;
+    private Context mContext;
 
     @Inject
-    public ShoppingListRepository(ProductsListDao productsListDao) {
+    public ShoppingListRepository(Context context, ProductsListDao productsListDao, ProductDao productDao) {
         mProductsListDao = productsListDao;
+        mProductDao = productDao;
+        mContext = context;
     }
 
-    public ShoppingList createList(Context context) {
+    public ShoppingList createList() {
 
-        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
-        int productsListID = (int) productsListDao.insert(createProductsList(context));
-        LiveData<ProductsList> productsList = productsListDao.findByID(productsListID);
+        int productsListID = (int) mProductsListDao.insert(createProductsList());
+        LiveData<ProductsList> productsList = mProductsListDao.findByID(productsListID);
 
-        return new ShoppingList(context, productsList, productsListID);
+        return new ShoppingList(productsList, productsListID);
     }
 
-    private ProductsList createProductsList(Context context) {
+    private ProductsList createProductsList() {
         ProductsList productsList = new ProductsList();
 
-        String defaultName = context.getString(R.string.default_list_name);
+        String defaultName = mContext.getString(R.string.default_list_name);
         productsList.setName(defaultName);
 
-        int selfUserID = UserManager.getSelfUserID(context);
-        productsList.setCreatedBy(selfUserID);
+        //int selfUserID = UserManager.getSelfUserID(mContext);
+        //productsList.setCreatedBy(selfUserID);
 
         return productsList;
     }
@@ -53,28 +55,26 @@ public class ShoppingListRepository {
 
     public ShoppingList copyList(Context context, int etalonListID) throws ShoppingListException {
 
-        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
-        ProductsList etalonList = productsListDao.findByIDSync(etalonListID);
+        ProductsList etalonList = mProductsListDao.findByIDSync(etalonListID);
         if (etalonList == null) {
             throw new ShoppingListException("List with id " + etalonListID + " does not exist");
         }
 
-        final ProductsList newProductsList = createProductsList(context);
+        final ProductsList newProductsList = createProductsList();
         newProductsList.setName(etalonList.getName());
 
-        int newListID = (int) productsListDao.insert(newProductsList);
-        LiveData<ProductsList> newListLiveData = productsListDao.findByID(newListID);
+        int newListID = (int) mProductsListDao.insert(newProductsList);
+        LiveData<ProductsList> newListLiveData = mProductsListDao.findByID(newListID);
 
         copyProductsFromList(context, etalonListID, newListID);
 
-        return new ShoppingList(context, newListLiveData, newListID);
+        return new ShoppingList(newListLiveData, newListID);
     }
 
     private void copyProductsFromList(Context context, int fromListID, int toListID) throws ShoppingListException {
 
         try {
-            ProductDao productDao = DaoFactory.getInstance().getProductDao(context);
-            List<Product> etalonProducts = productDao.findByListIDSync(fromListID);
+            List<Product> etalonProducts = mProductDao.findByListIDSync(fromListID);
 
             for (Product etalonProduct : etalonProducts) {
 
@@ -82,7 +82,7 @@ public class ShoppingListRepository {
                 newProduct.setListID(toListID);
                 newProduct.setStatus(Product.TO_BUY);
 
-                productDao.insert(newProduct);
+                mProductDao.insert(newProduct);
             }
 
         } catch (CloneNotSupportedException e) {
@@ -90,22 +90,21 @@ public class ShoppingListRepository {
         }
     }
 
-    public static DataSource.Factory<Integer, ProductsList> getLists(Context context,
+    public DataSource.Factory<Integer, ProductsList> getLists(Context context,
                                                                      @ProductsList.ProductListStatus int status,
                                                                      @ShoppingList.ProductsListSorting int sorting) throws ShoppingListException {
 
-        ProductsListDao productsListDao = DaoFactory.getInstance().getProductsListDao(context);
         switch (sorting) {
             case SORT_LISTS_BY_NAME:
-                return productsListDao.findByStatusSortByName(status);
+                return mProductsListDao.findByStatusSortByName(status);
             case SORT_LISTS_BY_CREATED_AT:
-                return productsListDao.findByStatusSortByCreatedAtDesc(status);
+                return mProductsListDao.findByStatusSortByCreatedAtDesc(status);
             case SORT_LISTS_BY_CREATED_BY:
-                return productsListDao.findByStatusSortByCreatedByAndName(status);
+                return mProductsListDao.findByStatusSortByCreatedByAndName(status);
             case SORT_LISTS_BY_ASSIGNED:
-                return productsListDao.findByStatusSortByAssignedAndName(status);
+                return mProductsListDao.findByStatusSortByAssignedAndName(status);
             case SORT_LISTS_BY_MODIFIED_AT:
-                return productsListDao.findByStatusSortByModifiedAtDesc(status);
+                return mProductsListDao.findByStatusSortByModifiedAtDesc(status);
 
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);

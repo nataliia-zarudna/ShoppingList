@@ -7,7 +7,6 @@ import com.nzarudna.shoppinglist.model.Product;
 import com.nzarudna.shoppinglist.model.ProductsList;
 import com.nzarudna.shoppinglist.model.ShoppingList;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
-import com.nzarudna.shoppinglist.model.dao.DaoFactory;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.model.db.AppDatabase;
 
@@ -15,7 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -37,7 +35,7 @@ public class ShoppingListTest {
     public void setUp() {
 
         mMockContext = Mockito.mock(Context.class);
-        mProductsListDao = DaoFactory.getInstance().getProductsListDao(mMockContext);
+       // mProductsListDao = DaoFactory.getInstance().getProductsListDao(mMockContext);
         AppDatabase.switchToInMemory(mMockContext);
 
         //mShoppingList = ShoppingList.createList(mMockContext);

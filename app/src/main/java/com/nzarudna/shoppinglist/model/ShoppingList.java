@@ -2,22 +2,19 @@ package com.nzarudna.shoppinglist.model;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.model.dao.DaoFactory;
-import com.nzarudna.shoppinglist.model.dao.ProductDao;
 import com.nzarudna.shoppinglist.model.dao.ProductsListDao;
 import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Class that contains productsList object
@@ -35,15 +32,15 @@ public class ShoppingList implements Observer<ProductsList> {
     private NotificationManager mNotificationManager;
     private ProductsListDao mProductsListDao;
 
-    public ShoppingList(Context context, LiveData<ProductsList> productsList, int listID) {
-        mContext = context;
+    public ShoppingList(LiveData<ProductsList> productsList, int listID) {
+       //mContext = context;
         mProductsList = productsList;
         mListID = listID;
 
-        mNotificationManager = NotificationManager.getInstance();
-        mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
+        //mNotificationManager = NotificationManager.getInstance();
+        //mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
 
-        mProductsList.observeForever(this);
+        //mProductsList.observeForever(this);
     }
 
     public LiveData<ProductsList> getListData() {
