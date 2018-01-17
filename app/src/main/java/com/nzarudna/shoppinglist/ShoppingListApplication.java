@@ -22,9 +22,9 @@ public class ShoppingListApplication extends Application {
         AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME).build();
 
         RoomDaoModule daoModule = new RoomDaoModule(database);
-        ContextModule contextModule = new ContextModule(this);
+        AppModule appModule = new AppModule(this);
         appComponent = DaggerAppComponent.builder()
-                .contextModule(contextModule)
+                .appModule(appModule)
                 .roomDaoModule(daoModule)
                 .build();
     }

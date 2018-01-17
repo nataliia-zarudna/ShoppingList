@@ -1,32 +1,23 @@
 package com.nzarudna.shoppinglist;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 
-import com.nzarudna.shoppinglist.product.ProductsList;
-import com.nzarudna.shoppinglist.product.ShoppingList;
-import com.nzarudna.shoppinglist.product.ShoppingListRepository;
+import com.nzarudna.shoppinglist.notification.NotificationManager;
 import com.nzarudna.shoppinglist.persistence.CategoryDao;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.UserDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
-import com.nzarudna.shoppinglist.notification.NotificationManager;
+import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ShoppingListRepository;
+import com.nzarudna.shoppinglist.user.UserRepository;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,8 +30,11 @@ public class ShoppingListRepositoryTest {
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
     private static final int MOCKED_SELF_USER_ID = 2;
 
-    private Context mMockContext;
-    private SharedPreferences mSharedPreferences;
+    @Mock
+    private UserRepository mUserRepository;
+    @Mock
+    private ResourceResolver mResourceResolver;
+
     private NotificationManager mNotificationManager;
 
     private ShoppingListRepository mSubject;
@@ -56,64 +50,25 @@ public class ShoppingListRepositoryTest {
     @Mock
     private ProductTemplateDao mProductTemplateDao;
 
-    private int mSelfUser;
-    private int mUser2;
-    private int mCategory1;
-    private int mCategory2;
-    private int mProduct1;
-    private int mProduct2;
-    private int mProductTemplate1;
-    private int mProductTemplate2;
-
     @Before
     public void setUp() {
 
-        mMockContext = Mockito.mock(Context.class);
+        when(mResourceResolver.getString(R.string.default_list_name)).thenReturn(MOCKED_DEFAULT_LIST_NAME);
+        when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
-        Resources resources = Mockito.mock(Resources.class);
-        when(mMockContext.getResources()).thenReturn(resources);
-
-        mSharedPreferences = Mockito.mock(SharedPreferences.class);
-        when(mMockContext.getSharedPreferences(mMockContext.getString(R.string.preference_key_file), Context.MODE_PRIVATE)).thenReturn(mSharedPreferences);
-
-        /*AppDatabase.switchToInMemory(mMockContext);
-        mUserDao = DaoFactory.getInstance().getUserDao(mMockContext);
-        mCategoryDao = DaoFactory.getInstance().getCategoryDao(mMockContext);
-        mProductsListDao = DaoFactory.getInstance().getProductsListDao(mMockContext);
-        mProductDao = DaoFactory.getInstance().getProductDao(mMockContext);
-        mProductTemplateDao = DaoFactory.getInstance().getProductTemplateDao(mMockContext);*/
-
-        createSelfUser();
-        createTestData();
-
-        when(mMockContext.getString(R.string.default_list_name)).thenReturn(MOCKED_DEFAULT_LIST_NAME);
-        when(mSharedPreferences.getInt(SharedPreferencesConstants.SELF_USER_ID, 0)).thenReturn(MOCKED_SELF_USER_ID);
-
-        mSubject = new ShoppingListRepository(mMockContext, mProductsListDao, mProductDao);
-
-        //mNotificationManager = Mockito.mock(NotificationManager.class);
-    }
-
-    private void createSelfUser() {
-        //UserDao userDao = DaoFactory.getInstance().getUserDao(mMockContext);
-        //mSelfUser = TestUtils.insertUser(userDao);
+        mSubject = new ShoppingListRepository(mProductsListDao, mProductDao, mUserRepository, mResourceResolver);
     }
 
     @Test
     public void createList() throws InterruptedException {
 
-        ShoppingList list = mSubject.createList();
+        mSubject.createList();
 
         ProductsList expectedProductsList = new ProductsList();
         expectedProductsList.setName(MOCKED_DEFAULT_LIST_NAME);
         expectedProductsList.setCreatedBy(MOCKED_SELF_USER_ID);
 
         verify(mProductsListDao).insert(expectedProductsList);
-
-        /*ProductsList productsList = TestUtils.getLiveDataValueSync(listLiveData);
-
-        assertThat(productsList.getName(), is(MOCKED_DEFAULT_LIST_NAME));
-        assertThat(productsList.getCreatedBy(), is(mSelfUser));*/
 
         //verify(mNotificationManager).sendNotification();
     }
@@ -370,19 +325,4 @@ public class ShoppingListRepositoryTest {
 
         TestUtils.assertEquals(activeLists, foundProductsList);
     }*/
-
-    private void createTestData() {
-        /*mUser2 = TestUtils.insertUser(mUserDao);
-        mCategory1 = TestUtils.insertCategory(mCategoryDao);
-        mCategory2 = TestUtils.insertCategory(mCategoryDao);
-        mProductTemplate1 = TestUtils.insertProductTemplate(mProductTemplateDao);
-        mProductTemplate2 = TestUtils.insertProductTemplate(mProductTemplateDao);*/
-    }
-
-    @After
-    public void closeDB() {
-
-        AppDatabase.getInstance(mMockContext).close();
-    }
-
 }

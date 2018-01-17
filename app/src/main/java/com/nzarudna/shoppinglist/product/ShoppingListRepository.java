@@ -2,11 +2,12 @@ package com.nzarudna.shoppinglist.product;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
-import android.content.Context;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ResourceResolver;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
+import com.nzarudna.shoppinglist.user.UserRepository;
 
 import java.util.List;
 
@@ -23,13 +24,16 @@ public class ShoppingListRepository {
 
     private ProductsListDao mProductsListDao;
     private ProductDao mProductDao;
-    private Context mContext;
+    private UserRepository mUserRepository;
+    private ResourceResolver mResourceResolver;
 
     @Inject
-    public ShoppingListRepository(Context context, ProductsListDao productsListDao, ProductDao productDao) {
+    public ShoppingListRepository(ProductsListDao productsListDao, ProductDao productDao,
+                                  UserRepository userRepository, ResourceResolver resourceResolver) {
         mProductsListDao = productsListDao;
         mProductDao = productDao;
-        mContext = context;
+        mUserRepository = userRepository;
+        mResourceResolver = resourceResolver;
     }
 
     public ShoppingList createList() {
@@ -43,17 +47,17 @@ public class ShoppingListRepository {
     private ProductsList createProductsList() {
         ProductsList productsList = new ProductsList();
 
-        String defaultName = mContext.getString(R.string.default_list_name);
+        String defaultName = mResourceResolver.getString(R.string.default_list_name);
         productsList.setName(defaultName);
 
-        //int selfUserID = UserManager.getSelfUserID(mContext);
-        //productsList.setCreatedBy(selfUserID);
+        int selfUserID = mUserRepository.getSelfUserID();
+        productsList.setCreatedBy(selfUserID);
 
         return productsList;
     }
 
 
-    public ShoppingList copyList(Context context, int etalonListID) throws ShoppingListException {
+    public ShoppingList copyList(int etalonListID) throws ShoppingListException {
 
         ProductsList etalonList = mProductsListDao.findByIDSync(etalonListID);
         if (etalonList == null) {
@@ -66,12 +70,12 @@ public class ShoppingListRepository {
         int newListID = (int) mProductsListDao.insert(newProductsList);
         LiveData<ProductsList> newListLiveData = mProductsListDao.findByID(newListID);
 
-        copyProductsFromList(context, etalonListID, newListID);
+        copyProductsFromList(etalonListID, newListID);
 
         return new ShoppingList(newListLiveData, newListID);
     }
 
-    private void copyProductsFromList(Context context, int fromListID, int toListID) throws ShoppingListException {
+    private void copyProductsFromList(int fromListID, int toListID) throws ShoppingListException {
 
         try {
             List<Product> etalonProducts = mProductDao.findByListIDSync(fromListID);
@@ -90,9 +94,9 @@ public class ShoppingListRepository {
         }
     }
 
-    public DataSource.Factory<Integer, ProductsList> getLists(Context context,
-                                                                     @ProductsList.ProductListStatus int status,
-                                                                     @ShoppingList.ProductsListSorting int sorting) throws ShoppingListException {
+    public DataSource.Factory<Integer, ProductsList> getLists(@ProductsList.ProductListStatus int status,
+                                                              @ShoppingList.ProductsListSorting int sorting)
+            throws ShoppingListException {
 
         switch (sorting) {
             case SORT_LISTS_BY_NAME:

@@ -12,7 +12,7 @@ import dagger.Component;
 /**
  * Component with application dependencies
  */
-@Component(modules = {RoomDaoModule.class, ContextModule.class})
+@Component(modules = {RoomDaoModule.class, AppModule.class})
 @Singleton
 public interface AppComponent {
 
