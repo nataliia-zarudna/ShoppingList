@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:name=".ShoppingListApplication"
         android:theme="@style/AppTheme" >
-        <activity android:name=".ShoppingListsActivity" >
+        <activity android:name=".ui.ShoppingListsActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -87,7 +87,7 @@ public class ShoppingListRepository {
 
         copyProductsFromList(etalonListID, newListID);
 
-        return new ShoppingList(newListLiveData, newListID);
+        return new ShoppingList();//newListLiveData, newListID);
     }
 
     private void copyProductsFromList(int fromListID, int toListID) throws ShoppingListException {

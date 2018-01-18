@@ -21,12 +21,12 @@ public class ShoppingListApplication extends Application {
 
         AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME).build();
 
-        /*RoomDaoModule daoModule = new RoomDaoModule(database);
+        RoomDaoModule daoModule = new RoomDaoModule(database);
         AppModule appModule = new AppModule(this);
         appComponent = DaggerAppComponent.builder()
                 .appModule(appModule)
                 .roomDaoModule(daoModule)
-                .build();*/
+                .build();
     }
 
     public AppComponent getAppComponent() {

@@ -17,7 +17,7 @@ import java.util.Date;
 /**
  * List of products to buy
  */
-@Entity(tableName = "products_lists",
+@Entity(tableName = "products_lists"/*,
         foreignKeys = {@ForeignKey(entity = User.class,
                 parentColumns = "user_id",
                 childColumns = "created_by"),
@@ -27,7 +27,7 @@ import java.util.Date;
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
                         childColumns = "assigned_id")},
-        indices = @Index("created_by"))
+        indices = @Index("created_by")*/)
 public class ProductsList {
 
     @Retention(RetentionPolicy.SOURCE)
@@ -52,7 +52,7 @@ public class ProductsList {
     private Date createdAt;
 
     @ColumnInfo(name = "created_by")
-    @NonNull
+    //@NonNull
     private Integer createdBy;
 
     @ColumnInfo(name = "modified_at")

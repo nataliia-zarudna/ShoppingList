@@ -1,24 +1,9 @@
-package com.nzarudna.shoppinglist;
+package com.nzarudna.shoppinglist.ui;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.persistence.room.Room;
-import android.os.AsyncTask;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 
-import com.nzarudna.shoppinglist.persistence.ProductDao;
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
-import com.nzarudna.shoppinglist.persistence.UserDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
-import com.nzarudna.shoppinglist.product.Product;
-import com.nzarudna.shoppinglist.product.ProductsList;
-import com.nzarudna.shoppinglist.user.User;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import com.nzarudna.shoppinglist.product.ShoppingList;
 
 public class ShoppingListsActivity extends SingleFragmentActivity {
 
@@ -28,7 +13,7 @@ public class ShoppingListsActivity extends SingleFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, "db1").build();
+        /*final AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, "db1").build();
         final User userInit = new User();
         userInit.setName("abc");
 
@@ -86,6 +71,11 @@ public class ShoppingListsActivity extends SingleFragmentActivity {
 
                 return null;
             }
-        }.execute();
+        }.execute();*/
+    }
+
+    @Override
+    protected Fragment getFragment() {
+        return ShoppingListsFragment.getInstance();
     }
 }
