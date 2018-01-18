@@ -9,17 +9,20 @@ import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListException;
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test methods on shopping list object
@@ -27,29 +30,29 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public class ShoppingListTest {
 
+    private static final int MOCKED_PRODUCTS_LIST_ID = 3;
+
+    @Mock
     private Context mMockContext;
     private ProductsListDao mProductsListDao;
-    private ShoppingList mShoppingList;
+    private ShoppingListRepository mShoppingListRepository;
+
+    @Mock
+    private LiveData<ProductsList> productsListLiveData;
+    private ShoppingList mSubject;
 
     @Before
     public void setUp() {
 
-        mMockContext = Mockito.mock(Context.class);
-       // mProductsListDao = DaoFactory.getInstance().getProductsListDao(mMockContext);
-        AppDatabase.switchToInMemory(mMockContext);
-
-        //mShoppingList = ShoppingList.createList(mMockContext);
+        mSubject = new ShoppingList(productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
     public void removeList() {
 
-        int listID = mShoppingList.getListID();
-        mShoppingList.removeList();
+        mSubject.removeList();
 
-        ProductsList removedList = mProductsListDao.findByIDSync(listID);
-
-        assertNull(removedList);
+        verify(mProductsListDao).delete();
     }
 
     @Test

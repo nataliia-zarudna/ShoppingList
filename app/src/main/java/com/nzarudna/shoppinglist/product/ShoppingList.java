@@ -30,7 +30,7 @@ public class ShoppingList implements Observer<ProductsList> {
     private NotificationManager mNotificationManager;
     private ProductsListDao mProductsListDao;
 
-    public ShoppingList(LiveData<ProductsList> productsList, int listID) {
+    /*public ShoppingList(LiveData<ProductsList> productsList, int listID) {
        //mContext = context;
         mProductsList = productsList;
         mListID = listID;
@@ -39,7 +39,7 @@ public class ShoppingList implements Observer<ProductsList> {
         //mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
 
         //mProductsList.observeForever(this);
-    }
+    }*/
 
     public LiveData<ProductsList> getListData() {
         return mProductsList;
@@ -49,15 +49,24 @@ public class ShoppingList implements Observer<ProductsList> {
         return mListID;
     }
 
+    public void setProductsList(LiveData<ProductsList> productsList) {
+        this.mProductsList = productsList;
+    }
+
+    public void setListID(int listID) {
+        this.mListID = listID;
+    }
+
     @Override
     public void onChanged(@Nullable ProductsList productsList) {
 
-        mNotificationManager.sendNotification();
+        //mNotificationManager.sendNotification();
 
+        //mProductsList
     }
 
     public void removeList() {
-        throw new UnsupportedOperationException("Not implemented yet");
+
     }
 
     public LiveData<Product> addProduct(@NonNull String name, String comment) {

@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.product;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
+import android.os.AsyncTask;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
@@ -38,10 +39,24 @@ public class ShoppingListRepository {
 
     public ShoppingList createList() {
 
-        int productsListID = (int) mProductsListDao.insert(createProductsList());
-        LiveData<ProductsList> productsList = mProductsListDao.findByID(productsListID);
+        final ShoppingList shoppingList = new ShoppingList();
 
-        return new ShoppingList(productsList, productsListID);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                int listID = (int) mProductsListDao.insert(createProductsList());
+
+                LiveData<ProductsList> productsList = mProductsListDao.findByID(listID);
+
+                shoppingList.setListID(listID);
+                shoppingList.setProductsList(productsList);
+
+                return null;
+            }
+        }.execute();
+
+        return shoppingList;
     }
 
     private ProductsList createProductsList() {
@@ -64,7 +79,7 @@ public class ShoppingListRepository {
             throw new ShoppingListException("List with id " + etalonListID + " does not exist");
         }
 
-        final ProductsList newProductsList = createProductsList();
+        ProductsList newProductsList = createProductsList();
         newProductsList.setName(etalonList.getName());
 
         int newListID = (int) mProductsListDao.insert(newProductsList);
