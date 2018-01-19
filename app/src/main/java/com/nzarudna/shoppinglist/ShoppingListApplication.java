@@ -13,23 +13,23 @@ public class ShoppingListApplication extends Application {
 
     private static final String DATABASE_NAME = "shopping_list";
 
-    private AppComponent appComponent;
+    private static AppComponent sAppComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        AppDatabase database = Room.databaseBuilder(this, AppDatabase.class, DATABASE_NAME).build();
+        AppDatabase database = AppDatabase.getInstance(this);
 
         RoomDaoModule daoModule = new RoomDaoModule(database);
         AppModule appModule = new AppModule(this);
-        appComponent = DaggerAppComponent.builder()
+        sAppComponent = DaggerAppComponent.builder()
                 .appModule(appModule)
                 .roomDaoModule(daoModule)
                 .build();
     }
 
-    public AppComponent getAppComponent() {
-        return appComponent;
+    public static AppComponent getAppComponent() {
+        return sAppComponent;
     }
 }

@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
@@ -46,13 +47,15 @@ public class ShoppingListsFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
 
+        ProductsListsViewModel viewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+
         RecyclerView recyclerView = fragmentView.findViewById(R.id.lists_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         final ProductsListAdapter listAdapter = new ProductsListAdapter();
         recyclerView.setAdapter(listAdapter);
 
-        // TODO: move to ViewModel
-        new AsyncTask<Void, Void, Void>() {
+        /*new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 ProductsList productsList = new ProductsList();
@@ -60,10 +63,9 @@ public class ShoppingListsFragment extends Fragment {
                 AppDatabase.getInstance(getActivity()).productsListDao().insert(productsList);
                 return null;
             }
-        }.execute();
-        DataSource.Factory<Integer, ProductsList> list = AppDatabase.getInstance(getActivity()).productsListDao().findByStatusSortByName(ProductsList.STATUS_ACTIVE);
-        LiveData<PagedList<ProductsList>> listLiveData = new LivePagedListBuilder<Integer, ProductsList>(list, 20).build();
-        listLiveData.observe(this, new Observer<PagedList<ProductsList>>() {
+        }.execute();*/
+
+        viewModel.getList(20).observe(this, new Observer<PagedList<ProductsList>>() {
             @Override
             public void onChanged(@Nullable PagedList<ProductsList> productsLists) {
                 listAdapter.setList(productsLists);
