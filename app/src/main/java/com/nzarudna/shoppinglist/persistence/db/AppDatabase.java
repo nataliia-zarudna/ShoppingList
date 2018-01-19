@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.nzarudna.shoppinglist.product.Category;
 import com.nzarudna.shoppinglist.product.Product;
@@ -22,12 +23,16 @@ import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.UserDao;
 
+import java.util.Date;
+
 /**
  * Room application database
  */
 @Database(entities = {Product.class, Category.class, ProductTemplate.class, ProductsList.class, User.class}, version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
+
+    private static final String LOG = "AppDatabase";
 
     private static final String DATABASE_NAME = "shopping_list";
 
@@ -39,9 +44,12 @@ public abstract class AppDatabase extends RoomDatabase {
                     .addCallback(new Callback() {
                         @Override
                         public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                            super.onCreate(db);
+
+                            Log.d(LOG, "onCreate initDB start");
 
                             initDB(db);
+
+                            Log.d(LOG, "onCreate initDB end");
                         }
                     })
                     .build();
@@ -51,19 +59,25 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static void initDB(SupportSQLiteDatabase db) {
 
-        db.beginTransaction();
-        insertSelfUser(db);
+        int selfUserID = insertSelfUser(db);
+        Log.d(LOG, "selfUserID " + selfUserID);
 
         for (int i = 0; i < 3; i++) {
             ContentValues values = new ContentValues();
             values.put("name", "Shopping list #" + i);
-            db.insert("products_lists", OnConflictStrategy.REPLACE, values);
+            values.put("created_by", selfUserID);
+            values.put("created_at", new Date().getTime());
+            values.put("status", ProductsList.STATUS_ACTIVE);
+
+            long productsListsID = db.insert("products_lists", OnConflictStrategy.IGNORE, values);
+            Log.d(LOG, "Shopping list #" + i + " id " + productsListsID);
         }
-        db.endTransaction();
     }
 
-    private static void insertSelfUser(SupportSQLiteDatabase db) {
-        db.insert("users", OnConflictStrategy.REPLACE, new ContentValues());
+    private static int insertSelfUser(SupportSQLiteDatabase db) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", "");
+        return (int) db.insert("users", OnConflictStrategy.IGNORE, contentValues);
     }
 
     @VisibleForTesting

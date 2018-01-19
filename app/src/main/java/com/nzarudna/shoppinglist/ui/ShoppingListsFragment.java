@@ -1,13 +1,10 @@
 package com.nzarudna.shoppinglist.ui;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
-import android.os.AsyncTask;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,19 +15,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
 import com.nzarudna.shoppinglist.product.ProductsList;
-import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 /**
  * Fragment with set of shopping lists
  */
 public class ShoppingListsFragment extends Fragment {
+
+    private static final String LOG = "ShoppingListsFragment";
 
     public static Fragment getInstance() {
         return new ShoppingListsFragment();
@@ -52,18 +48,10 @@ public class ShoppingListsFragment extends Fragment {
 
         RecyclerView recyclerView = fragmentView.findViewById(R.id.lists_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+
         final ProductsListAdapter listAdapter = new ProductsListAdapter();
         recyclerView.setAdapter(listAdapter);
-
-        /*new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                ProductsList productsList = new ProductsList();
-                productsList.setName("abc");
-                AppDatabase.getInstance(getActivity()).productsListDao().insert(productsList);
-                return null;
-            }
-        }.execute();*/
 
         viewModel.getList(20).observe(this, new Observer<PagedList<ProductsList>>() {
             @Override
@@ -75,41 +63,33 @@ public class ShoppingListsFragment extends Fragment {
         return fragmentView;
     }
 
-    private class ProductsListViewHolder extends RecyclerView.ViewHolder {
+    public class ProductsListViewHolder extends RecyclerView.ViewHolder {
 
-        TextView mListNameText;
+        ListItemShoppingListBinding mBinding;
 
-        public ProductsListViewHolder(View itemView) {
-            super(itemView);
-            mListNameText = itemView.findViewById(R.id.list_name);
+        public ProductsListViewHolder(ListItemShoppingListBinding binding) {
+            super(binding.getRoot());
+
+            mBinding = binding;
+            mBinding.setViewModel(new ProductsListItemViewModel());
         }
-
         public void bind(ProductsList productsList) {
-            mListNameText.setText(productsList.getName());
+            mBinding.getViewModel().setProductsList(productsList);
+            mBinding.executePendingBindings();
         }
     }
 
     private class ProductsListAdapter extends PagedListAdapter<ProductsList, ProductsListViewHolder> {
 
         public ProductsListAdapter() {
-            //super(DIFF_CALLBACK);
-            super(new DiffCallback<ProductsList>() {
-                @Override
-                public boolean areItemsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
-                    return oldItem.getListID() == newItem.getListID();
-                }
-
-                @Override
-                public boolean areContentsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
-                    return oldItem.equals(newItem);
-                }
-            });
+            super(DIFF_CALLBACK);
         }
 
         @Override
         public ProductsListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = getLayoutInflater().inflate(R.layout.item_shopping_list, parent, false);
-            return new ProductsListViewHolder(itemView);
+            ListItemShoppingListBinding binding = DataBindingUtil.inflate(
+                    getLayoutInflater(),R.layout.list_item_shopping_list, parent, false);
+            return new ProductsListViewHolder(binding);
         }
 
         @Override
@@ -117,17 +97,17 @@ public class ShoppingListsFragment extends Fragment {
             ProductsList productsList = getItem(position);
             holder.bind(productsList);
         }
-
-        /*private static final DiffCallback<ProductsList> DIFF_CALLBACK = new DiffCallback<ProductsList>() {
-            @Override
-            public boolean areItemsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
-                return oldItem.getListID() == newItem.getListID();
-            }
-
-            @Override
-            public boolean areContentsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
-                return oldItem.equals(newItem);
-            }
-        };*/
     }
+
+    private static final DiffCallback<ProductsList> DIFF_CALLBACK = new DiffCallback<ProductsList>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
+            return oldItem.getListID() == newItem.getListID();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull ProductsList oldItem, @NonNull ProductsList newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 }
