@@ -129,4 +129,14 @@ public class ShoppingListRepository {
                 throw new ShoppingListException("Unknown sorting " + sorting);
         }
     }
+
+    public void removeList(final ProductsList productsList) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductsListDao.delete(productsList);
+                return null;
+            }
+        };
+    }
 }

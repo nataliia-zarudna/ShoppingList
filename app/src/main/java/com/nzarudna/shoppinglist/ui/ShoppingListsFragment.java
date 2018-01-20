@@ -8,14 +8,19 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nzarudna.shoppinglist.AppComponent;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
@@ -43,12 +48,30 @@ public class ShoppingListsFragment extends Fragment {
 
         View fragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
 
-        ProductsListsViewModel viewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
+        final ProductsListsViewModel viewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
         ShoppingListApplication.getAppComponent().inject(viewModel);
 
         RecyclerView recyclerView = fragmentView.findViewById(R.id.lists_recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
+
+        new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT );
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                Log.d(LOG, "onSwiped direction " + direction);
+                ((ProductsListViewHolder) viewHolder).mBinding.getViewModel().removeList();
+            }
+        }).attachToRecyclerView(recyclerView);
 
         final ProductsListAdapter listAdapter = new ProductsListAdapter();
         recyclerView.setAdapter(listAdapter);
@@ -71,7 +94,10 @@ public class ShoppingListsFragment extends Fragment {
             super(binding.getRoot());
 
             mBinding = binding;
-            mBinding.setViewModel(new ProductsListItemViewModel());
+
+            ProductsListItemViewModel itemViewModel = new ProductsListItemViewModel();
+            ShoppingListApplication.getAppComponent().inject(itemViewModel);
+            mBinding.setViewModel(itemViewModel);
         }
         public void bind(ProductsList productsList) {
             mBinding.getViewModel().setProductsList(productsList);

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
+import com.nzarudna.shoppinglist.ui.ProductsListItemViewModel;
 import com.nzarudna.shoppinglist.ui.ProductsListsViewModel;
 
 import javax.inject.Singleton;
@@ -22,4 +23,6 @@ public interface AppComponent {
     ShoppingListRepository getShoppingListRepository();
 
     void inject(ProductsListsViewModel viewModel);
+
+    void inject(ProductsListItemViewModel viewModel);
 }

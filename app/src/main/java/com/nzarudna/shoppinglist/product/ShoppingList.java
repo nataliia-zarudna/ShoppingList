@@ -65,10 +65,6 @@ public class ShoppingList implements Observer<ProductsList> {
         //mProductsList
     }
 
-    public void removeList() {
-
-    }
-
     public LiveData<Product> addProduct(@NonNull String name, String comment) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
