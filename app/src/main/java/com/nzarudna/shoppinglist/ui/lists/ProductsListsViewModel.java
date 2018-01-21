@@ -1,10 +1,11 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.lists;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.view.View;
 
 import com.nzarudna.shoppinglist.product.ProductsList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
@@ -38,5 +39,10 @@ public class ProductsListsViewModel extends ViewModel {
 
     public void removeList(ProductsList productsList) {
         mShoppingListRepository.removeList(productsList);
+    }
+
+    public void createList() {
+
+        mShoppingListRepository.createList();
     }
 }

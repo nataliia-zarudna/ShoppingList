@@ -47,10 +47,10 @@ public class ShoppingListRepository {
 
                 int listID = (int) mProductsListDao.insert(createProductsList());
 
-                LiveData<ProductsList> productsList = mProductsListDao.findByID(listID);
+                //LiveData<ProductsList> productsList = mProductsListDao.findByID(listID);
 
                 shoppingList.setListID(listID);
-                shoppingList.setProductsList(productsList);
+                //shoppingList.setProductsList(productsList);
 
                 return null;
             }

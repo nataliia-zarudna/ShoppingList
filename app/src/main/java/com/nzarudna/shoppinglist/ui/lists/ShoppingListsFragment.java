@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.lists;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nzarudna.shoppinglist.AppComponent;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
@@ -89,6 +88,13 @@ public class ShoppingListsFragment extends Fragment {
             public void onChanged(@Nullable PagedList<ProductsList> productsLists) {
                 mProductsLists = productsLists;
                 mListAdapter.setList(productsLists);
+            }
+        });
+
+        mFragmentView.findViewById(R.id.btn_add_list).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mViewModel.createList();
             }
         });
 

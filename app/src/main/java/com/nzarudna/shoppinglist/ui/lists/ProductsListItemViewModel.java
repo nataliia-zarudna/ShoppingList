@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.lists;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;

@@ -1,9 +1,7 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.lists;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-
-import com.nzarudna.shoppinglist.product.ShoppingList;
 
 public class ShoppingListsActivity extends SingleFragmentActivity {
 
