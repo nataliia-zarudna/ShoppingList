@@ -23,6 +23,4 @@ public interface AppComponent {
     ShoppingListRepository getShoppingListRepository();
 
     void inject(ProductsListsViewModel viewModel);
-
-    void inject(ProductsListItemViewModel viewModel);
 }

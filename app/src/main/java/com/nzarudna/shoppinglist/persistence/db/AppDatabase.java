@@ -62,7 +62,7 @@ public abstract class AppDatabase extends RoomDatabase {
         int selfUserID = insertSelfUser(db);
         Log.d(LOG, "selfUserID " + selfUserID);
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 10; i < 40; i++) {
             ContentValues values = new ContentValues();
             values.put("name", "Shopping list #" + i);
             values.put("created_by", selfUserID);

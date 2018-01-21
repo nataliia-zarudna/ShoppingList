@@ -8,7 +8,8 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,11 +31,17 @@ import com.nzarudna.shoppinglist.product.ProductsList;
  */
 public class ShoppingListsFragment extends Fragment {
 
-    private static final String LOG = "ShoppingListsFragment";
+    private static final String TAG = "ShoppingListsFragment";
+    private PagedList<ProductsList> mProductsLists;
 
     public static Fragment getInstance() {
         return new ShoppingListsFragment();
     }
+
+    private View mFragmentView;
+    private ProductsListsViewModel mViewModel;
+    private RecyclerView mListRecyclerView;
+    private ProductsListAdapter mListAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,19 +52,19 @@ public class ShoppingListsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View fragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
+        mFragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
 
-        final ProductsListsViewModel viewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
-        ShoppingListApplication.getAppComponent().inject(viewModel);
+        mViewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
+        ShoppingListApplication.getAppComponent().inject(mViewModel);
 
-        RecyclerView recyclerView = fragmentView.findViewById(R.id.lists_recycle_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
+        mListRecyclerView = mFragmentView.findViewById(R.id.lists_recycle_view);
+        mListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mListRecyclerView.setHasFixedSize(true);
 
         new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT );
+                return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             }
 
             @Override
@@ -68,22 +74,53 @@ public class ShoppingListsFragment extends Fragment {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                Log.d(LOG, "onSwiped direction " + direction);
-                ((ProductsListViewHolder) viewHolder).mBinding.getViewModel().removeList();
+                Log.d(TAG, "onSwiped direction " + direction);
+
+                ProductsListItemViewModel itemViewModel = ((ProductsListViewHolder) viewHolder).mBinding.getViewModel();
+                removeListItem(itemViewModel, viewHolder.getAdapterPosition());
             }
-        }).attachToRecyclerView(recyclerView);
+        }).attachToRecyclerView(mListRecyclerView);
 
-        final ProductsListAdapter listAdapter = new ProductsListAdapter();
-        recyclerView.setAdapter(listAdapter);
+        mListAdapter = new ProductsListAdapter();
+        mListRecyclerView.setAdapter(mListAdapter);
 
-        viewModel.getList(20).observe(this, new Observer<PagedList<ProductsList>>() {
+        mViewModel.getList(20).observe(this, new Observer<PagedList<ProductsList>>() {
             @Override
             public void onChanged(@Nullable PagedList<ProductsList> productsLists) {
-                listAdapter.setList(productsLists);
+                mProductsLists = productsLists;
+                mListAdapter.setList(productsLists);
             }
         });
 
-        return fragmentView;
+        return mFragmentView;
+    }
+
+    private void removeListItem(final ProductsListItemViewModel itemViewModel, final int position) {
+
+        final ProductsList listToRemove = itemViewModel.getProductsList();
+//        mProductsLists.remove(position);
+        Log.d(TAG, "list to remove " + listToRemove.getName());
+
+        mListAdapter.notifyItemRemoved(position);
+
+        Snackbar.make(mFragmentView, R.string.message_remove_list, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo_removal, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListAdapter.notifyItemInserted(position);
+                    }
+                })
+                .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        super.onDismissed(transientBottomBar, event);
+
+                        if (event != DISMISS_EVENT_ACTION) {
+                            Log.d(TAG, "removed list " + listToRemove.getName());
+                            mViewModel.removeList(listToRemove);
+                        }
+                    }
+                }).show();
     }
 
     public class ProductsListViewHolder extends RecyclerView.ViewHolder {
@@ -96,10 +133,12 @@ public class ShoppingListsFragment extends Fragment {
             mBinding = binding;
 
             ProductsListItemViewModel itemViewModel = new ProductsListItemViewModel();
-            ShoppingListApplication.getAppComponent().inject(itemViewModel);
             mBinding.setViewModel(itemViewModel);
         }
+
         public void bind(ProductsList productsList) {
+            Log.d(TAG, "bind productsList " + productsList.getName());
+
             mBinding.getViewModel().setProductsList(productsList);
             mBinding.executePendingBindings();
         }
@@ -114,7 +153,7 @@ public class ShoppingListsFragment extends Fragment {
         @Override
         public ProductsListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             ListItemShoppingListBinding binding = DataBindingUtil.inflate(
-                    getLayoutInflater(),R.layout.list_item_shopping_list, parent, false);
+                    getLayoutInflater(), R.layout.list_item_shopping_list, parent, false);
             return new ProductsListViewHolder(binding);
         }
 

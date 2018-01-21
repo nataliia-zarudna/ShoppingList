@@ -35,4 +35,8 @@ public class ProductsListsViewModel extends ViewModel {
             return null;
         }
     }
+
+    public void removeList(ProductsList productsList) {
+        mShoppingListRepository.removeList(productsList);
+    }
 }

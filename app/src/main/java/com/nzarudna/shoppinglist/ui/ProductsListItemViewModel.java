@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.ui;
 
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.product.ProductsList;
@@ -12,13 +14,11 @@ import javax.inject.Inject;
  * View Model for item of product lists
  */
 
-public class ProductsListItemViewModel {
+public class ProductsListItemViewModel extends BaseObservable {
 
     private static final String LOG = "ProductsListItemVM";
 
-    @Inject
-    ShoppingListRepository shoppingListRepository;
-
+    @Bindable
     private ProductsList mProductsList;
 
     public String getListName() {
@@ -28,10 +28,13 @@ public class ProductsListItemViewModel {
     }
 
     public void setProductsList(ProductsList productsList) {
+        Log.d(LOG, "setProductsList => " + (productsList != null ? productsList.getName() : ""));
+
         this.mProductsList = productsList;
+        notifyChange();
     }
 
-    public void removeList() {
-        shoppingListRepository.removeList(mProductsList);
+    public ProductsList getProductsList() {
+        return mProductsList;
     }
 }

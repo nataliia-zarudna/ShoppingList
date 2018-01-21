@@ -137,6 +137,6 @@ public class ShoppingListRepository {
                 mProductsListDao.delete(productsList);
                 return null;
             }
-        };
+        }.execute();
     }
 }

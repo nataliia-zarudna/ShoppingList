@@ -3,4 +3,6 @@
 
     <string name="default_list_name">Shopping List</string>
     <string name="preference_key_file">shopping_list_preferences</string>
+    <string name="message_remove_list">List has been removed</string>
+    <string name="undo_removal">Undo</string>
 </resources>
