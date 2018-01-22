@@ -42,7 +42,7 @@ public class ProductsList {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
-    private long listID;
+    private int listID;
 
     @NonNull
     private String name;
@@ -71,11 +71,11 @@ public class ProductsList {
         this.setStatus(STATUS_ACTIVE);
     }
 
-    public long getListID() {
+    public int getListID() {
         return listID;
     }
 
-    public void setListID(long listID) {
+    public void setListID(int listID) {
         this.listID = listID;
     }
 

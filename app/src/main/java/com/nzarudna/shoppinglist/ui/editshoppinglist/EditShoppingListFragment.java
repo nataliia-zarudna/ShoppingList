@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.ui.shoppinglist;
+package com.nzarudna.shoppinglist.ui.editshoppinglist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,17 +9,17 @@ import android.util.Log;
  * Created by Nataliia on 21.01.2018.
  */
 
-public class ShoppingListFragment extends Fragment {
+public class EditShoppingListFragment extends Fragment {
 
     private static final String TAG = "EditShoppingListFragment";
 
     private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
 
-    public static ShoppingListFragment getInstance(int productsListID) {
+    public static EditShoppingListFragment getInstance(int productsListID) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_PRODUCTS_LIST_ID, productsListID);
 
-        ShoppingListFragment instance = new ShoppingListFragment();
+        EditShoppingListFragment instance = new EditShoppingListFragment();
         instance.setArguments(bundle);
 
         return instance;

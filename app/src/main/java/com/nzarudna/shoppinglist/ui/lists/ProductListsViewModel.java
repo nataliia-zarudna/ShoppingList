@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
-import android.view.View;
 
 import com.nzarudna.shoppinglist.product.ProductsList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
@@ -18,10 +17,16 @@ import javax.inject.Inject;
  * Created by Nataliia on 19.01.2018.
  */
 
-public class ProductsListsViewModel extends ViewModel {
+public class ProductListsViewModel extends ViewModel {
 
     @Inject
     ShoppingListRepository mShoppingListRepository;
+
+    private ProductListViewModelObserver mObserver;
+
+    public void setObserver(ProductListViewModelObserver observer) {
+        this.mObserver = observer;
+    }
 
     public LiveData<PagedList<ProductsList>> getList(int pageSize) {
         try {
@@ -44,5 +49,10 @@ public class ProductsListsViewModel extends ViewModel {
     public void createList() {
 
         mShoppingListRepository.createList();
+    }
+
+    public interface ProductListViewModelObserver {
+
+        void startEditProductsListActivity(int productsListID);
     }
 }

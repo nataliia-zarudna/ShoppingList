@@ -37,7 +37,7 @@ public class ShoppingListRepository {
         mResourceResolver = resourceResolver;
     }
 
-    public ShoppingList createList() {
+    public void createList() {
 
         final ShoppingList shoppingList = new ShoppingList();
 
@@ -55,8 +55,6 @@ public class ShoppingListRepository {
                 return null;
             }
         }.execute();
-
-        return shoppingList;
     }
 
     private ProductsList createProductsList() {
@@ -138,5 +136,9 @@ public class ShoppingListRepository {
                 return null;
             }
         }.execute();
+    }
+
+    public interface OnProductListCreateListener {
+        void onCreate(int productListID);
     }
 }

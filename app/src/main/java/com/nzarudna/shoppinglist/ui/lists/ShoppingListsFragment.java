@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,11 +25,14 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
 import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.ui.editshoppinglist.EditShoppingListActivity;
+import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListActivity;
+import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListFragment;
 
 /**
  * Fragment with set of shopping lists
  */
-public class ShoppingListsFragment extends Fragment {
+public class ShoppingListsFragment extends Fragment implements ProductListItemViewModel.ProductListItemViewModelObserver, ProductListsViewModel.ProductListViewModelObserver {
 
     private static final String TAG = "ShoppingListsFragment";
     private PagedList<ProductsList> mProductsLists;
@@ -38,7 +42,7 @@ public class ShoppingListsFragment extends Fragment {
     }
 
     private View mFragmentView;
-    private ProductsListsViewModel mViewModel;
+    private ProductListsViewModel mViewModel;
     private RecyclerView mListRecyclerView;
     private ProductsListAdapter mListAdapter;
 
@@ -53,7 +57,8 @@ public class ShoppingListsFragment extends Fragment {
 
         mFragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
 
-        mViewModel = ViewModelProviders.of(this).get(ProductsListsViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(ProductListsViewModel.class);
+        mViewModel.setObserver(this);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
 
         mListRecyclerView = mFragmentView.findViewById(R.id.lists_recycle_view);
@@ -75,12 +80,13 @@ public class ShoppingListsFragment extends Fragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 Log.d(TAG, "onSwiped direction " + direction);
 
-                ProductsListItemViewModel itemViewModel = ((ProductsListViewHolder) viewHolder).mBinding.getViewModel();
+                ProductListItemViewModel itemViewModel = ((ProductsListViewHolder) viewHolder).mBinding.getViewModel();
                 removeListItem(itemViewModel, viewHolder.getAdapterPosition());
             }
         }).attachToRecyclerView(mListRecyclerView);
 
         mListAdapter = new ProductsListAdapter();
+        mListAdapter.mItemObserver = this;
         mListRecyclerView.setAdapter(mListAdapter);
 
         mViewModel.getList(20).observe(this, new Observer<PagedList<ProductsList>>() {
@@ -101,7 +107,7 @@ public class ShoppingListsFragment extends Fragment {
         return mFragmentView;
     }
 
-    private void removeListItem(final ProductsListItemViewModel itemViewModel, final int position) {
+    private void removeListItem(final ProductListItemViewModel itemViewModel, final int position) {
 
         final ProductsList listToRemove = itemViewModel.getProductsList();
 //        mProductsLists.remove(position);
@@ -129,17 +135,38 @@ public class ShoppingListsFragment extends Fragment {
                 }).show();
     }
 
+    @Override
+    public void startProductsListActivity(int productsListID) {
+        Intent intent = ShoppingListActivity.newIntent(getActivity(), productsListID);
+        startActivity(intent);
+    }
+
+    @Override
+    public void startEditProductsListActivity(int productsListID) {
+        Intent intent = EditShoppingListActivity.newIntent(getActivity(), productsListID);
+        startActivity(intent);
+    }
+
     public class ProductsListViewHolder extends RecyclerView.ViewHolder {
 
         ListItemShoppingListBinding mBinding;
 
-        public ProductsListViewHolder(ListItemShoppingListBinding binding) {
+        public ProductsListViewHolder(ListItemShoppingListBinding binding,
+                                      ProductListItemViewModel.ProductListItemViewModelObserver itemObserver) {
             super(binding.getRoot());
 
             mBinding = binding;
 
-            ProductsListItemViewModel itemViewModel = new ProductsListItemViewModel();
+            ProductListItemViewModel itemViewModel = new ProductListItemViewModel();
+            itemViewModel.setObserver(itemObserver);
             mBinding.setViewModel(itemViewModel);
+
+            /*binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ShoppingListActivity.newIntent(getActivity(), )
+                }
+            });*/
         }
 
         public void bind(ProductsList productsList) {
@@ -152,6 +179,8 @@ public class ShoppingListsFragment extends Fragment {
 
     private class ProductsListAdapter extends PagedListAdapter<ProductsList, ProductsListViewHolder> {
 
+        private ProductListItemViewModel.ProductListItemViewModelObserver mItemObserver;
+
         public ProductsListAdapter() {
             super(DIFF_CALLBACK);
         }
@@ -160,7 +189,7 @@ public class ShoppingListsFragment extends Fragment {
         public ProductsListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             ListItemShoppingListBinding binding = DataBindingUtil.inflate(
                     getLayoutInflater(), R.layout.list_item_shopping_list, parent, false);
-            return new ProductsListViewHolder(binding);
+            return new ProductsListViewHolder(binding, mItemObserver);
         }
 
         @Override
