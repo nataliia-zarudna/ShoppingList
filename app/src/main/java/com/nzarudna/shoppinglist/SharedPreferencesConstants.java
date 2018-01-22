@@ -6,6 +6,6 @@ package com.nzarudna.shoppinglist;
 
 public interface SharedPreferencesConstants {
 
-    String SELF_USER_ID = "selfUserID";
+
 
 }

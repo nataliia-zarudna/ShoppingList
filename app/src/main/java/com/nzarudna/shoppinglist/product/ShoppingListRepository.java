@@ -37,20 +37,14 @@ public class ShoppingListRepository {
         mResourceResolver = resourceResolver;
     }
 
-    public void createList() {
-
-        final ShoppingList shoppingList = new ShoppingList();
+    public void createList(final OnProductListCreateListener onProductListCreateListener) {
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
 
                 int listID = (int) mProductsListDao.insert(createProductsList());
-
-                //LiveData<ProductsList> productsList = mProductsListDao.findByID(listID);
-
-                shoppingList.setListID(listID);
-                //shoppingList.setProductsList(productsList);
+                onProductListCreateListener.onCreate(listID);
 
                 return null;
             }
@@ -85,7 +79,7 @@ public class ShoppingListRepository {
 
         copyProductsFromList(etalonListID, newListID);
 
-        return new ShoppingList();//newListLiveData, newListID);
+        return null;// new ShoppingList();//newListLiveData, newListID);
     }
 
     private void copyProductsFromList(int fromListID, int toListID) throws ShoppingListException {
@@ -105,6 +99,11 @@ public class ShoppingListRepository {
         } catch (CloneNotSupportedException e) {
             throw new ShoppingListException("Product cannot be copied", e);
         }
+    }
+
+    public ShoppingList getList(int productListID) {
+        LiveData<ProductsList> productsList = mProductsListDao.findByID(productListID);
+        return new ShoppingList(mProductsListDao, productsList, productListID);
     }
 
     public DataSource.Factory<Integer, ProductsList> getLists(@ProductsList.ProductListStatus int status,

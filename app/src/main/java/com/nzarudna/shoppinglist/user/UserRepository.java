@@ -15,6 +15,8 @@ import javax.inject.Singleton;
 @Singleton
 public class UserRepository {
 
+    private static final String SELF_USER_ID = "selfUserID";
+
     private SharedPreferences mSharedPreferences;
 
     @Inject
@@ -23,7 +25,14 @@ public class UserRepository {
     }
 
     public int getSelfUserID() {
-        return mSharedPreferences.getInt(SharedPreferencesConstants.SELF_USER_ID, 0);
+        return mSharedPreferences.getInt(SELF_USER_ID, 0);
+    }
+
+    public void setSelfUserID(int selfUserID) {
+        mSharedPreferences
+                .edit()
+                .putInt(SELF_USER_ID, selfUserID)
+                .commit();
     }
 
 }

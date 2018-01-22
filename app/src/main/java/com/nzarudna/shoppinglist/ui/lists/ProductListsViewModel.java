@@ -48,7 +48,15 @@ public class ProductListsViewModel extends ViewModel {
 
     public void createList() {
 
-        mShoppingListRepository.createList();
+        mShoppingListRepository.createList(new ShoppingListRepository.OnProductListCreateListener() {
+            @Override
+            public void onCreate(int productListID) {
+
+                if (mObserver != null) {
+                    mObserver.startEditProductsListActivity(productListID);
+                }
+            }
+        });
     }
 
     public interface ProductListViewModelObserver {

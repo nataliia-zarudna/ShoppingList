@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
+import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.product.Category;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ProductTemplate;
@@ -59,6 +60,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static void initDB(SupportSQLiteDatabase db) {
 
+        // For testing
+
         int selfUserID = insertSelfUser(db);
         Log.d(LOG, "selfUserID " + selfUserID);
 
@@ -77,7 +80,14 @@ public abstract class AppDatabase extends RoomDatabase {
     private static int insertSelfUser(SupportSQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", "");
-        return (int) db.insert("users", OnConflictStrategy.IGNORE, contentValues);
+        int selfUserID = (int) db.insert("users", OnConflictStrategy.IGNORE, contentValues);
+
+        ShoppingListApplication.getAppComponent().getSharedPreferences()
+                .edit()
+                .putInt("selfUserID", selfUserID)
+                .commit();
+
+        return selfUserID;
     }
 
     @VisibleForTesting

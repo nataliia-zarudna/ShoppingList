@@ -27,7 +27,6 @@ import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
 import com.nzarudna.shoppinglist.product.ProductsList;
 import com.nzarudna.shoppinglist.ui.editshoppinglist.EditShoppingListActivity;
 import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListActivity;
-import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListFragment;
 
 /**
  * Fragment with set of shopping lists

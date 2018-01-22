@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +43,7 @@ public class ShoppingListTest {
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
+        mSubject = new ShoppingList(mProductsListDao, productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test

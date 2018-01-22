@@ -3,13 +3,12 @@ package com.nzarudna.shoppinglist.product;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.paging.PagedList;
-import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
-import com.nzarudna.shoppinglist.notification.NotificationManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,20 +25,13 @@ public class ShoppingList implements Observer<ProductsList> {
     private LiveData<ProductsList> mProductsList;
     private int mListID;
 
-    private Context mContext;
-    private NotificationManager mNotificationManager;
     private ProductsListDao mProductsListDao;
 
-    /*public ShoppingList(LiveData<ProductsList> productsList, int listID) {
-       //mContext = context;
+    public ShoppingList(ProductsListDao productsListDao, LiveData<ProductsList> productsList, int listID) {
+        mProductsListDao = productsListDao;
         mProductsList = productsList;
         mListID = listID;
-
-        //mNotificationManager = NotificationManager.getInstance();
-        //mProductsListDao = DaoFactory.getInstance().getProductsListDao(context);
-
-        //mProductsList.observeForever(this);
-    }*/
+    }
 
     public LiveData<ProductsList> getListData() {
         return mProductsList;
@@ -49,12 +41,15 @@ public class ShoppingList implements Observer<ProductsList> {
         return mListID;
     }
 
-    public void setProductsList(LiveData<ProductsList> productsList) {
-        this.mProductsList = productsList;
-    }
+    public void updateProductList(final ProductsList productsList) {
+        new AsyncTask<Void, Void, Void>() {
 
-    public void setListID(int listID) {
-        this.mListID = listID;
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductsListDao.update(productsList);
+                return null;
+            }
+        }.execute();
     }
 
     @Override

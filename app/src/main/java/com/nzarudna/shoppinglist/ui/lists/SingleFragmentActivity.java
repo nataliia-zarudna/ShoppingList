@@ -30,8 +30,5 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         }
     }
 
-    //@LayoutRes
-    //protected abstract int getLayoutResID();
-
     protected abstract Fragment getFragment();
 }

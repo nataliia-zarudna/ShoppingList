@@ -1,9 +1,21 @@
 package com.nzarudna.shoppinglist.ui.editshoppinglist;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
+import com.nzarudna.shoppinglist.product.ProductsList;
 
 /**
  * Created by Nataliia on 21.01.2018.
@@ -11,9 +23,13 @@ import android.util.Log;
 
 public class EditShoppingListFragment extends Fragment {
 
-    private static final String TAG = "EditShoppingListFragment";
+    private static final String TAG = "EditShoppingListFragmen";
 
     private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
+
+    private EditProductListViewModel mViewModel;
+    private View mToolbarView;
+    private View mFragmentView;
 
     public static EditShoppingListFragment getInstance(int productsListID) {
         Bundle bundle = new Bundle();
@@ -25,12 +41,33 @@ public class EditShoppingListFragment extends Fragment {
         return instance;
     }
 
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        mFragmentView = inflater.inflate(R.layout.fragment_edit_shopping_list, container, false);
 
         int productsListID = getArguments().getInt(ARG_PRODUCTS_LIST_ID);
+        mViewModel = ViewModelProviders.of(this).get(EditProductListViewModel.class);
+        ShoppingListApplication.getAppComponent().inject(mViewModel);
+        mViewModel.setProductListID(productsListID);
 
-        Log.d(TAG, "list id " + productsListID);
+        if (mToolbarView != null) {
+            ToolbarEditTitleBinding viewDataBinding = DataBindingUtil.bind(mToolbarView);
+            viewDataBinding.setEditListViewModel(mViewModel);
+        }
+
+        mViewModel.getProductListData().observe(this, new Observer<ProductsList>() {
+            @Override
+            public void onChanged(@Nullable ProductsList productsList) {
+                mViewModel.setProductListData(productsList);
+            }
+        });
+
+        return mFragmentView;
+    }
+
+    public void setToolbar(View toolbarView) {
+        mToolbarView = toolbarView;
     }
 }
