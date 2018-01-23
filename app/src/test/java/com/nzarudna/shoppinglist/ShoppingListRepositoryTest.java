@@ -201,7 +201,7 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_NAME);
 
-        verify(mProductsListDao).findByStatusSortByName(ProductsList.STATUS_ACTIVE);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByName(ProductsList.STATUS_ACTIVE);
     }
 
     @Test
@@ -209,7 +209,7 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_CREATED_AT);
 
-        verify(mProductsListDao).findByStatusSortByCreatedAtDesc(ProductsList.STATUS_ACTIVE);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByCreatedAtDesc(ProductsList.STATUS_ACTIVE);
     }
 
     @Test
@@ -217,7 +217,7 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_CREATED_BY);
 
-        verify(mProductsListDao).findByStatusSortByCreatedByAndName(ProductsList.STATUS_ACTIVE);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByCreatedByAndName(ProductsList.STATUS_ACTIVE);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_MODIFIED_AT);
 
-        verify(mProductsListDao).findByStatusSortByModifiedAtDesc(ProductsList.STATUS_ACTIVE);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductsList.STATUS_ACTIVE);
     }
 
     @Test
@@ -233,7 +233,7 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ARCHIVED, ShoppingList.SORT_LISTS_BY_MODIFIED_AT);
 
-        verify(mProductsListDao).findByStatusSortByModifiedAtDesc(ProductsList.STATUS_ARCHIVED);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductsList.STATUS_ARCHIVED);
     }
 
     @Test
@@ -241,6 +241,6 @@ public class ShoppingListRepositoryTest {
 
         mSubject.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_ASSIGNED);
 
-        verify(mProductsListDao).findByStatusSortByAssignedAndName(ProductsList.STATUS_ACTIVE);
+        verify(mProductsListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductsList.STATUS_ACTIVE);
     }
 }

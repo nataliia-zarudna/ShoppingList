@@ -39,8 +39,6 @@ public class ProductsList {
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_ARCHIVED = 2;
 
-    //TODO: add order
-
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
     private int listID;

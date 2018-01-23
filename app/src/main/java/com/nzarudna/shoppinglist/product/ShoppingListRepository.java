@@ -141,15 +141,15 @@ public class ShoppingListRepository {
 
         switch (sorting) {
             case SORT_LISTS_BY_NAME:
-                return mProductsListDao.findByStatusSortByName(status);
+                return mProductsListDao.findWithStaticticsByStatusSortByName(status);
             case SORT_LISTS_BY_CREATED_AT:
-                return mProductsListDao.findByStatusSortByCreatedAtDesc(status);
+                return mProductsListDao.findWithStaticticsByStatusSortByCreatedAtDesc(status);
             case SORT_LISTS_BY_CREATED_BY:
-                return mProductsListDao.findByStatusSortByCreatedByAndName(status);
+                return mProductsListDao.findWithStaticticsByStatusSortByCreatedByAndName(status);
             case SORT_LISTS_BY_ASSIGNED:
-                return mProductsListDao.findByStatusSortByAssignedAndName(status);
+                return mProductsListDao.findWithStaticticsByStatusSortByAssignedAndName(status);
             case SORT_LISTS_BY_MODIFIED_AT:
-                return mProductsListDao.findByStatusSortByModifiedAtDesc(status);
+                return mProductsListDao.findWithStaticticsByStatusSortByModifiedAtDesc(status);
 
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);
