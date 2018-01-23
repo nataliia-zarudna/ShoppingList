@@ -8,6 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
+import com.nzarudna.shoppinglist.DateUtils;
 import com.nzarudna.shoppinglist.user.User;
 
 import java.lang.annotation.Retention;
@@ -153,7 +154,9 @@ public class ProductsList {
         if (status != that.status) return false;
         if (assignedID != that.assignedID) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return createdAt != null ? createdAt.equals(that.createdAt) : that.createdAt == null;
+        return createdAt != null
+                ? DateUtils.getTimeInSeconds(createdAt) == DateUtils.getTimeInSeconds(that.createdAt)
+                : that.createdAt == null;
     }
 
     @Override
@@ -161,7 +164,7 @@ public class ProductsList {
         int result = (int) listID;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + createdBy;
-        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = (int) (31 * result + (createdAt != null ? DateUtils.getTimeInSeconds(createdAt) : 0));
         result = 31 * result + status;
         result = 31 * result + assignedID;
         return result;

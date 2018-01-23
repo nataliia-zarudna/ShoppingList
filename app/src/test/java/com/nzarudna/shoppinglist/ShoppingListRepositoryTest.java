@@ -18,7 +18,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,11 +59,24 @@ public class ShoppingListRepositoryTest {
     @Test
     public void createList() throws InterruptedException {
 
-        mSubject.createList();
+        final long mockListID = 33;
 
         ProductsList expectedProductsList = new ProductsList();
         expectedProductsList.setName(MOCKED_DEFAULT_LIST_NAME);
         expectedProductsList.setCreatedBy(MOCKED_SELF_USER_ID);
+        when(mProductsListDao.insert(expectedProductsList)).thenReturn(mockListID);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.createList(new ShoppingListRepository.OnProductListCreateListener() {
+            @Override
+            public void onCreate(int productListID) {
+
+                assertEquals(productListID, mockListID);
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await();
 
         verify(mProductsListDao).insert(expectedProductsList);
     }
@@ -72,16 +89,26 @@ public class ShoppingListRepositoryTest {
         etalonList.setListID(etalonListID);
         etalonList.setName("Some list name");
         etalonList.setStatus(ProductsList.STATUS_ARCHIVED);
-
         when(mProductsListDao.findByIDSync(etalonListID)).thenReturn(etalonList);
 
-        mSubject.copyList(etalonListID);
-
+        final long mockNewListID = 12;
         ProductsList expectedList = new ProductsList();
         expectedList.setName(etalonList.getName());
         expectedList.setCreatedAt(new Date());
         expectedList.setCreatedBy(MOCKED_SELF_USER_ID);
         expectedList.setStatus(ProductsList.STATUS_ACTIVE);
+        when(mProductsListDao.insert(expectedList)).thenReturn(mockNewListID);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.copyList(etalonListID, new ShoppingListRepository.OnProductListCreateListener() {
+            @Override
+            public void onCreate(int productListID) {
+
+                assertEquals(productListID, mockNewListID);
+                countDownLatch.countDown();
+            }
+        });
+        countDownLatch.await();
 
         verify(mProductsListDao).insert(expectedList);
     }
@@ -110,7 +137,14 @@ public class ShoppingListRepositoryTest {
         etalonProducts.get(2).setStatus(Product.TO_BUY);
         when(mProductDao.findByListIDSync(etalonListID)).thenReturn(etalonProducts);
 
-        mSubject.copyList(etalonListID);
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.copyList(etalonListID, new ShoppingListRepository.OnProductListCreateListener() {
+            @Override
+            public void onCreate(int productListID) {
+                countDownLatch.countDown();
+            }
+        });
+        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
 
         List<Product> expectedProducts = etalonProducts;
         for (Product expectedProduct : expectedProducts) {
@@ -123,7 +157,18 @@ public class ShoppingListRepositoryTest {
     @Test(expected = ShoppingListException.class)
     public void copyList_testException_OnNonexistentList() throws InterruptedException, ShoppingListException {
 
-        mSubject.copyList( 99);
+        mSubject.copyList( 99, null);
+    }
+
+    @Test
+    public void removeList_Empty() {
+        int listID = 2;
+        ProductsList listToRemove = new ProductsList();
+        when(mProductsListDao.findByIDSync(listID)).thenReturn(listToRemove);
+
+        mSubject.removeList(listToRemove);
+
+        verify(mProductsListDao).delete(listToRemove);
     }
 
     @Test

@@ -45,7 +45,7 @@ public class ShoppingListTest {
 
         mSubject = new ShoppingList(mProductsListDao, productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
     }
-
+/*
     @Test
     public void removeList() {
 
@@ -95,11 +95,7 @@ public class ShoppingListTest {
         assertEquals(product.getListID(), mShoppingList.getListID());
         assertEquals(product.getStatus(), Product.TO_BUY);
     }
-
-    @After
-    public void cleanUp() {
-        AppDatabase.getInstance(mMockContext).close();
-    }
+*/
 
 
 

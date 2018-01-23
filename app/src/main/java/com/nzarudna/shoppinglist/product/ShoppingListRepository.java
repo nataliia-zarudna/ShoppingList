@@ -3,6 +3,8 @@ package com.nzarudna.shoppinglist.product;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
@@ -23,6 +25,8 @@ import static com.nzarudna.shoppinglist.product.ShoppingList.*;
 @Singleton
 public class ShoppingListRepository {
 
+    private static final String TAG = "ShoppingListRepository";
+
     private ProductsListDao mProductsListDao;
     private ProductDao mProductDao;
     private UserRepository mUserRepository;
@@ -37,14 +41,16 @@ public class ShoppingListRepository {
         mResourceResolver = resourceResolver;
     }
 
-    public void createList(final OnProductListCreateListener onProductListCreateListener) {
+    public void createList(@Nullable final OnProductListCreateListener onProductListCreateListener) {
 
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<Void, Void, Integer>() {
             @Override
-            protected Void doInBackground(Void... voids) {
+            protected Integer doInBackground(Void... voids) {
 
                 int listID = (int) mProductsListDao.insert(createProductsList());
-                onProductListCreateListener.onCreate(listID);
+                if (onProductListCreateListener != null) {
+                    onProductListCreateListener.onCreate(listID);
+                }
 
                 return null;
             }
@@ -64,25 +70,34 @@ public class ShoppingListRepository {
     }
 
 
-    public ShoppingList copyList(int etalonListID) throws ShoppingListException {
+    public void copyList(final int etalonListID, @Nullable final OnProductListCreateListener onProductListCreateListener)
+            throws ShoppingListException {
 
         ProductsList etalonList = mProductsListDao.findByIDSync(etalonListID);
         if (etalonList == null) {
             throw new ShoppingListException("List with id " + etalonListID + " does not exist");
         }
 
-        ProductsList newProductsList = createProductsList();
+        final ProductsList newProductsList = createProductsList();
         newProductsList.setName(etalonList.getName());
 
-        int newListID = (int) mProductsListDao.insert(newProductsList);
-        LiveData<ProductsList> newListLiveData = mProductsListDao.findByID(newListID);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
 
-        copyProductsFromList(etalonListID, newListID);
+                int newListID = (int) mProductsListDao.insert(newProductsList);
+                copyProductsFromList(etalonListID, newListID);
 
-        return null;// new ShoppingList();//newListLiveData, newListID);
+                if (onProductListCreateListener != null) {
+                    onProductListCreateListener.onCreate(newListID);
+                }
+
+                return null;
+            }
+        }.execute();
     }
 
-    private void copyProductsFromList(int fromListID, int toListID) throws ShoppingListException {
+    private void copyProductsFromList(int fromListID, int toListID) {
 
         try {
             List<Product> etalonProducts = mProductDao.findByListIDSync(fromListID);
@@ -97,8 +112,18 @@ public class ShoppingListRepository {
             }
 
         } catch (CloneNotSupportedException e) {
-            throw new ShoppingListException("Product cannot be copied", e);
+            Log.e(TAG, "Product cannot be copied", e);
         }
+    }
+
+    public void removeList(final ProductsList productsList) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductsListDao.delete(productsList);
+                return null;
+            }
+        }.execute();
     }
 
     public ShoppingList getList(int productListID) {
@@ -125,16 +150,6 @@ public class ShoppingListRepository {
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);
         }
-    }
-
-    public void removeList(final ProductsList productsList) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductsListDao.delete(productsList);
-                return null;
-            }
-        }.execute();
     }
 
     public interface OnProductListCreateListener {
