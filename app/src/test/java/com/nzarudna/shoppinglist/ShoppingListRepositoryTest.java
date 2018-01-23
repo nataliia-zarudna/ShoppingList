@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist;
 
+import android.arch.lifecycle.LiveData;
+
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.product.Product;
@@ -13,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -161,14 +165,35 @@ public class ShoppingListRepositoryTest {
     }
 
     @Test
-    public void removeList_Empty() {
+    public void removeList() {
         int listID = 2;
         ProductsList listToRemove = new ProductsList();
-        when(mProductsListDao.findByIDSync(listID)).thenReturn(listToRemove);
 
         mSubject.removeList(listToRemove);
 
         verify(mProductsListDao).delete(listToRemove);
+    }
+
+    @Test
+    public void getList() {
+
+        int listID = 3;
+        LiveData<ProductsList> productsListLiveData = Mockito.mock(LiveData.class);
+        when(mProductsListDao.findByID(listID)).thenReturn(productsListLiveData);
+        when(mProductsListDao.findByIDSync(listID)).thenReturn(new ProductsList());
+
+        ShoppingList shoppingList = mSubject.getList(listID);
+
+        assertEquals(shoppingList.getListData(), productsListLiveData);
+        assertEquals(shoppingList.getListID(), listID);
+    }
+
+    @Test
+    public void getList_testNull_onNonexistentList() {
+
+        ShoppingList shoppingList = mSubject.getList(99);
+
+        assertNull(shoppingList);
     }
 
     @Test

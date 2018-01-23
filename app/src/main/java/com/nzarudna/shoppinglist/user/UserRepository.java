@@ -1,10 +1,6 @@
 package com.nzarudna.shoppinglist.user;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

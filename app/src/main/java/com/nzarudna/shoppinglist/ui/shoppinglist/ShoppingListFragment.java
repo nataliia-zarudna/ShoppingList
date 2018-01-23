@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class ShoppingListFragment extends Fragment {
 
-    private static final String TAG = "EditShoppingListFragment";
+    private static final String TAG = "EditShoppingListFragmen";
 
     private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
 

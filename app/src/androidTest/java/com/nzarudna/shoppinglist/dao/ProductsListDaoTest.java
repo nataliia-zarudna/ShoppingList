@@ -1,11 +1,13 @@
 package com.nzarudna.shoppinglist.dao;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
+import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -23,11 +25,14 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -79,13 +84,39 @@ public class ProductsListDaoTest {
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
 
-        long listID = mSubjectDao.insert(list);
+        int listID = (int) mSubjectDao.insert(list);
         list.setListID(listID);
 
         LiveData<ProductsList> listLiveData = mSubjectDao.findByID(listID);
         ProductsList insertedList = TestUtils.getLiveDataValueSync(listLiveData);
 
         assertThat(insertedList, equalTo(list));
+    }
+
+    @Test
+    public void readSync_Nonexistent() throws InterruptedException {
+
+        ProductsList listLiveData = mSubjectDao.findByIDSync(99);
+
+        assertNull(listLiveData);
+    }
+
+    @Test
+    public void readAsync_Nonexistent() throws InterruptedException {
+
+        LiveData<ProductsList> listLiveData = mSubjectDao.findByID(99);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        listLiveData.observeForever(new Observer<ProductsList>() {
+            @Override
+            public void onChanged(@Nullable ProductsList productsList) {
+
+                assertNull(productsList);
+
+                countDownLatch.countDown();
+            }
+        });
+        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -98,7 +129,7 @@ public class ProductsListDaoTest {
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
 
-        long listID = mSubjectDao.insert(list);
+        int listID = (int) mSubjectDao.insert(list);
         list.setListID(listID);
 
         ProductsList insertedList = mSubjectDao.findByIDSync(listID);
@@ -368,7 +399,7 @@ public class ProductsListDaoTest {
 
     private ProductsList insertList() {
         ProductsList listToInsert = createProductListWithNotNullParams();
-        long listID = mSubjectDao.insert(listToInsert);
+        int listID = (int) mSubjectDao.insert(listToInsert);
         listToInsert.setListID(listID);
 
         return listToInsert;

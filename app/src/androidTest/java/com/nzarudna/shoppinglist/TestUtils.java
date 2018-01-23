@@ -122,7 +122,7 @@ public class TestUtils {
 
     public static void insertProductsLists(ProductsListDao productsListDao, List<ProductsList> listsToInsert) {
         for (ProductsList list : listsToInsert) {
-            long insertedID = productsListDao.insert(list);
+            int insertedID = (int) productsListDao.insert(list);
             list.setListID(insertedID);
         }
     }

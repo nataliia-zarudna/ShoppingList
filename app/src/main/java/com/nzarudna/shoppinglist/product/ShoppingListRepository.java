@@ -127,6 +127,10 @@ public class ShoppingListRepository {
     }
 
     public ShoppingList getList(int productListID) {
+        if (mProductsListDao.findByIDSync(productListID) == null) {
+            return null;
+        }
+
         LiveData<ProductsList> productsList = mProductsListDao.findByID(productListID);
         return new ShoppingList(mProductsListDao, productsList, productListID);
     }
