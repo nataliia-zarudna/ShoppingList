@@ -8,7 +8,7 @@ import android.databinding.PropertyChangeRegistry;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.BR;
-import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
@@ -30,34 +30,34 @@ public class EditProductListViewModel extends ViewModel implements Observable {
     private ShoppingList mShoppingList;
 
     @Bindable
-    private ProductsList mProductsList;
+    private ProductList mProductList;
 
     public void setProductListID(int productListID) {
 
         mShoppingList = mShoppingListRepository.getList(productListID);
     }
 
-    public LiveData<ProductsList> getProductListData() {
+    public LiveData<ProductList> getProductListData() {
         return mShoppingList.getListData();
     }
 
-    public void setProductListData(ProductsList productsList) {
-        mProductsList = productsList;
+    public void setProductListData(ProductList productList) {
+        mProductList = productList;
         mRegistry.notifyChange(this, BR._all);
     }
 
     public void onListNameChanged(String newName) {
         Log.d(TAG, "onListNameChanged " + newName);
-        if (mProductsList != null && !mProductsList.getName().equals(newName)) {
-            mProductsList.setName(newName);
-            mShoppingList.updateProductList(mProductsList);
+        if (mProductList != null && !mProductList.getName().equals(newName)) {
+            mProductList.setName(newName);
+            mShoppingList.updateProductList(mProductList);
         }
     }
 
     public String getListName() {
         if (mShoppingList != null) {
-            ProductsList productsList = mShoppingList.getListData().getValue();
-            return productsList != null ? productsList.getName() : "";
+            ProductList productList = mShoppingList.getListData().getValue();
+            return productList != null ? productList.getName() : "";
         }
         return "";
     }

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,7 @@ import android.view.ViewGroup;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
-import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ProductList;
 
 /**
  * Created by Nataliia on 21.01.2018.
@@ -57,10 +56,10 @@ public class EditShoppingListFragment extends Fragment {
             viewDataBinding.setEditListViewModel(mViewModel);
         }
 
-        mViewModel.getProductListData().observe(this, new Observer<ProductsList>() {
+        mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
             @Override
-            public void onChanged(@Nullable ProductsList productsList) {
-                mViewModel.setProductListData(productsList);
+            public void onChanged(@Nullable ProductList productList) {
+                mViewModel.setProductListData(productList);
             }
         });
 

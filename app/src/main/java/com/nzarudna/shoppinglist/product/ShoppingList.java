@@ -8,7 +8,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
+import com.nzarudna.shoppinglist.persistence.ProductListDao;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,22 +18,22 @@ import java.lang.annotation.RetentionPolicy;
  * and operates with it
  */
 
-public class ShoppingList implements Observer<ProductsList> {
+public class ShoppingList implements Observer<ProductList> {
 
     public static final String TAG = "ShoppingList";
 
-    private LiveData<ProductsList> mProductsList;
+    private LiveData<ProductList> mProductsList;
     private int mListID;
 
-    private ProductsListDao mProductsListDao;
+    private ProductListDao mProductListDao;
 
-    public ShoppingList(ProductsListDao productsListDao, LiveData<ProductsList> productsList, int listID) {
-        mProductsListDao = productsListDao;
+    public ShoppingList(ProductListDao productListDao, LiveData<ProductList> productsList, int listID) {
+        mProductListDao = productListDao;
         mProductsList = productsList;
         mListID = listID;
     }
 
-    public LiveData<ProductsList> getListData() {
+    public LiveData<ProductList> getListData() {
         return mProductsList;
     }
 
@@ -41,23 +41,21 @@ public class ShoppingList implements Observer<ProductsList> {
         return mListID;
     }
 
-    public void updateProductList(final ProductsList productsList) {
+    public void updateProductList(final ProductList productList) {
         new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                mProductsListDao.update(productsList);
+                mProductListDao.update(productList);
                 return null;
             }
         }.execute();
     }
 
     @Override
-    public void onChanged(@Nullable ProductsList productsList) {
+    public void onChanged(@Nullable ProductList productList) {
 
         //mNotificationManager.sendNotification();
-
-        //mProductsList
     }
 
     public LiveData<Product> addProduct(@NonNull String name, String comment) {

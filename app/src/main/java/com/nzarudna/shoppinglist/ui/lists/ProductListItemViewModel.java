@@ -4,7 +4,7 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.util.Log;
 
-import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ProductList;
 
 /**
  * View Model for item of product lists
@@ -15,7 +15,7 @@ public class ProductListItemViewModel extends BaseObservable {
     private static final String TAG = "ProductsListItemVM";
 
     @Bindable
-    private ProductsList mProductsList;
+    private ProductList mProductList;
 
     private ProductListItemViewModelObserver mObserver;
 
@@ -24,27 +24,27 @@ public class ProductListItemViewModel extends BaseObservable {
     }
 
     public String getListName() {
-        Log.d(TAG, "getListName => " + (mProductsList != null ? mProductsList.getName() : ""));
+        Log.d(TAG, "getListName => " + (mProductList != null ? mProductList.getName() : ""));
 
-        return mProductsList != null ? mProductsList.getName() : "";
+        return mProductList != null ? mProductList.getName() : "";
     }
 
-    public void setProductsList(ProductsList productsList) {
-        Log.d(TAG, "setProductsList => " + (productsList != null ? productsList.getName() : ""));
+    public void setProductsList(ProductList productList) {
+        Log.d(TAG, "setProductsList => " + (productList != null ? productList.getName() : ""));
 
-        this.mProductsList = productsList;
+        this.mProductList = productList;
         notifyChange();
     }
 
-    public ProductsList getProductsList() {
-        return mProductsList;
+    public ProductList getProductsList() {
+        return mProductList;
     }
 
     public void onListClick() {
-        Log.d(TAG, "Click on list " + mProductsList.getName());
+        Log.d(TAG, "Click on list " + mProductList.getName());
 
         if (mObserver != null) {
-            mObserver.startProductsListActivity(mProductsList.getListID());
+            mObserver.startProductsListActivity(mProductList.getListID());
         }
     }
 

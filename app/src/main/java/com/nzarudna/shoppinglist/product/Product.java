@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
         foreignKeys = {@ForeignKey(entity = Category.class,
                 parentColumns = "category_id",
                 childColumns = "category_id"),
-                @ForeignKey(entity = ProductsList.class,
+                @ForeignKey(entity = ProductList.class,
                         parentColumns = "list_id", childColumns = "list_id")})
 public class Product implements Cloneable {
 

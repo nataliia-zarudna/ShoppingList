@@ -14,11 +14,22 @@ public class ProductListWithStatistics {
 
     private String name;
 
-    @ColumnInfo(name = "all_products_count")
-    private int allProductsCount;
+    @ColumnInfo(name = "to_buy_products_count")
+    private int toBuyProductsCount;
+
+    @ColumnInfo(name = "absent_products_count")
+    private int absentProductsCount;
 
     @ColumnInfo(name = "bought_products_count")
     private int boughtProductsCount;
+
+    public ProductListWithStatistics(int listID, String name, int toBuyProductsCount, int absentProductsCount, int boughtProductsCount) {
+        this.listID = listID;
+        this.name = name;
+        this.toBuyProductsCount = toBuyProductsCount;
+        this.absentProductsCount = absentProductsCount;
+        this.boughtProductsCount = boughtProductsCount;
+    }
 
     public int getListID() {
         return listID;
@@ -36,20 +47,28 @@ public class ProductListWithStatistics {
         this.name = name;
     }
 
-    public int getAllProductsCount() {
-        return allProductsCount;
-    }
-
-    public void setAllProductsCount(int allProductsCount) {
-        this.allProductsCount = allProductsCount;
-    }
-
     public int getBoughtProductsCount() {
         return boughtProductsCount;
     }
 
     public void setBoughtProductsCount(int boughtProductsCount) {
         this.boughtProductsCount = boughtProductsCount;
+    }
+
+    public int getToBuyProductsCount() {
+        return toBuyProductsCount;
+    }
+
+    public void setToBuyProductsCount(int toBuyProductsCount) {
+        this.toBuyProductsCount = toBuyProductsCount;
+    }
+
+    public int getAbsentProductsCount() {
+        return absentProductsCount;
+    }
+
+    public void setAbsentProductsCount(int absentProductsCount) {
+        this.absentProductsCount = absentProductsCount;
     }
 
     @Override
@@ -60,7 +79,8 @@ public class ProductListWithStatistics {
         ProductListWithStatistics that = (ProductListWithStatistics) o;
 
         if (listID != that.listID) return false;
-        if (allProductsCount != that.allProductsCount) return false;
+        if (toBuyProductsCount != that.toBuyProductsCount) return false;
+        if (absentProductsCount != that.absentProductsCount) return false;
         if (boughtProductsCount != that.boughtProductsCount) return false;
         return name != null ? name.equals(that.name) : that.name == null;
     }
@@ -69,7 +89,8 @@ public class ProductListWithStatistics {
     public int hashCode() {
         int result = listID;
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + allProductsCount;
+        result = 31 * result + toBuyProductsCount;
+        result = 31 * result + absentProductsCount;
         result = 31 * result + boughtProductsCount;
         return result;
     }
@@ -79,7 +100,8 @@ public class ProductListWithStatistics {
         return "ProductListWithStatistics{" +
                 "listID=" + listID +
                 ", name='" + name + '\'' +
-                ", allProductsCount=" + allProductsCount +
+                ", toBuyProductsCount=" + toBuyProductsCount +
+                ", absentProductsCount=" + absentProductsCount +
                 ", boughtProductsCount=" + boughtProductsCount +
                 '}';
     }

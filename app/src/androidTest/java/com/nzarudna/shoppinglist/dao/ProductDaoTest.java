@@ -10,10 +10,10 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
+import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.persistence.CategoryDao;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.UserDao;
 import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 
@@ -55,9 +55,9 @@ public class ProductDaoTest {
         UserDao userDao = mDatabase.userDao();
         mUserID_1 = TestUtils.insertUser(userDao);
 
-        ProductsListDao productsListDao = mDatabase.productsListDao();
-        mProductsListID_1 = TestUtils.insertProductsList(productsListDao, mUserID_1);
-        mProductsListID_2 = TestUtils.insertProductsList(productsListDao, mUserID_1);
+        ProductListDao productListDao = mDatabase.productsListDao();
+        mProductsListID_1 = TestUtils.insertProductsList(productListDao, mUserID_1);
+        mProductsListID_2 = TestUtils.insertProductsList(productListDao, mUserID_1);
 
         CategoryDao categoryDao = mDatabase.categoryDao();
         mCategoryID_1 = TestUtils.insertCategory(categoryDao);

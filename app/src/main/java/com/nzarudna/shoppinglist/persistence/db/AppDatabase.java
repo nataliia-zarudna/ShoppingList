@@ -13,15 +13,15 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Category;
 import com.nzarudna.shoppinglist.product.Product;
+import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ProductTemplate;
-import com.nzarudna.shoppinglist.product.ProductsList;
 import com.nzarudna.shoppinglist.user.User;
 import com.nzarudna.shoppinglist.persistence.CategoryDao;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.UserDao;
 
 import java.util.Date;
@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * Room application database
  */
-@Database(entities = {Product.class, Category.class, ProductTemplate.class, ProductsList.class, User.class}, version = 1)
+@Database(entities = {Product.class, Category.class, ProductTemplate.class, ProductList.class, User.class}, version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -70,7 +70,7 @@ public abstract class AppDatabase extends RoomDatabase {
             values.put("name", "Shopping list #" + i);
             values.put("created_by", selfUserID);
             values.put("created_at", new Date().getTime());
-            values.put("status", ProductsList.STATUS_ACTIVE);
+            values.put("status", ProductList.STATUS_ACTIVE);
 
             long productsListsID = db.insert("products_lists", OnConflictStrategy.IGNORE, values);
             Log.d(LOG, "Shopping list #" + i + " id " + productsListsID);
@@ -98,7 +98,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ProductDao productDao();
 
-    public abstract ProductsListDao productsListDao();
+    public abstract ProductListDao productsListDao();
 
     public abstract UserDao userDao();
 

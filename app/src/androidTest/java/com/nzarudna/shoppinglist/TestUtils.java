@@ -7,15 +7,15 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Category;
 import com.nzarudna.shoppinglist.product.Product;
+import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ProductTemplate;
-import com.nzarudna.shoppinglist.product.ProductsList;
 import com.nzarudna.shoppinglist.user.User;
 import com.nzarudna.shoppinglist.persistence.CategoryDao;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
 import com.nzarudna.shoppinglist.persistence.UserDao;
 
 import org.junit.Assert;
@@ -99,30 +99,30 @@ public class TestUtils {
         return (int) userDao.insert(user);
     }
 
-    public static int insertProductsList(ProductsListDao productsListDao, int createdBy) {
+    public static int insertProductsList(ProductListDao productListDao, int createdBy) {
 
-        ProductsList list = new ProductsList();
+        ProductList list = new ProductList();
         list.setName("Some name");
         list.setCreatedBy(createdBy);
 
-        return (int) productsListDao.insert(list);
+        return (int) productListDao.insert(list);
     }
 
-    public static List<ProductsList> createProductsLists(int count, int createdBy) {
+    public static List<ProductList> createProductsLists(int count, int createdBy) {
 
-        List<ProductsList> lists = new ArrayList<>();
+        List<ProductList> lists = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            ProductsList productsList = new ProductsList();
-            productsList.setName("Some name");
-            productsList.setCreatedBy(createdBy);
-            lists.add(productsList);
+            ProductList productList = new ProductList();
+            productList.setName("Some name");
+            productList.setCreatedBy(createdBy);
+            lists.add(productList);
         }
         return lists;
     }
 
-    public static void insertProductsLists(ProductsListDao productsListDao, List<ProductsList> listsToInsert) {
-        for (ProductsList list : listsToInsert) {
-            int insertedID = (int) productsListDao.insert(list);
+    public static void insertProductsLists(ProductListDao productListDao, List<ProductList> listsToInsert) {
+        for (ProductList list : listsToInsert) {
+            int insertedID = (int) productListDao.insert(list);
             list.setListID(insertedID);
         }
     }
@@ -136,10 +136,15 @@ public class TestUtils {
     }
 
     public static int insertProduct(ProductDao productDao, int listID) {
+        return insertProduct(productDao, listID, 0);
+    }
+
+    public static int insertProduct(ProductDao productDao, int listID, @Product.ProductStatus int status) {
 
         Product product = new Product();
         product.setName("Some name");
         product.setListID(listID);
+        product.setStatus(status);
 
         return (int) productDao.insert(product);
     }

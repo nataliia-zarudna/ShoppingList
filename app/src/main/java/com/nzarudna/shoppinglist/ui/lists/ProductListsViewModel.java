@@ -6,7 +6,7 @@ import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 
-import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListException;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
@@ -28,12 +28,12 @@ public class ProductListsViewModel extends ViewModel {
         this.mObserver = observer;
     }
 
-    public LiveData<PagedList<ProductsList>> getList(int pageSize) {
+    public LiveData<PagedList<ProductList>> getList(int pageSize) {
         try {
-            DataSource.Factory<Integer, ProductsList> listFactory
-                    = mShoppingListRepository.getLists(ProductsList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_NAME);
+            DataSource.Factory<Integer, ProductList> listFactory
+                    = mShoppingListRepository.getLists(ProductList.STATUS_ACTIVE, ShoppingList.SORT_LISTS_BY_NAME);
 
-            return new LivePagedListBuilder<Integer, ProductsList>(listFactory, pageSize).build();
+            return new LivePagedListBuilder<Integer, ProductList>(listFactory, pageSize).build();
 
         } catch (ShoppingListException e) {
             //TODO: handle exception
@@ -42,8 +42,8 @@ public class ProductListsViewModel extends ViewModel {
         }
     }
 
-    public void removeList(ProductsList productsList) {
-        mShoppingListRepository.removeList(productsList);
+    public void removeList(ProductList productList) {
+        mShoppingListRepository.removeList(productList);
     }
 
     public void createList() {

@@ -29,7 +29,7 @@ import java.util.Date;
                         parentColumns = "user_id",
                         childColumns = "assigned_id")},
         indices = @Index("created_by"))
-public class ProductsList {
+public class ProductList {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_ACTIVE, STATUS_ARCHIVED})
@@ -65,7 +65,7 @@ public class ProductsList {
     @ColumnInfo(name = "assigned_id")
     private Integer assignedID;
 
-    public ProductsList() {
+    public ProductList() {
         this.createdAt = new Date();
         this.setStatus(STATUS_ACTIVE);
     }
@@ -145,7 +145,7 @@ public class ProductsList {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ProductsList that = (ProductsList) o;
+        ProductList that = (ProductList) o;
 
         if (listID != that.listID) return false;
         if (createdBy != that.createdBy) return false;

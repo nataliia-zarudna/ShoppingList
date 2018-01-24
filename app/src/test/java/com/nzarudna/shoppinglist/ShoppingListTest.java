@@ -3,17 +3,12 @@ package com.nzarudna.shoppinglist;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
-import com.nzarudna.shoppinglist.product.Product;
-import com.nzarudna.shoppinglist.product.ProductsList;
+import com.nzarudna.shoppinglist.persistence.ProductListDao;
+import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
-import com.nzarudna.shoppinglist.product.ShoppingListException;
-import com.nzarudna.shoppinglist.persistence.ProductsListDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -33,17 +28,17 @@ public class ShoppingListTest {
 
     @Mock
     private Context mMockContext;
-    private ProductsListDao mProductsListDao;
+    private ProductListDao mProductListDao;
     private ShoppingListRepository mShoppingListRepository;
 
     @Mock
-    private LiveData<ProductsList> productsListLiveData;
+    private LiveData<ProductList> productsListLiveData;
     private ShoppingList mSubject;
 
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(mProductsListDao, productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
+        mSubject = new ShoppingList(mProductListDao, productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
     }
 /*
     @Test

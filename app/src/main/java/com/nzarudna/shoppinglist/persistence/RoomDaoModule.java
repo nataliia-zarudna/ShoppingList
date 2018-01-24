@@ -35,7 +35,7 @@ public class RoomDaoModule {
 
     @Singleton
     @Provides
-    public ProductsListDao provideProductsListDao(Context context) {
+    public ProductListDao provideProductsListDao(Context context) {
         return mDatabase.productsListDao();
     }
 
