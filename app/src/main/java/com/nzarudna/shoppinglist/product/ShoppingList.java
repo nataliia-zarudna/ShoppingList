@@ -78,18 +78,6 @@ public class ShoppingList implements Observer<ProductList> {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public static final int SORT_LISTS_BY_NAME = 1;
-    public static final int SORT_LISTS_BY_CREATED_BY = 2;
-    public static final int SORT_LISTS_BY_CREATED_AT = 3;
-    public static final int SORT_LISTS_BY_MODIFIED_AT = 4;
-    public static final int SORT_LISTS_BY_ASSIGNED = 5;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
-            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED})
-    public @interface ProductsListSorting {
-    }
-
     public static final int SORT_PRODUCTS_BY_NAME = 1;
     public static final int SORT_PRODUCTS_BY_CATEGORY = 2;
     public static final int SORT_PRODUCTS_BY_STATUS = 3;

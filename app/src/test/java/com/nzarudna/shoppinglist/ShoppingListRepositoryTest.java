@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist;
 
 import android.arch.lifecycle.LiveData;
+import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.nzarudna.shoppinglist.SharedPreferencesConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +39,7 @@ import static org.mockito.Mockito.when;
 public class ShoppingListRepositoryTest {
 
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
+    private static final int MOCKED_DEFAULT_LIST_SORTING = ProductList.SORT_LISTS_BY_NAME;
     private static final int MOCKED_SELF_USER_ID = 2;
 
     private ShoppingListRepository mSubject;
@@ -45,6 +48,8 @@ public class ShoppingListRepositoryTest {
     private UserRepository mUserRepository;
     @Mock
     private ResourceResolver mResourceResolver;
+    @Mock
+    private SharedPreferences mSharedPreferences;
 
     @Mock
     private ProductListDao mProductListDao;
@@ -54,7 +59,12 @@ public class ShoppingListRepositoryTest {
     @Before
     public void setUp() {
 
-        when(mResourceResolver.getString(R.string.default_list_name)).thenReturn(MOCKED_DEFAULT_LIST_NAME);
+        when(mResourceResolver.getString(R.string.default_list_name))
+                .thenReturn(MOCKED_DEFAULT_LIST_NAME);
+        when(mSharedPreferences.getString(DEFAULT_PRODUCT_LIST_NAME, MOCKED_DEFAULT_LIST_NAME))
+                .thenReturn(MOCKED_DEFAULT_LIST_NAME);
+        when(mSharedPreferences.getInt(DEFAULT_PRODUCT_LIST_SORTING, ProductList.SORT_LISTS_BY_NAME))
+                .thenReturn(MOCKED_DEFAULT_LIST_SORTING);
         when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
         mSubject = new ShoppingListRepository(mProductListDao, mProductDao, mUserRepository, mResourceResolver);
@@ -67,6 +77,7 @@ public class ShoppingListRepositoryTest {
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME);
+        expectedProductList.setSorting(MOCKED_DEFAULT_LIST_SORTING);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 

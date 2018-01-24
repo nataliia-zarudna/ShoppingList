@@ -46,10 +46,10 @@ public interface ProductListDao {
     @Delete
     void delete(ProductList productList);
 
-    @Query(value = "SELECT * FROM ProductList WHERE list_id = :listID")
+    @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
     ProductList findByIDSync(long listID);
 
-    @Query(value = "SELECT * FROM ProductList WHERE list_id = :listID")
+    @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
     LiveData<ProductList> findByID(long listID);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.name")

@@ -39,6 +39,18 @@ public class ProductList {
     public static final int STATUS_ACTIVE = 1;
     public static final int STATUS_ARCHIVED = 2;
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
+            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED})
+    public @interface ProductListSorting {
+    }
+
+    public static final int SORT_LISTS_BY_NAME = 1;
+    public static final int SORT_LISTS_BY_CREATED_BY = 2;
+    public static final int SORT_LISTS_BY_CREATED_AT = 3;
+    public static final int SORT_LISTS_BY_MODIFIED_AT = 4;
+    public static final int SORT_LISTS_BY_ASSIGNED = 5;
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
     private int listID;
@@ -61,6 +73,7 @@ public class ProductList {
     private Integer modifiedBy;
 
     private int status;
+    private int sorting;
 
     @ColumnInfo(name = "assigned_id")
     private Integer assignedID;
@@ -92,7 +105,6 @@ public class ProductList {
         return createdAt;
     }
 
-    @NonNull
     public void setCreatedAt(@NonNull Date createdAt) {
         this.createdAt = createdAt;
     }
@@ -102,7 +114,6 @@ public class ProductList {
         return createdBy;
     }
 
-    @NonNull
     public void setCreatedBy(@NonNull Integer createdBy) {
         this.createdBy = createdBy;
     }
@@ -132,6 +143,15 @@ public class ProductList {
         this.status = status;
     }
 
+    @ProductListSorting
+    public int getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(@ProductListSorting int sorting) {
+        this.sorting = sorting;
+    }
+
     public Integer getAssignedID() {
         return assignedID;
     }
@@ -148,34 +168,43 @@ public class ProductList {
         ProductList that = (ProductList) o;
 
         if (listID != that.listID) return false;
-        if (createdBy != that.createdBy) return false;
         if (status != that.status) return false;
-        if (assignedID != that.assignedID) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return createdAt != null
-                ? DateUtils.getTimeInSeconds(createdAt) == DateUtils.getTimeInSeconds(that.createdAt)
-                : that.createdAt == null;
+        if (sorting != that.sorting) return false;
+        if (!name.equals(that.name)) return false;
+        if (!createdAt.equals(that.createdAt)) return false;
+        if (!createdBy.equals(that.createdBy)) return false;
+        if (modifiedAt != null ? !modifiedAt.equals(that.modifiedAt) : that.modifiedAt != null)
+            return false;
+        if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null)
+            return false;
+        return assignedID != null ? assignedID.equals(that.assignedID) : that.assignedID == null;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) listID;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + createdBy;
-        result = (int) (31 * result + (createdAt != null ? DateUtils.getTimeInSeconds(createdAt) : 0));
+        int result = listID;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + createdAt.hashCode();
+        result = 31 * result + createdBy.hashCode();
+        result = 31 * result + (modifiedAt != null ? modifiedAt.hashCode() : 0);
+        result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         result = 31 * result + status;
-        result = 31 * result + assignedID;
+        result = 31 * result + sorting;
+        result = 31 * result + (assignedID != null ? assignedID.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "ProductsList{" +
+        return "ProductList{" +
                 "listID=" + listID +
                 ", name='" + name + '\'' +
-                ", createdBy=" + createdBy +
                 ", createdAt=" + createdAt +
+                ", createdBy=" + createdBy +
+                ", modifiedAt=" + modifiedAt +
+                ", modifiedBy=" + modifiedBy +
                 ", status=" + status +
+                ", sorting=" + sorting +
                 ", assignedID=" + assignedID +
                 '}';
     }
