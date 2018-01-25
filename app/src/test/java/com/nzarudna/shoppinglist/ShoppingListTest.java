@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
+import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
@@ -41,7 +42,7 @@ public class ShoppingListTest {
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(mProductListDao, MOCKED_PRODUCTS_LIST_ID, productsListLiveData);
+        mSubject = new ShoppingList(mProductListDao, MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
@@ -53,8 +54,10 @@ public class ShoppingListTest {
         verify(mProductListDao).update(updatedList);
     }
 
-    /*@Test
-    public void addProductToListWithCustomSorting() throws InterruptedException {
+    @Test
+    public void addProductToListWith_NotCustomSorting() throws InterruptedException {
+
+        
 
         Product product = new Product();
         product.setName("Some product name");
@@ -63,7 +66,7 @@ public class ShoppingListTest {
         Product expectedProduct = new Product();
         expectedProduct.setListID(mSubject.getListID());
         expectedProduct.setName("Some product name");
-        expectedProduct.setOrder();
+        expectedProduct.setOrder(0);
 
         assertEquals(product.getName(), productName);
         assertEquals(product.getComment(), productComment);

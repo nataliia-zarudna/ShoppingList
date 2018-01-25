@@ -27,10 +27,11 @@ public class ShoppingList implements Observer<ProductList> {
 
     private ProductListDao mProductListDao;
 
-    public ShoppingList(ProductListDao productListDao, int listID, LiveData<ProductList> productsList) {
+    public ShoppingList(ProductListDao productListDao, int listID) {
         mProductListDao = productListDao;
         mListID = listID;
-        mProductsList = productsList;
+
+        mProductsList = productListDao.findByID(listID);
     }
 
     public LiveData<ProductList> getListData() {

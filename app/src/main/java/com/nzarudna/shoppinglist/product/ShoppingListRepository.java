@@ -139,8 +139,7 @@ public class ShoppingListRepository {
             return null;
         }
 
-        LiveData<ProductList> productsList = mProductListDao.findByID(productListID);
-        return new ShoppingList(mProductListDao, productListID, productsList);
+        return new ShoppingList(mProductListDao, productListID);
     }
 
     public DataSource.Factory<Integer, ProductListWithStatistics> getLists(@ProductList.ProductListStatus int status,
