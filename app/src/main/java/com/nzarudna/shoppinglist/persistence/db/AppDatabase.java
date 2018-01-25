@@ -72,7 +72,7 @@ public abstract class AppDatabase extends RoomDatabase {
             values.put("created_at", new Date().getTime());
             values.put("status", ProductList.STATUS_ACTIVE);
 
-            long productsListsID = db.insert("products_lists", OnConflictStrategy.IGNORE, values);
+            long productsListsID = db.insert("product_lists", OnConflictStrategy.IGNORE, values);
             Log.d(LOG, "Shopping list #" + i + " id " + productsListsID);
         }
     }

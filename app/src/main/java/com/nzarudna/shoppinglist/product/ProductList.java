@@ -18,7 +18,7 @@ import java.util.Date;
 /**
  * List of products to buy
  */
-@Entity(tableName = "products_lists",
+@Entity(tableName = "product_lists",
         foreignKeys = {@ForeignKey(entity = User.class,
                 parentColumns = "user_id",
                 childColumns = "created_by"),

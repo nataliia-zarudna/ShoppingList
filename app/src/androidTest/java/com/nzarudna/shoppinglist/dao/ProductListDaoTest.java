@@ -213,6 +213,21 @@ public class ProductListDaoTest {
     }
 
     @Test
+    public void deleteByID() throws InterruptedException {
+
+        ProductList listToDelete = insertList();
+        ProductList otherList = insertList();
+
+        mSubjectDao.deleteByID(listToDelete.getListID());
+
+        ProductList deletedList = mSubjectDao.findByIDSync(listToDelete.getListID());
+        assertNull(deletedList);
+
+        ProductList foundOtherList = mSubjectDao.findByIDSync(otherList.getListID());
+        assertEquals(foundOtherList, otherList);
+    }
+
+    @Test
     public void findActiveSortByName() throws InterruptedException {
 
         List<ProductList> lists = TestUtils.createProductsLists(4, mUserID_1);

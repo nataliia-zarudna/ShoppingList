@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.product.ProductList;
+import com.nzarudna.shoppinglist.product.ProductListWithStatistics;
 
 /**
  * View Model for item of product lists
@@ -15,7 +16,7 @@ public class ProductListItemViewModel extends BaseObservable {
     private static final String TAG = "ProductsListItemVM";
 
     @Bindable
-    private ProductList mProductList;
+    private ProductListWithStatistics mProductList;
 
     private ProductListItemViewModelObserver mObserver;
 
@@ -29,14 +30,14 @@ public class ProductListItemViewModel extends BaseObservable {
         return mProductList != null ? mProductList.getName() : "";
     }
 
-    public void setProductsList(ProductList productList) {
+    public void setProductsList(ProductListWithStatistics productList) {
         Log.d(TAG, "setProductsList => " + (productList != null ? productList.getName() : ""));
 
         this.mProductList = productList;
         notifyChange();
     }
 
-    public ProductList getProductsList() {
+    public ProductListWithStatistics getProductsList() {
         return mProductList;
     }
 

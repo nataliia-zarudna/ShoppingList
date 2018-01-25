@@ -25,6 +25,7 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemShoppingListBinding;
 import com.nzarudna.shoppinglist.product.ProductList;
+import com.nzarudna.shoppinglist.product.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.editshoppinglist.EditShoppingListActivity;
 import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListActivity;
 
@@ -34,7 +35,6 @@ import com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListActivity;
 public class ShoppingListsFragment extends Fragment implements ProductListItemViewModel.ProductListItemViewModelObserver, ProductListsViewModel.ProductListViewModelObserver {
 
     private static final String TAG = "ShoppingListsFragment";
-    private PagedList<ProductList> mProductLists;
 
     public static Fragment getInstance() {
         return new ShoppingListsFragment();
@@ -88,10 +88,9 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
         mListAdapter.mItemObserver = this;
         mListRecyclerView.setAdapter(mListAdapter);
 
-        mViewModel.getList(20).observe(this, new Observer<PagedList<ProductList>>() {
+        mViewModel.getList(20).observe(this, new Observer<PagedList<ProductListWithStatistics>>() {
             @Override
-            public void onChanged(@Nullable PagedList<ProductList> productLists) {
-                mProductLists = productLists;
+            public void onChanged(@Nullable PagedList<ProductListWithStatistics> productLists) {
                 mListAdapter.setList(productLists);
             }
         });
@@ -108,7 +107,7 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
 
     private void removeListItem(final ProductListItemViewModel itemViewModel, final int position) {
 
-        final ProductList listToRemove = itemViewModel.getProductsList();
+        final ProductListWithStatistics listToRemove = itemViewModel.getProductsList();
 //        mProductsLists.remove(position);
         Log.d(TAG, "list to remove " + listToRemove.getName());
 
@@ -168,7 +167,7 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
             });*/
         }
 
-        public void bind(ProductList productList) {
+        public void bind(ProductListWithStatistics productList) {
             Log.d(TAG, "bind productsList " + productList.getName());
 
             mBinding.getViewModel().setProductsList(productList);
@@ -176,7 +175,7 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
         }
     }
 
-    private class ProductsListAdapter extends PagedListAdapter<ProductList, ProductsListViewHolder> {
+    private class ProductsListAdapter extends PagedListAdapter<ProductListWithStatistics, ProductsListViewHolder> {
 
         private ProductListItemViewModel.ProductListItemViewModelObserver mItemObserver;
 
@@ -193,19 +192,19 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
 
         @Override
         public void onBindViewHolder(ProductsListViewHolder holder, int position) {
-            ProductList productList = getItem(position);
+            ProductListWithStatistics productList = getItem(position);
             holder.bind(productList);
         }
     }
 
-    private static final DiffCallback<ProductList> DIFF_CALLBACK = new DiffCallback<ProductList>() {
+    private static final DiffCallback<ProductListWithStatistics> DIFF_CALLBACK = new DiffCallback<ProductListWithStatistics>() {
         @Override
-        public boolean areItemsTheSame(@NonNull ProductList oldItem, @NonNull ProductList newItem) {
+        public boolean areItemsTheSame(@NonNull ProductListWithStatistics oldItem, @NonNull ProductListWithStatistics newItem) {
             return oldItem.getListID() == newItem.getListID();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull ProductList oldItem, @NonNull ProductList newItem) {
+        public boolean areContentsTheSame(@NonNull ProductListWithStatistics oldItem, @NonNull ProductListWithStatistics newItem) {
             return oldItem.equals(newItem);
         }
     };

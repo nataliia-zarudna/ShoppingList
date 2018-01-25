@@ -24,7 +24,7 @@ public interface ProductListDao {
             "           COUNT(DISTINCT to_buy_product.product_id) AS to_buy_products_count, " +
             "           COUNT(DISTINCT absent_product.product_id) AS absent_products_count, " +
             "           COUNT(DISTINCT bought_product.product_id) AS bought_products_count " +
-            "       FROM products_lists list " +
+            "       FROM product_lists list " +
             "           LEFT JOIN products to_buy_product " +
             "               ON to_buy_product.list_id = list.list_id " +
             "                   AND to_buy_product.status = " + Product.TO_BUY +
@@ -46,10 +46,13 @@ public interface ProductListDao {
     @Delete
     void delete(ProductList productList);
 
-    @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
+    @Query(value = "DELETE FROM product_lists WHERE list_id = :productListID")
+    void deleteByID(int productListID);
+
+    @Query(value = "SELECT * FROM product_lists WHERE list_id = :listID")
     ProductList findByIDSync(long listID);
 
-    @Query(value = "SELECT * FROM products_lists WHERE list_id = :listID")
+    @Query(value = "SELECT * FROM product_lists WHERE list_id = :listID")
     LiveData<ProductList> findByID(long listID);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.name")
@@ -72,10 +75,10 @@ public interface ProductListDao {
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByAssignedAndName(
             @ProductList.ProductListStatus int status);
 
-    @Query(value = "SELECT * FROM ProductList ORDER BY modified_at DESC")
+    @Query(value = "SELECT * FROM product_lists ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findAllSortByModifiedAtDesc();
 
-    @Query(value = "SELECT * FROM ProductList WHERE status = :status ORDER BY modified_at DESC")
+    @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findByStatusSortByModifiedAtDesc(@ProductList.ProductListStatus int status);
 
 }
