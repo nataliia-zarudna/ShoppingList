@@ -60,7 +60,7 @@ public class ShoppingListRepository {
         }.execute();
     }
 
-    private ProductList createProductsList() {
+    public ProductList createProductsList() {
         ProductList productList = new ProductList();
 
         String defaultName = mResourceResolver.getString(R.string.default_list_name);
@@ -68,9 +68,7 @@ public class ShoppingListRepository {
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_NAME, defaultName);
         productList.setName(defaultNameFromPrefs);
 
-        int defaultSorting = mSharedPreferences.getInt(
-                SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING, ProductList.SORT_LISTS_BY_NAME);
-        productList.setSorting(defaultSorting);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
 
         int selfUserID = mUserRepository.getSelfUserID();
         productList.setCreatedBy(selfUserID);
@@ -142,7 +140,7 @@ public class ShoppingListRepository {
         }
 
         LiveData<ProductList> productsList = mProductListDao.findByID(productListID);
-        return new ShoppingList(mProductListDao, productsList, productListID);
+        return new ShoppingList(mProductListDao, productListID, productsList);
     }
 
     public DataSource.Factory<Integer, ProductListWithStatistics> getLists(@ProductList.ProductListStatus int status,

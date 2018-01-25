@@ -27,10 +27,10 @@ public class ShoppingList implements Observer<ProductList> {
 
     private ProductListDao mProductListDao;
 
-    public ShoppingList(ProductListDao productListDao, LiveData<ProductList> productsList, int listID) {
+    public ShoppingList(ProductListDao productListDao, int listID, LiveData<ProductList> productsList) {
         mProductListDao = productListDao;
-        mProductsList = productsList;
         mListID = listID;
+        mProductsList = productsList;
     }
 
     public LiveData<ProductList> getListData() {
@@ -58,11 +58,11 @@ public class ShoppingList implements Observer<ProductList> {
         //mNotificationManager.sendNotification();
     }
 
-    public LiveData<Product> addProduct(@NonNull String name, String comment) {
+    /*public LiveData<Product> addProduct(@NonNull String name, String comment) {
         throw new UnsupportedOperationException("Not implemented yet");
-    }
+    }*/
 
-    public LiveData<Product> addProduct(@NonNull String name, double count, int unitID) {
+    public LiveData<Product> addProduct(@NonNull Product product) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

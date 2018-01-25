@@ -9,6 +9,7 @@ import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -28,7 +29,9 @@ public class ShoppingListTest {
 
     @Mock
     private Context mMockContext;
+    @Mock
     private ProductListDao mProductListDao;
+    @Mock
     private ShoppingListRepository mShoppingListRepository;
 
     @Mock
@@ -38,32 +41,36 @@ public class ShoppingListTest {
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(mProductListDao, productsListLiveData, MOCKED_PRODUCTS_LIST_ID);
-    }
-/*
-    @Test
-    public void removeList() {
-
-        mSubject.removeList();
-
-        verify(mProductsListDao).delete();
+        mSubject = new ShoppingList(mProductListDao, MOCKED_PRODUCTS_LIST_ID, productsListLiveData);
     }
 
     @Test
-    public void addProductWithComment() throws InterruptedException {
+    public void updateList() {
 
-        String productName = "Some product";
-        String productComment = "Something about product";
-        LiveData<Product> productLiveData = mShoppingList.addProduct(productName, productComment);
+        ProductList updatedList = new ProductList();
+        mSubject.updateProductList(updatedList);
 
-        Product product = TestUtils.getLiveDataValueSync(productLiveData);
+        verify(mProductListDao).update(updatedList);
+    }
+
+    /*@Test
+    public void addProductToListWithCustomSorting() throws InterruptedException {
+
+        Product product = new Product();
+        product.setName("Some product name");
+        mSubject.addProduct(product);
+
+        Product expectedProduct = new Product();
+        expectedProduct.setListID(mSubject.getListID());
+        expectedProduct.setName("Some product name");
+        expectedProduct.setOrder();
 
         assertEquals(product.getName(), productName);
         assertEquals(product.getComment(), productComment);
         assertEquals(product.getListID(), mShoppingList.getListID());
         assertEquals(product.getStatus(), Product.TO_BUY);
     }
-
+/*
     @Test(expected = ShoppingListException.class)
     public void exception_onAddProductWithComment_AndEmptyName() throws InterruptedException {
 

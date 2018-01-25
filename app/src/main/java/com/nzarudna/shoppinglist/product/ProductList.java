@@ -41,7 +41,7 @@ public class ProductList {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
-            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED})
+            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED, SORT_LISTS_BY_PRODUCT_ORDER})
     public @interface ProductListSorting {
     }
 
@@ -50,6 +50,7 @@ public class ProductList {
     public static final int SORT_LISTS_BY_CREATED_AT = 3;
     public static final int SORT_LISTS_BY_MODIFIED_AT = 4;
     public static final int SORT_LISTS_BY_ASSIGNED = 5;
+    public static final int SORT_LISTS_BY_PRODUCT_ORDER = 6;
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
@@ -73,6 +74,8 @@ public class ProductList {
     private Integer modifiedBy;
 
     private int status;
+
+    @ProductListSorting
     private int sorting;
 
     @ColumnInfo(name = "assigned_id")
@@ -171,7 +174,7 @@ public class ProductList {
         if (status != that.status) return false;
         if (sorting != that.sorting) return false;
         if (!name.equals(that.name)) return false;
-        if (!createdAt.equals(that.createdAt)) return false;
+        if (DateUtils.getTimeInSeconds(createdAt) != DateUtils.getTimeInSeconds(that.createdAt)) return false;
         if (!createdBy.equals(that.createdBy)) return false;
         if (modifiedAt != null ? !modifiedAt.equals(that.modifiedAt) : that.modifiedAt != null)
             return false;

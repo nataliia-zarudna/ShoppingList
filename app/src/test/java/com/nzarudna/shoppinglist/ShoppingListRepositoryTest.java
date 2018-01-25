@@ -42,7 +42,6 @@ public class ShoppingListRepositoryTest {
 
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
     private static final String MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES = "My own default List Name";
-    private static final int MOCKED_DEFAULT_LIST_SORTING_FROM_PREFERENCES = ProductList.SORT_LISTS_BY_ASSIGNED;
     private static final int MOCKED_SELF_USER_ID = 2;
 
     private ShoppingListRepository mSubject;
@@ -68,9 +67,6 @@ public class ShoppingListRepositoryTest {
         when(mSharedPreferences.getString(DEFAULT_PRODUCT_LIST_NAME, MOCKED_DEFAULT_LIST_NAME))
                 .thenReturn(MOCKED_DEFAULT_LIST_NAME);
 
-        when(mSharedPreferences.getInt(DEFAULT_PRODUCT_LIST_SORTING, ProductList.SORT_LISTS_BY_NAME))
-                .thenReturn(ProductList.SORT_LISTS_BY_NAME);
-
         when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
         mSubject = new ShoppingListRepository(mProductListDao, mProductDao, mUserRepository,
@@ -84,7 +80,7 @@ public class ShoppingListRepositoryTest {
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME);
-        expectedProductList.setSorting(ProductList.SORT_LISTS_BY_NAME);
+        expectedProductList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
@@ -109,14 +105,11 @@ public class ShoppingListRepositoryTest {
         when(mSharedPreferences.getString(DEFAULT_PRODUCT_LIST_NAME, MOCKED_DEFAULT_LIST_NAME))
                 .thenReturn(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
 
-        when(mSharedPreferences.getInt(DEFAULT_PRODUCT_LIST_SORTING, ProductList.SORT_LISTS_BY_NAME))
-                .thenReturn(MOCKED_DEFAULT_LIST_SORTING_FROM_PREFERENCES);
-
         final long mockListID = 33;
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
-        expectedProductList.setSorting(MOCKED_DEFAULT_LIST_SORTING_FROM_PREFERENCES);
+        expectedProductList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 

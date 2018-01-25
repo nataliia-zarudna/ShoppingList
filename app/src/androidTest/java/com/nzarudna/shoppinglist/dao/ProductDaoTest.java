@@ -107,7 +107,7 @@ public class ProductDaoTest {
     }
 
     @Test(expected = SQLiteConstraintException.class)
-    public void constrainedExceptionOnCreateWithNullName() throws InterruptedException {
+    public void constrainedException_OnCreateWith_NullName() throws InterruptedException {
 
         Product product = createProduct();
         product.setName(null);
@@ -116,10 +116,28 @@ public class ProductDaoTest {
     }
 
     @Test(expected = SQLiteConstraintException.class)
-    public void constrainedExceptionOnCreateWithInvalidListID() throws InterruptedException {
+    public void constrainedException_OnCreateWithInvalid_ListID() throws InterruptedException {
 
         Product product = createProduct();
         product.setListID(99);
+
+        mSubjectDao.insert(product);
+    }
+
+    @Test(expected = SQLiteConstraintException.class)
+    public void constrainedException_OnCreateWithInvalid_CategoryID() throws InterruptedException {
+
+        Product product = createProduct();
+        product.setCategoryID(99);
+
+        mSubjectDao.insert(product);
+    }
+
+    @Test(expected = SQLiteConstraintException.class)
+    public void constrainedException_OnCreateWithInvalid_UnitID() throws InterruptedException {
+
+        Product product = createProduct();
+        product.setUnitID(99);
 
         mSubjectDao.insert(product);
     }
@@ -242,6 +260,39 @@ public class ProductDaoTest {
 
         DataSource.Factory<Integer, Product> foundProductsDataSource =
                 mSubjectDao.findByListIDSortByStatusAndName(mProductsListID_1);
+        PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
+
+        TestUtils.assertEquals(expectedProducts, foundProducts);
+    }
+
+    @Test
+    public void findByListIDSortByProductOrder() throws InterruptedException {
+
+        List<Product> products = createProducts(5);
+        products.get(0).setListID(mProductsListID_2);
+
+        products.get(1).setListID(mProductsListID_1);
+        products.get(1).setOrder(4.5);
+
+        products.get(2).setListID(mProductsListID_1);
+        products.get(2).setOrder(0);
+
+        products.get(3).setListID(mProductsListID_1);
+        products.get(3).setOrder(1.2);
+
+        products.get(4).setListID(mProductsListID_1);
+        products.get(4).setOrder(4.05);
+
+        insertProducts(products);
+
+        List<Product> expectedProducts = new ArrayList<>();
+        expectedProducts.add(products.get(2));
+        expectedProducts.add(products.get(3));
+        expectedProducts.add(products.get(4));
+        expectedProducts.add(products.get(1));
+
+        DataSource.Factory<Integer, Product> foundProductsDataSource =
+                mSubjectDao.findByListIDSortByProductOrder(mProductsListID_1);
         PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);

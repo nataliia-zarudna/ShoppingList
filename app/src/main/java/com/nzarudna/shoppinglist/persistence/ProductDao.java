@@ -41,4 +41,7 @@ public interface ProductDao {
 
     @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY status, name")
     DataSource.Factory<Integer, Product> findByListIDSortByStatusAndName(int listID);
+
+    @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY `order`")
+    DataSource.Factory<Integer, Product> findByListIDSortByProductOrder(int listID);
 }
