@@ -8,34 +8,40 @@ import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
+import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import javax.inject.Inject;
 
 /**
  * Class that contains productsList object
  * and operates with it
  */
 
-public class ShoppingList implements Observer<ProductList> {
+public class ShoppingList {
 
     public static final String TAG = "ShoppingList";
 
-    private LiveData<ProductList> mProductsList;
     private int mListID;
 
-    private ProductListDao mProductListDao;
+    @Inject
+    public ProductListDao mProductListDao;
+    @Inject
+    public ProductTemplateDao mProductTemplateDao;
+    @Inject
+    public ProductDao mProductDao;
 
-    public ShoppingList(ProductListDao productListDao, int listID) {
-        mProductListDao = productListDao;
+    public ShoppingList(/*ProductListDao productListDao,*/ int listID) {
+        //mProductListDao = productListDao;
         mListID = listID;
-
-        mProductsList = productListDao.findByID(listID);
     }
 
     public LiveData<ProductList> getListData() {
-        return mProductsList;
+        return mProductListDao.findByID(mListID);
     }
 
     public int getListID() {
@@ -53,25 +59,41 @@ public class ShoppingList implements Observer<ProductList> {
         }.execute();
     }
 
-    @Override
-    public void onChanged(@Nullable ProductList productList) {
+    public void addProduct(@NonNull final Product product) {
 
-        //mNotificationManager.sendNotification();
+        product.setListID(mListID);
+
+        ProductList productList = mProductListDao.findByIDSync(mListID);
+        if (productList.getSorting() == ProductList.SORT_LISTS_BY_PRODUCT_ORDER) {
+
+            double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
+            product.setOrder(maxProductOrder + 10);
+
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductDao.insert(product);
+                return null;
+            }
+        }.execute();
+
     }
 
-    /*public LiveData<Product> addProduct(@NonNull String name, String comment) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }*/
-
-    public LiveData<Product> addProduct(@NonNull Product product) {
+    public void addProductFromTemplate(ProductTemplate template) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public LiveData<Product> addProductFromTemplate(ProductTemplate template) {
+    public void updateProduct(Product product) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public void removeProduct(LiveData<Product> product) {
+    public void moveProduct(Product product, Product productBefore, Product productAfter) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public void removeProduct(Product product) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

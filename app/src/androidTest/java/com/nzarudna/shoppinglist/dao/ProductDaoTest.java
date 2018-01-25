@@ -28,7 +28,9 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -138,6 +140,15 @@ public class ProductDaoTest {
 
         Product product = createProduct();
         product.setUnitID(99);
+
+        mSubjectDao.insert(product);
+    }
+
+    @Test(expected = SQLiteConstraintException.class)
+    public void constrainedException_OnCreateWithInvalid_TemplateID() throws InterruptedException {
+
+        Product product = createProduct();
+        product.setTemplateID(99);
 
         mSubjectDao.insert(product);
     }
@@ -296,6 +307,32 @@ public class ProductDaoTest {
         PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);
+    }
+
+    @Test
+    public void getMaxProductOrderByListID() throws InterruptedException {
+
+        List<Product> products = createProducts(5);
+        products.get(0).setListID(mProductsListID_2);
+
+        products.get(1).setListID(mProductsListID_1);
+        products.get(1).setOrder(4.5);
+
+        products.get(2).setListID(mProductsListID_1);
+        products.get(2).setOrder(0);
+
+        products.get(3).setListID(mProductsListID_1);
+        products.get(3).setOrder(1.2);
+
+        products.get(4).setListID(mProductsListID_1);
+        products.get(4).setOrder(4.05);
+
+        insertProducts(products);
+
+        double maxOrder = mSubjectDao.getMaxProductOrderByListID(mProductsListID_1);
+
+        //assertTrue(Math.abs(maxOrder - 4.5) < 0.0001);
+        assertEquals(Double.compare(maxOrder, 4.5), 0);
     }
 
     private Product createProduct() throws InterruptedException {

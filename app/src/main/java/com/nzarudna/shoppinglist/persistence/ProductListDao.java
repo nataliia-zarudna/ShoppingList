@@ -80,5 +80,4 @@ public interface ProductListDao {
 
     @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findByStatusSortByModifiedAtDesc(@ProductList.ProductListStatus int status);
-
 }

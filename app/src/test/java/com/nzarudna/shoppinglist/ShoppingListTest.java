@@ -3,9 +3,11 @@ package com.nzarudna.shoppinglist;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
+import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ProductList;
+import com.nzarudna.shoppinglist.product.ProductTemplate;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
@@ -19,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test methods on shopping list object
@@ -33,16 +36,18 @@ public class ShoppingListTest {
     @Mock
     private ProductListDao mProductListDao;
     @Mock
+    private ProductDao mProductDao;
+    @Mock
     private ShoppingListRepository mShoppingListRepository;
 
-    @Mock
-    private LiveData<ProductList> productsListLiveData;
     private ShoppingList mSubject;
 
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(mProductListDao, MOCKED_PRODUCTS_LIST_ID);
+        mSubject = new ShoppingList(MOCKED_PRODUCTS_LIST_ID);
+        mSubject.mProductListDao = mProductListDao;
+        mSubject.mProductDao = mProductDao;
     }
 
     @Test
@@ -55,54 +60,57 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void addProductToListWith_NotCustomSorting() throws InterruptedException {
+    public void addProductToListWith_NotCustomSorting() {
 
-        
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_NAME);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
 
         Product product = new Product();
         product.setName("Some product name");
+
         mSubject.addProduct(product);
 
         Product expectedProduct = new Product();
         expectedProduct.setListID(mSubject.getListID());
         expectedProduct.setName("Some product name");
-        expectedProduct.setOrder(0);
 
-        assertEquals(product.getName(), productName);
-        assertEquals(product.getComment(), productComment);
-        assertEquals(product.getListID(), mShoppingList.getListID());
-        assertEquals(product.getStatus(), Product.TO_BUY);
-    }
-/*
-    @Test(expected = ShoppingListException.class)
-    public void exception_onAddProductWithComment_AndEmptyName() throws InterruptedException {
-
-        String emptyName = "";
-        String productComment = "Something about product";
-        LiveData<Product> productLiveData = mShoppingList.addProduct(emptyName, productComment);
-
-        TestUtils.getLiveDataValueSync(productLiveData);
+        assertEquals(product, expectedProduct);
     }
 
     @Test
-    public void addProductWithUnits() throws InterruptedException {
+    public void addProductToListWith_CustomSorting() {
 
-        String productName = "Some product";
-        double productCount = 5.5;
-        int productUnitID = 1;
-        LiveData<Product> productLiveData = mShoppingList.addProduct(productName, productCount, productUnitID);
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
 
-        Product product = TestUtils.getLiveDataValueSync(productLiveData);
+        when(mProductDao.getMaxProductOrderByListID(MOCKED_PRODUCTS_LIST_ID)).thenReturn(7.81);
 
-        assertEquals(product.getName(), productName);
-        assertTrue(Math.abs(product.getCount() - productCount) < 0.001);
-        assertEquals(product.getUnitID(), productUnitID);
-        assertEquals(product.getListID(), mShoppingList.getListID());
-        assertEquals(product.getStatus(), Product.TO_BUY);
+        Product product = new Product();
+        product.setName("Some product name");
+
+        mSubject.addProduct(product);
+
+        Product expectedProduct = new Product();
+        expectedProduct.setListID(mSubject.getListID());
+        expectedProduct.setName("Some product name");
+        expectedProduct.setOrder(17.81);
+
+        assertEquals(product, expectedProduct);
     }
-*/
+
+    /*@Test
+    public void addProductFromTemplate() {
+
+        ProductTemplate template = new ProductTemplate();
+        template.setTemplateID(10);
+        template.setCategoryID(20);
+        template.setName("Template name");
+        when()
 
 
-
-
+    }*/
 }

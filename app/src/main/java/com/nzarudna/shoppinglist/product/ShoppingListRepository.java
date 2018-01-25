@@ -10,6 +10,7 @@ import android.util.Log;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
+import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.user.UserRepository;
@@ -139,7 +140,9 @@ public class ShoppingListRepository {
             return null;
         }
 
-        return new ShoppingList(mProductListDao, productListID);
+        ShoppingList shoppingList = new ShoppingList(productListID);
+        ShoppingListApplication.getAppComponent().inject(shoppingList);
+        return shoppingList;
     }
 
     public DataSource.Factory<Integer, ProductListWithStatistics> getLists(@ProductList.ProductListStatus int status,

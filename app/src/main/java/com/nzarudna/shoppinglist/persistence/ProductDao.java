@@ -44,4 +44,7 @@ public interface ProductDao {
 
     @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY `order`")
     DataSource.Factory<Integer, Product> findByListIDSortByProductOrder(int listID);
+
+    @Query(value = "SELECT max(`order`) FROM products WHERE list_id = :listID")
+    double getMaxProductOrderByListID(int listID);
 }

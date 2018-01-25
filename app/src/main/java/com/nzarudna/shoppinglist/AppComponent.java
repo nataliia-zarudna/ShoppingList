@@ -3,6 +3,7 @@ package com.nzarudna.shoppinglist;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
 import com.nzarudna.shoppinglist.ui.editshoppinglist.EditProductListViewModel;
@@ -28,4 +29,6 @@ public interface AppComponent {
     void inject(ProductListsViewModel viewModel);
 
     void inject(EditProductListViewModel viewModel);
+
+    void inject(ShoppingList shoppingList);
 }

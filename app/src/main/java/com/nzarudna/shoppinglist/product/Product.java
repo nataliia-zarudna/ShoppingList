@@ -14,16 +14,22 @@ import java.lang.annotation.RetentionPolicy;
  * Product item user can add to his shopping list
  */
 @Entity(tableName = "products",
-        foreignKeys = {@ForeignKey(entity = Category.class,
-                parentColumns = "category_id",
-                childColumns = "category_id"),
+        foreignKeys = {
+                @ForeignKey(entity = Category.class,
+                        parentColumns = "category_id",
+                        childColumns = "category_id"),
                 @ForeignKey(entity = ProductList.class,
-                        parentColumns = "list_id", childColumns = "list_id")})
+                        parentColumns = "list_id",
+                        childColumns = "list_id"),
+                @ForeignKey(entity = ProductTemplate.class,
+                        parentColumns = "template_id",
+                        childColumns = "template_id")})
 public class Product implements Cloneable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TO_BUY, ABSENT, BOUGHT})
-    public @interface ProductStatus {}
+    public @interface ProductStatus {
+    }
 
     public static final int TO_BUY = 1;
     public static final int ABSENT = 2;
@@ -52,6 +58,9 @@ public class Product implements Cloneable {
     private int status;
 
     private String comment;
+
+    @ColumnInfo(name = "template_id")
+    private Integer templateID;
 
     private double order;
 
@@ -124,6 +133,14 @@ public class Product implements Cloneable {
         this.comment = comment;
     }
 
+    public Integer getTemplateID() {
+        return templateID;
+    }
+
+    public void setTemplateID(Integer templateID) {
+        this.templateID = templateID;
+    }
+
     public double getOrder() {
         return order;
     }
@@ -154,6 +171,7 @@ public class Product implements Cloneable {
         if (status != product.status) return false;
         if (Double.compare(product.order, order) != 0) return false;
         if (!name.equals(product.name)) return false;
+        if (templateID != product.templateID) return false;
         if (categoryID != null ? !categoryID.equals(product.categoryID) : product.categoryID != null)
             return false;
         return comment != null ? comment.equals(product.comment) : product.comment == null;
@@ -168,6 +186,7 @@ public class Product implements Cloneable {
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
         result = 31 * result + listID;
         result = 31 * result + unitID;
+        result = 31 * result + templateID;
         temp = Double.doubleToLongBits(count);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + status;
@@ -185,6 +204,7 @@ public class Product implements Cloneable {
                 ", categoryID=" + categoryID +
                 ", listID=" + listID +
                 ", unitID=" + unitID +
+                ", templateID=" + templateID +
                 ", count=" + count +
                 ", status=" + status +
                 ", comment='" + comment + '\'' +

@@ -26,6 +26,9 @@ public interface ProductTemplateDao {
     void delete(ProductTemplate template);
 
     @Query(value = "SELECT * FROM product_templates WHERE template_id = :templateID")
+    ProductTemplate findByIDSync(int templateID);
+
+    @Query(value = "SELECT * FROM product_templates WHERE template_id = :templateID")
     LiveData<ProductTemplate> findByID(int templateID);
 
     @Query(value = "SELECT * FROM product_templates ORDER BY name")
