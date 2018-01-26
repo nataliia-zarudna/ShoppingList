@@ -8,6 +8,7 @@ import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ProductTemplate;
+import com.nzarudna.shoppinglist.product.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
@@ -20,6 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +40,8 @@ public class ShoppingListTest {
     @Mock
     private ProductDao mProductDao;
     @Mock
+    private ProductTemplateRepository mProductTemplateRepository;
+    @Mock
     private ShoppingListRepository mShoppingListRepository;
 
     private ShoppingList mSubject;
@@ -48,6 +52,7 @@ public class ShoppingListTest {
         mSubject = new ShoppingList(MOCKED_PRODUCTS_LIST_ID);
         mSubject.mProductListDao = mProductListDao;
         mSubject.mProductDao = mProductDao;
+        mSubject.mProductTemplateRepository = mProductTemplateRepository;
     }
 
     @Test
@@ -76,7 +81,8 @@ public class ShoppingListTest {
         expectedProduct.setListID(mSubject.getListID());
         expectedProduct.setName("Some product name");
 
-        assertEquals(product, expectedProduct);
+        verify(mProductDao).insert(expectedProduct);
+        verify(mProductTemplateRepository).createTemplateFromProduct(expectedProduct);
     }
 
     @Test
@@ -99,18 +105,126 @@ public class ShoppingListTest {
         expectedProduct.setName("Some product name");
         expectedProduct.setOrder(17.81);
 
-        assertEquals(product, expectedProduct);
+        verify(mProductDao).insert(expectedProduct);
+        verify(mProductTemplateRepository).createTemplateFromProduct(expectedProduct);
     }
 
-    /*@Test
-    public void addProductFromTemplate() {
+    @Test
+    public void addProductFromTemplateWith_NotCustomSorting() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
 
         ProductTemplate template = new ProductTemplate();
         template.setTemplateID(10);
         template.setCategoryID(20);
         template.setName("Template name");
-        when()
 
+        mSubject.addProductFromTemplate(template);
 
-    }*/
+        Product expectedProduct = new Product();
+        expectedProduct.setName("Template name");
+        expectedProduct.setListID(MOCKED_PRODUCTS_LIST_ID);
+        expectedProduct.setCategoryID(20);
+        expectedProduct.setTemplateID(10);
+
+        verify(mProductDao).insert(expectedProduct);
+        verify(mProductTemplateRepository, never()).createTemplateFromProduct(expectedProduct);
+    }
+
+    @Test
+    public void addProductFromTemplateWith_CustomSorting() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
+
+        when(mProductDao.getMaxProductOrderByListID(MOCKED_PRODUCTS_LIST_ID)).thenReturn(2.);
+
+        ProductTemplate template = new ProductTemplate();
+        template.setTemplateID(10);
+        template.setCategoryID(20);
+        template.setName("Template name");
+
+        mSubject.addProductFromTemplate(template);
+
+        Product expectedProduct = new Product();
+        expectedProduct.setName("Template name");
+        expectedProduct.setListID(MOCKED_PRODUCTS_LIST_ID);
+        expectedProduct.setCategoryID(20);
+        expectedProduct.setTemplateID(10);
+        expectedProduct.setOrder(12);
+
+        verify(mProductDao).insert(expectedProduct);
+        verify(mProductTemplateRepository, never()).createTemplateFromProduct(expectedProduct);
+    }
+
+    @Test
+    public void updateProductName() {
+
+        int productID = 88;
+        Product product = new Product();
+        product.setProductID(productID);
+        product.setTemplateID(4);
+        when(mProductDao.findByIDSync(productID)).thenReturn(product);
+
+        mSubject.updateProduct(product);
+
+        verify(mProductDao).update(product);
+    }
+
+    @Test
+    public void updateProductName_testClearTemplateID() {
+
+        int productID = 88;
+
+        Product oldProduct = new Product();
+        oldProduct.setProductID(productID);
+        oldProduct.setName("Old name");
+        oldProduct.setTemplateID(5);
+        when(mProductDao.findByIDSync(productID)).thenReturn(oldProduct);
+
+        Product productWithNewName = new Product();
+        productWithNewName.setProductID(productID);
+        productWithNewName.setName("New name");
+        productWithNewName.setTemplateID(5);
+
+        mSubject.updateProduct(productWithNewName);
+
+        Product expectedProduct = new Product();
+        productWithNewName.setProductID(productID);
+        productWithNewName.setName("New name");
+        productWithNewName.setTemplateID(0);
+
+        verify(mProductDao).update(expectedProduct);
+    }
+
+    @Test
+    public void updateCategoryID_testClearTemplateID() {
+
+        int productID = 88;
+
+        Product oldProduct = new Product();
+        oldProduct.setProductID(productID);
+        oldProduct.setCategoryID(2);
+        oldProduct.setTemplateID(5);
+        when(mProductDao.findByIDSync(productID)).thenReturn(oldProduct);
+
+        Product productWithNewName = new Product();
+        productWithNewName.setProductID(productID);
+        productWithNewName.setCategoryID(8);
+        productWithNewName.setTemplateID(5);
+
+        mSubject.updateProduct(productWithNewName);
+
+        Product expectedProduct = new Product();
+        productWithNewName.setProductID(productID);
+        productWithNewName.setCategoryID(8);
+        productWithNewName.setTemplateID(0);
+
+        verify(mProductDao).update(expectedProduct);
+    }
 }

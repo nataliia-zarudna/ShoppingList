@@ -29,6 +29,8 @@ public class ShoppingList {
     private int mListID;
 
     @Inject
+    public ProductTemplateRepository mProductTemplateRepository;
+    @Inject
     public ProductListDao mProductListDao;
     @Inject
     public ProductTemplateDao mProductTemplateDao;
@@ -60,15 +62,27 @@ public class ShoppingList {
     }
 
     public void addProduct(@NonNull final Product product) {
+        insertProduct(product);
+        mProductTemplateRepository.createTemplateFromProduct(product);
+    }
 
+    public void addProductFromTemplate(ProductTemplate template) {
+
+        Product product = new Product();
+        product.setName(template.getName());
+        product.setCategoryID(template.getCategoryID());
+        product.setTemplateID(template.getTemplateID());
+
+        insertProduct(product);
+    }
+
+    private void insertProduct(final Product product) {
         product.setListID(mListID);
 
         ProductList productList = mProductListDao.findByIDSync(mListID);
         if (productList.getSorting() == ProductList.SORT_LISTS_BY_PRODUCT_ORDER) {
-
             double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
             product.setOrder(maxProductOrder + 10);
-
         }
 
         new AsyncTask<Void, Void, Void>() {
@@ -78,11 +92,6 @@ public class ShoppingList {
                 return null;
             }
         }.execute();
-
-    }
-
-    public void addProductFromTemplate(ProductTemplate template) {
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public void updateProduct(Product product) {

@@ -3,6 +3,7 @@ package com.nzarudna.shoppinglist;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.product.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
@@ -25,6 +26,8 @@ public interface AppComponent {
     SharedPreferences getSharedPreferences();
 
     ShoppingListRepository getShoppingListRepository();
+
+    ProductTemplateRepository getProductTemplateRepository();
 
     void inject(ProductListsViewModel viewModel);
 
