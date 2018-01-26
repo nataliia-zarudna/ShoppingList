@@ -331,8 +331,47 @@ public class ProductDaoTest {
 
         double maxOrder = mSubjectDao.getMaxProductOrderByListID(mProductsListID_1);
 
-        //assertTrue(Math.abs(maxOrder - 4.5) < 0.0001);
         assertEquals(Double.compare(maxOrder, 4.5), 0);
+    }
+
+    @Test
+    public void setOrderToAllProductsInList() {
+
+        int listID = 2;
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 2");
+        product1.setListID(listID);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 1");
+        product2.setListID(listID);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 4");
+        product3.setListID(listID);
+        products.add(product3);
+
+        Product product4 = new Product();
+        product4.setName("Product 3");
+        product4.setListID(listID);
+        products.add(product4);
+
+        insertProducts(products);
+
+        mSubjectDao.updateProductOrdersByListIDSortByName(listID);
+
+        List<Product> actualList = mSubjectDao.findByListIDSync(listID);
+
+        product2.setOrder(0);
+        product1.setOrder(10);
+        product4.setOrder(20);
+        product3.setOrder(30);
+
+        TestUtils.assertEquals(actualList, products);
     }
 
     private Product createProduct() throws InterruptedException {

@@ -18,6 +18,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +68,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void addProductToListWith_NotCustomSorting() {
+    public void addProductToList_withNotCustomSorting() {
 
         ProductList productList = new ProductList();
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -86,7 +89,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void addProductToListWith_CustomSorting() {
+    public void addProductToList_withCustomSorting() {
 
         ProductList productList = new ProductList();
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -110,7 +113,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void addProductFromTemplateWith_NotCustomSorting() {
+    public void addProductFromTemplate_withNotCustomSorting() {
 
         ProductList productList = new ProductList();
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -135,7 +138,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void addProductFromTemplateWith_CustomSorting() {
+    public void addProductFromTemplate_withCustomSorting() {
 
         ProductList productList = new ProductList();
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -163,10 +166,11 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void updateProductName() {
+    public void updateProduct() {
 
         int productID = 88;
         Product product = new Product();
+        product.setName("Some name");
         product.setProductID(productID);
         product.setTemplateID(4);
         when(mProductDao.findByIDSync(productID)).thenReturn(product);
@@ -195,9 +199,9 @@ public class ShoppingListTest {
         mSubject.updateProduct(productWithNewName);
 
         Product expectedProduct = new Product();
-        productWithNewName.setProductID(productID);
-        productWithNewName.setName("New name");
-        productWithNewName.setTemplateID(0);
+        expectedProduct.setProductID(productID);
+        expectedProduct.setName("New name");
+        expectedProduct.setTemplateID(0);
 
         verify(mProductDao).update(expectedProduct);
     }
@@ -208,12 +212,14 @@ public class ShoppingListTest {
         int productID = 88;
 
         Product oldProduct = new Product();
+        oldProduct.setName("Some name");
         oldProduct.setProductID(productID);
         oldProduct.setCategoryID(2);
         oldProduct.setTemplateID(5);
         when(mProductDao.findByIDSync(productID)).thenReturn(oldProduct);
 
         Product productWithNewName = new Product();
+        productWithNewName.setName("Some name");
         productWithNewName.setProductID(productID);
         productWithNewName.setCategoryID(8);
         productWithNewName.setTemplateID(5);
@@ -221,10 +227,145 @@ public class ShoppingListTest {
         mSubject.updateProduct(productWithNewName);
 
         Product expectedProduct = new Product();
-        productWithNewName.setProductID(productID);
-        productWithNewName.setCategoryID(8);
-        productWithNewName.setTemplateID(0);
+        expectedProduct.setName("Some name");
+        expectedProduct.setProductID(productID);
+        expectedProduct.setCategoryID(8);
+        expectedProduct.setTemplateID(0);
 
         verify(mProductDao).update(expectedProduct);
+    }
+
+    @Test
+    public void moveProduct_insideList_WithCustomOrder() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 1");
+        product1.setOrder(4.1);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 2");
+        product2.setOrder(2);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 3");
+        product3.setOrder(8.7);
+        products.add(product3);
+
+        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
+
+        mSubject.moveProduct(product3, product2, product1);
+
+        product3.setOrder((8.7 - 4.1) / 2);
+
+        verify(mProductDao).update(product3);
+    }
+
+    @Test
+    public void moveProduct_toListStart_WithCustomOrder() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 1");
+        product1.setOrder(4.1);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 2");
+        product2.setOrder(2);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 3");
+        product3.setOrder(8.7);
+        products.add(product3);
+
+        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
+
+        mSubject.moveProduct(product1, product2, null);
+
+        product1.setOrder(2 - 10);
+
+        verify(mProductDao).update(product3);
+    }
+
+    @Test
+    public void moveProduct_toListEnd_WithCustomOrder() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 1");
+        product1.setOrder(4.1);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 2");
+        product2.setOrder(2);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 3");
+        product3.setOrder(8.7);
+        products.add(product3);
+
+        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
+
+        mSubject.moveProduct(product2, null, product3);
+
+        product2.setOrder(8.7 + 10);
+
+        verify(mProductDao).update(product3);
+    }
+
+    @Test
+    public void moveProduct_insideList_WithOrderByName() {
+
+        ProductList productList = new ProductList();
+        productList.setListID(MOCKED_PRODUCTS_LIST_ID);
+        productList.setSorting(ProductList.SORT_LISTS_BY_NAME);
+        when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(productList);
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 2");
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 1");
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 4");
+        products.add(product3);
+
+        Product product4 = new Product();
+        product4.setName("Product 3");
+        products.add(product4);
+
+        when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
+
+        mSubject.moveProduct(product3, product2, product1);
+
+        
+
+
+        verify(mProductDao).update(product3);
     }
 }

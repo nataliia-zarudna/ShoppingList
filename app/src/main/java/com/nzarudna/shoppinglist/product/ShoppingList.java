@@ -94,8 +94,22 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void updateProduct(Product product) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void updateProduct(@NonNull final Product product) {
+
+        Product oldProduct = mProductDao.findByIDSync(product.getProductID());
+        if (!oldProduct.getName().equals(product.getName())
+                || oldProduct.getCategoryID() != product.getCategoryID()) {
+            product.setTemplateID(0);
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mProductDao.update(product);
+                return null;
+            }
+        }.execute();
     }
 
     public void moveProduct(Product product, Product productBefore, Product productAfter) {

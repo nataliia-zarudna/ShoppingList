@@ -50,4 +50,16 @@ public interface ProductDao {
 
     @Query(value = "SELECT max(`order`) FROM products WHERE list_id = :listID")
     double getMaxProductOrderByListID(int listID);
+
+    @Query(value = "UPDATE products " +
+            "       SET `order` = (" +
+            "           SELECT (SELECT count(*)" +
+            "                   FROM products" +
+            "                   WHERE name < product.name" +
+            "                       AND list_id = :listID)" +
+            "           FROM products product" +
+            "           WHERE products.product_id = product.product_id" +
+            "               AND list_id = :listID" +
+            "           ORDER BY name) * 10")
+    void updateProductOrdersByListIDSortByName(int listID);
 }
