@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.nzarudna.shoppinglist.SharedPreferencesConstants.*;
+import static com.nzarudna.shoppinglist.product.ShoppingListRepository.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -80,7 +81,7 @@ public class ShoppingListRepositoryTest {
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME);
-        expectedProductList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
@@ -109,7 +110,7 @@ public class ShoppingListRepositoryTest {
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
-        expectedProductList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
@@ -135,7 +136,7 @@ public class ShoppingListRepositoryTest {
         ProductList etalonList = new ProductList();
         etalonList.setListID(etalonListID);
         etalonList.setName("Some list name");
-        etalonList.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        etalonList.setSorting(SORT_LISTS_BY_CREATED_AT);
         etalonList.setStatus(ProductList.STATUS_ARCHIVED);
         when(mProductListDao.findByIDSync(etalonListID)).thenReturn(etalonList);
 
@@ -144,7 +145,7 @@ public class ShoppingListRepositoryTest {
         expectedList.setName(etalonList.getName());
         expectedList.setCreatedAt(new Date());
         expectedList.setCreatedBy(MOCKED_SELF_USER_ID);
-        expectedList.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        expectedList.setSorting(SORT_LISTS_BY_CREATED_AT);
         expectedList.setStatus(ProductList.STATUS_ACTIVE);
         when(mProductListDao.insert(expectedList)).thenReturn(mockNewListID);
 
@@ -244,7 +245,7 @@ public class ShoppingListRepositoryTest {
     public void getLists_testNull_onNonexistentStatus() throws ShoppingListException {
 
         DataSource.Factory<Integer, ProductListWithStatistics> lists =
-                mSubject.getLists(99, ProductList.SORT_LISTS_BY_NAME);
+                mSubject.getLists(99, SORT_LISTS_BY_NAME);
 
         assertNull(lists);
     }
@@ -258,7 +259,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findActiveSortByName() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_NAME);
+        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByName(ProductList.STATUS_ACTIVE);
     }
@@ -266,7 +267,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findActiveSortByCreatedAtDesc() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_CREATED_AT);
+        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_AT);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
     }
@@ -274,7 +275,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findActiveSortByCreatedByAndName() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_CREATED_BY);
+        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_BY);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
     }
@@ -282,7 +283,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findActiveSortByModifiedAtDesc() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_MODIFIED_AT);
+        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_MODIFIED_AT);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
     }
@@ -290,7 +291,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findArchivedSortByModifiedAtDesc() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ARCHIVED, ProductList.SORT_LISTS_BY_MODIFIED_AT);
+        mSubject.getLists(ProductList.STATUS_ARCHIVED, SORT_LISTS_BY_MODIFIED_AT);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ARCHIVED);
     }
@@ -298,7 +299,7 @@ public class ShoppingListRepositoryTest {
     @Test
     public void findActiveSortByAssignedAndName() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_ASSIGNED);
+        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
     }
