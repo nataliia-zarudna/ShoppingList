@@ -80,7 +80,7 @@ public class ShoppingList {
         product.setListID(mListID);
 
         ProductList productList = mProductListDao.findByIDSync(mListID);
-        if (productList.getSorting() == ProductList.SORT_LISTS_BY_PRODUCT_ORDER) {
+        if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
             double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
             product.setOrder(maxProductOrder + 10);
         }
@@ -113,24 +113,57 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void moveProduct(Product product, Product productBefore, Product productAfter) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void moveProduct(Product product, Product productAfter, Product productBefore) throws ShoppingListException {
+        if (productAfter == null && productBefore == null) {
+            throw new ShoppingListException("Either productAfter or productBefore must not be null");
+        }
+
+        new AsyncTask<Product, Void, Void>() {
+            @Override
+            protected Void doInBackground(Product... products) {
+                Product product = products[0];
+                Product productAfter = products[1];
+                Product productBefore = products[2];
+
+                ProductList productList = mProductListDao.findByIDSync(mListID);
+                boolean resortPerformed = false;
+                if (productList.getSorting() != ProductList.SORT_PRODUCTS_BY_ORDER) {
+
+                    if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_NAME) {
+                        mProductDao.updateProductOrdersByListIDSortByName(mListID);
+                    } else {
+                        mProductDao.updateProductOrdersByListIDSortByStatusAndName(mListID);
+                    }
+                    productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+                    mProductListDao.update(productList);
+                }
+
+                double newProductOrder;
+                if (productBefore == null) {
+                    newProductOrder = mProductDao.getMinProductOrderByListID(mListID) - 10;
+                } else if (productAfter == null) {
+                    newProductOrder = mProductDao.getMaxProductOrderByListID(mListID) + 10;
+                } else {
+                    if (resortPerformed) {
+                        productAfter = mProductDao.findByIDSync(productAfter.getProductID());
+                        productBefore = mProductDao.findByIDSync(productBefore.getProductID());
+                    }
+
+                    newProductOrder = (productAfter.getOrder() - productBefore.getOrder()) / 2;
+                }
+                product.setOrder(newProductOrder);
+                mProductDao.update(product);
+
+                return null;
+            }
+        }.execute(product, productAfter, productBefore);
     }
 
     public void removeProduct(Product product) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public LiveData<PagedList<Product>> getProducts(@ProducstsSorting int sorting) {
+    public LiveData<PagedList<Product>> getProducts(@ProductList.ProductSorting int sorting) {
         throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    public static final int SORT_PRODUCTS_BY_NAME = 1;
-    public static final int SORT_PRODUCTS_BY_CATEGORY = 2;
-    public static final int SORT_PRODUCTS_BY_STATUS = 3;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SORT_PRODUCTS_BY_NAME, SORT_PRODUCTS_BY_CATEGORY, SORT_PRODUCTS_BY_STATUS})
-    public @interface ProducstsSorting {
     }
 }

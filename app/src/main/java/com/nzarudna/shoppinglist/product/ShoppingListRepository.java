@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -15,6 +16,8 @@ import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.user.UserRepository;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,7 +72,7 @@ public class ShoppingListRepository {
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_NAME, defaultName);
         productList.setName(defaultNameFromPrefs);
 
-        productList.setSorting(ProductList.SORT_LISTS_BY_PRODUCT_ORDER);
+        productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         int selfUserID = mUserRepository.getSelfUserID();
         productList.setCreatedBy(selfUserID);
@@ -146,25 +149,38 @@ public class ShoppingListRepository {
     }
 
     public DataSource.Factory<Integer, ProductListWithStatistics> getLists(@ProductList.ProductListStatus int status,
-                                                                           @ProductList.ProductListSorting int sorting)
+                                                                           @ProductListSorting int sorting)
             throws ShoppingListException {
 
         switch (sorting) {
-            case ProductList.SORT_LISTS_BY_NAME:
+            case SORT_LISTS_BY_NAME:
                 return mProductListDao.findWithStaticticsByStatusSortByName(status);
-            case ProductList.SORT_LISTS_BY_CREATED_AT:
+            case SORT_LISTS_BY_CREATED_AT:
                 return mProductListDao.findWithStaticticsByStatusSortByCreatedAtDesc(status);
-            case ProductList.SORT_LISTS_BY_CREATED_BY:
+            case SORT_LISTS_BY_CREATED_BY:
                 return mProductListDao.findWithStaticticsByStatusSortByCreatedByAndName(status);
-            case ProductList.SORT_LISTS_BY_ASSIGNED:
+            case SORT_LISTS_BY_ASSIGNED:
                 return mProductListDao.findWithStaticticsByStatusSortByAssignedAndName(status);
-            case ProductList.SORT_LISTS_BY_MODIFIED_AT:
+            case SORT_LISTS_BY_MODIFIED_AT:
                 return mProductListDao.findWithStaticticsByStatusSortByModifiedAtDesc(status);
 
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);
         }
     }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
+            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED, SORT_LISTS_BY_PRODUCT_ORDER})
+    public @interface ProductListSorting {
+    }
+
+    public static final int SORT_LISTS_BY_NAME = 1;
+    public static final int SORT_LISTS_BY_CREATED_BY = 2;
+    public static final int SORT_LISTS_BY_CREATED_AT = 3;
+    public static final int SORT_LISTS_BY_MODIFIED_AT = 4;
+    public static final int SORT_LISTS_BY_ASSIGNED = 5;
+    public static final int SORT_LISTS_BY_PRODUCT_ORDER = 6;
 
     public interface OnProductListCreateListener {
         void onCreate(int productListID);

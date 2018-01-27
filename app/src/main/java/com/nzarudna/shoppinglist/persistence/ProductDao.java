@@ -39,8 +39,8 @@ public interface ProductDao {
     @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY name")
     DataSource.Factory<Integer, Product> findByListIDSortByName(int listID);
 
-    @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY category_id, name")
-    DataSource.Factory<Integer, Product> findByListIDSortByCategoryIDAndName(int listID);
+    //@Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY category_id, name")
+    //DataSource.Factory<Integer, Product> findByListIDSortByCategoryIDAndName(int listID);
 
     @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY status, name")
     DataSource.Factory<Integer, Product> findByListIDSortByStatusAndName(int listID);
@@ -50,6 +50,9 @@ public interface ProductDao {
 
     @Query(value = "SELECT max(`order`) FROM products WHERE list_id = :listID")
     double getMaxProductOrderByListID(int listID);
+
+    @Query(value = "SELECT min(`order`) FROM products WHERE list_id = :listID")
+    double getMinProductOrderByListID(int listID);
 
     @Query(value = "UPDATE products " +
             "       SET `order` = (" +
@@ -62,4 +65,17 @@ public interface ProductDao {
             "               AND list_id = :listID" +
             "           ORDER BY name) * 10")
     void updateProductOrdersByListIDSortByName(int listID);
+
+    @Query(value = "UPDATE products " +
+            "       SET `order` = (" +
+            "           SELECT (SELECT count(*)" +
+            "                   FROM products" +
+            "                   WHERE status < product.status" +
+            "                       OR (status = product.status AND name < product.name)" +
+            "                       AND list_id = :listID)" +
+            "           FROM products product" +
+            "           WHERE products.product_id = product.product_id" +
+            "               AND list_id = :listID" +
+            "           ORDER BY status, name) * 10")
+    void updateProductOrdersByListIDSortByStatusAndName(int listID);
 }

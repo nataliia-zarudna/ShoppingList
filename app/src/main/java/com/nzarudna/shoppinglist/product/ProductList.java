@@ -40,17 +40,13 @@ public class ProductList {
     public static final int STATUS_ARCHIVED = 2;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
-            SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED, SORT_LISTS_BY_PRODUCT_ORDER})
-    public @interface ProductListSorting {
+    @IntDef({SORT_PRODUCTS_BY_NAME, SORT_PRODUCTS_BY_STATUS, SORT_PRODUCTS_BY_ORDER})
+    public @interface ProductSorting {
     }
 
-    public static final int SORT_LISTS_BY_NAME = 1;
-    public static final int SORT_LISTS_BY_CREATED_BY = 2;
-    public static final int SORT_LISTS_BY_CREATED_AT = 3;
-    public static final int SORT_LISTS_BY_MODIFIED_AT = 4;
-    public static final int SORT_LISTS_BY_ASSIGNED = 5;
-    public static final int SORT_LISTS_BY_PRODUCT_ORDER = 6;
+    public static final int SORT_PRODUCTS_BY_NAME = 1;
+    public static final int SORT_PRODUCTS_BY_STATUS = 2;
+    public static final int SORT_PRODUCTS_BY_ORDER = 3;
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "list_id")
@@ -75,7 +71,7 @@ public class ProductList {
 
     private int status;
 
-    @ProductListSorting
+    @ProductSorting
     private int sorting;
 
     @ColumnInfo(name = "is_grouped_view")
@@ -149,12 +145,12 @@ public class ProductList {
         this.status = status;
     }
 
-    @ProductListSorting
+    @ProductSorting
     public int getSorting() {
         return sorting;
     }
 
-    public void setSorting(@ProductListSorting int sorting) {
+    public void setSorting(@ProductSorting int sorting) {
         this.sorting = sorting;
     }
 

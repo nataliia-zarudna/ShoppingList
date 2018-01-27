@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.nzarudna.shoppinglist.product.ShoppingListRepository.SORT_LISTS_BY_CREATED_AT;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
@@ -88,7 +89,7 @@ public class ProductListDaoTest {
         list.setModifiedAt(new Date());
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
-        list.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        list.setSorting(SORT_LISTS_BY_CREATED_AT);
         list.setIsGroupedView(true);
 
         int listID = (int) mSubjectDao.insert(list);
@@ -135,7 +136,7 @@ public class ProductListDaoTest {
         list.setModifiedAt(new Date());
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
-        list.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        list.setSorting(SORT_LISTS_BY_CREATED_AT);
         list.setIsGroupedView(true);
 
         int listID = (int) mSubjectDao.insert(list);

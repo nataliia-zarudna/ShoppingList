@@ -14,6 +14,8 @@ import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 import javax.inject.Inject;
 
+import static com.nzarudna.shoppinglist.product.ShoppingListRepository.SORT_LISTS_BY_NAME;
+
 /**
  * Created by Nataliia on 19.01.2018.
  */
@@ -32,7 +34,7 @@ public class ProductListsViewModel extends ViewModel {
     public LiveData<PagedList<ProductListWithStatistics>> getList(int pageSize) {
         try {
             DataSource.Factory<Integer, ProductListWithStatistics> listFactory
-                    = mShoppingListRepository.getLists(ProductList.STATUS_ACTIVE, ProductList.SORT_LISTS_BY_NAME);
+                    = mShoppingListRepository.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
 
             return new LivePagedListBuilder<Integer, ProductListWithStatistics>(listFactory, pageSize).build();
 

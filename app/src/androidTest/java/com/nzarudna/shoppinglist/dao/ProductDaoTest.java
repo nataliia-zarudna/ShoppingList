@@ -203,7 +203,7 @@ public class ProductDaoTest {
         TestUtils.assertEquals(expectedProducts, foundProducts);
     }
 
-    @Test
+    /*@Test
     public void findByListIDSortByCategoryIDAndName() throws InterruptedException {
 
         List<Product> products = createProducts(5);
@@ -237,7 +237,7 @@ public class ProductDaoTest {
         PagedList<Product> foundProducts = TestUtils.getPagedListSync(foundProductsDataSource);
 
         TestUtils.assertEquals(expectedProducts, foundProducts);
-    }
+    }*/
 
     @Test
     public void findByListIDSortByStatusAndName() throws InterruptedException {
@@ -335,7 +335,32 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void setOrderToAllProductsInList() {
+    public void getMinProductOrderByListID() throws InterruptedException {
+
+        List<Product> products = createProducts(5);
+        products.get(0).setListID(mProductsListID_2);
+
+        products.get(1).setListID(mProductsListID_1);
+        products.get(1).setOrder(4.5);
+
+        products.get(2).setListID(mProductsListID_1);
+        products.get(2).setOrder(0.2);
+
+        products.get(3).setListID(mProductsListID_1);
+        products.get(3).setOrder(1.2);
+
+        products.get(4).setListID(mProductsListID_1);
+        products.get(4).setOrder(4.05);
+
+        insertProducts(products);
+
+        double maxOrder = mSubjectDao.getMinProductOrderByListID(mProductsListID_1);
+
+        assertEquals(Double.compare(maxOrder, 0.2), 0);
+    }
+
+    @Test
+    public void setOrderToAllProductsInList_orderByName() {
 
         int listID = 2;
 
@@ -372,6 +397,94 @@ public class ProductDaoTest {
         product3.setOrder(30);
 
         TestUtils.assertEquals(actualList, products);
+    }
+
+    @Test
+    public void setOrderToAllProductsInList_orderByStatus() {
+
+        int listID = 2;
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 2");
+        product1.setStatus(Product.ABSENT);
+        product1.setListID(listID);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 1");
+        product2.setStatus(Product.ABSENT);
+        product2.setListID(listID);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 4");
+        product3.setStatus(Product.TO_BUY);
+        product3.setListID(listID);
+        products.add(product3);
+
+        Product product4 = new Product();
+        product4.setName("Product 3");
+        product4.setStatus(Product.BOUGHT);
+        product4.setListID(listID);
+        products.add(product4);
+
+        insertProducts(products);
+
+        mSubjectDao.updateProductOrdersByListIDSortByStatusAndName(listID);
+
+        List<Product> actualList = mSubjectDao.findByListIDSync(listID);
+
+        product3.setOrder(0);
+        product2.setOrder(10);
+        product1.setOrder(20);
+        product4.setOrder(30);
+
+        TestUtils.assertEquals(products, actualList);
+    }
+
+    @Test
+    public void setOrderToAllProductsInList_orderByStatus_equalsStatus() {
+
+        int listID = 2;
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product();
+        product1.setName("Product 2");
+        product1.setStatus(Product.TO_BUY);
+        product1.setListID(listID);
+        products.add(product1);
+
+        Product product2 = new Product();
+        product2.setName("Product 1");
+        product2.setStatus(Product.TO_BUY);
+        product2.setListID(listID);
+        products.add(product2);
+
+        Product product3 = new Product();
+        product3.setName("Product 4");
+        product3.setStatus(Product.TO_BUY);
+        product3.setListID(listID);
+        products.add(product3);
+
+        Product product4 = new Product();
+        product4.setName("Product 3");
+        product4.setStatus(Product.TO_BUY);
+        product4.setListID(listID);
+        products.add(product4);
+
+        insertProducts(products);
+
+        mSubjectDao.updateProductOrdersByListIDSortByStatusAndName(listID);
+
+        List<Product> actualList = mSubjectDao.findByListIDSync(listID);
+
+        product2.setOrder(0);
+        product1.setOrder(10);
+        product4.setOrder(20);
+        product3.setOrder(30); // 3 2 1 4
+
+        TestUtils.assertEquals(products, actualList);
     }
 
     private Product createProduct() throws InterruptedException {
