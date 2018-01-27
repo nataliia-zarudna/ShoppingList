@@ -78,6 +78,9 @@ public class ProductList {
     @ProductListSorting
     private int sorting;
 
+    @ColumnInfo(name = "is_grouped_view")
+    private boolean isGroupedView;
+
     @ColumnInfo(name = "assigned_id")
     private Integer assignedID;
 
@@ -155,6 +158,14 @@ public class ProductList {
         this.sorting = sorting;
     }
 
+    public boolean isGroupedView() {
+        return isGroupedView;
+    }
+
+    public void setIsGroupedView(boolean isGroupedView) {
+        isGroupedView = isGroupedView;
+    }
+
     public Integer getAssignedID() {
         return assignedID;
     }
@@ -173,6 +184,7 @@ public class ProductList {
         if (listID != that.listID) return false;
         if (status != that.status) return false;
         if (sorting != that.sorting) return false;
+        if (isGroupedView != that.isGroupedView) return false;
         if (!name.equals(that.name)) return false;
         if (DateUtils.getTimeInSeconds(createdAt) != DateUtils.getTimeInSeconds(that.createdAt)) return false;
         if (!createdBy.equals(that.createdBy)) return false;
@@ -193,6 +205,7 @@ public class ProductList {
         result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         result = 31 * result + status;
         result = 31 * result + sorting;
+        result = 31 * result + (isGroupedView ? 1 : 0);
         result = 31 * result + (assignedID != null ? assignedID.hashCode() : 0);
         return result;
     }
@@ -208,6 +221,7 @@ public class ProductList {
                 ", modifiedBy=" + modifiedBy +
                 ", status=" + status +
                 ", sorting=" + sorting +
+                ", isGroupedView=" + isGroupedView +
                 ", assignedID=" + assignedID +
                 '}';
     }

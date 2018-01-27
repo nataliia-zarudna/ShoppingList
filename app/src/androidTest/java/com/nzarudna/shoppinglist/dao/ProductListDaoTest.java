@@ -88,6 +88,8 @@ public class ProductListDaoTest {
         list.setModifiedAt(new Date());
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
+        list.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        list.setIsGroupedView(true);
 
         int listID = (int) mSubjectDao.insert(list);
         list.setListID(listID);
@@ -133,6 +135,8 @@ public class ProductListDaoTest {
         list.setModifiedAt(new Date());
         list.setCreatedBy(mUserID_1);
         list.setModifiedBy(mUserID_2);
+        list.setSorting(ProductList.SORT_LISTS_BY_CREATED_AT);
+        list.setIsGroupedView(true);
 
         int listID = (int) mSubjectDao.insert(list);
         list.setListID(listID);
