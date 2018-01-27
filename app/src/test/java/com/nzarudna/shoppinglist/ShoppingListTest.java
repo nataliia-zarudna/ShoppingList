@@ -236,6 +236,35 @@ public class ShoppingListTest {
     }
 
     @Test
+    public void updateUniID_testClearTemplateID() {
+
+        int productID = 88;
+
+        Product oldProduct = new Product();
+        oldProduct.setName("Some name");
+        oldProduct.setProductID(productID);
+        oldProduct.setUnitID(2);
+        oldProduct.setTemplateID(5);
+        when(mProductDao.findByIDSync(productID)).thenReturn(oldProduct);
+
+        Product productWithNewName = new Product();
+        productWithNewName.setName("Some name");
+        productWithNewName.setProductID(productID);
+        productWithNewName.setUnitID(8);
+        productWithNewName.setTemplateID(5);
+
+        mSubject.updateProduct(productWithNewName);
+
+        Product expectedProduct = new Product();
+        expectedProduct.setName("Some name");
+        expectedProduct.setProductID(productID);
+        expectedProduct.setUnitID(8);
+        expectedProduct.setTemplateID(0);
+
+        verify(mProductDao).update(expectedProduct);
+    }
+
+    @Test
     public void moveProduct_insideList_WithCustomOrder() {
 
         ProductList productList = new ProductList();
@@ -363,8 +392,7 @@ public class ShoppingListTest {
 
         mSubject.moveProduct(product3, product2, product1);
 
-        
-
+        product3.setOrder(5);
 
         verify(mProductDao).update(product3);
     }

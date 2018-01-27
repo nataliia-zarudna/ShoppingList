@@ -98,7 +98,8 @@ public class ShoppingList {
 
         Product oldProduct = mProductDao.findByIDSync(product.getProductID());
         if (!oldProduct.getName().equals(product.getName())
-                || oldProduct.getCategoryID() != product.getCategoryID()) {
+                || oldProduct.getCategoryID() != product.getCategoryID()
+                || oldProduct.getUnitID() != product.getUnitID()) {
             product.setTemplateID(0);
         }
 
