@@ -26,6 +26,9 @@ public interface CategoryDao {
     void delete(Category category);
 
     @Query("SELECT * FROM categories WHERE category_id = :categoryID")
+    Category findByIDSync(int categoryID);
+
+    @Query("SELECT * FROM categories WHERE category_id = :categoryID")
     LiveData<Category> findByID(int categoryID);
 
     @Query("SELECT * FROM categories")

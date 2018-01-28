@@ -10,7 +10,9 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
+import com.nzarudna.shoppinglist.persistence.CategoryProductItem;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
+import com.nzarudna.shoppinglist.product.Category;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.persistence.CategoryDao;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
@@ -41,6 +43,7 @@ public class ProductDaoTest {
 
     private AppDatabase mDatabase;
     private ProductDao mSubjectDao;
+    private CategoryDao mCategoryDao;
     private int mUserID_1;
     private int mProductsListID_1;
     private int mProductsListID_2;
@@ -61,9 +64,9 @@ public class ProductDaoTest {
         mProductsListID_1 = TestUtils.insertProductsList(productListDao, mUserID_1);
         mProductsListID_2 = TestUtils.insertProductsList(productListDao, mUserID_1);
 
-        CategoryDao categoryDao = mDatabase.categoryDao();
-        mCategoryID_1 = TestUtils.insertCategory(categoryDao);
-        mCategoryID_2 = TestUtils.insertCategory(categoryDao);
+        mCategoryDao = mDatabase.categoryDao();
+        mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
+        mCategoryID_2 = TestUtils.insertCategory(mCategoryDao);
     }
 
     @After
@@ -485,6 +488,48 @@ public class ProductDaoTest {
         product3.setOrder(30); // 3 2 1 4
 
         TestUtils.assertEquals(products, actualList);
+    }
+
+    @Test
+    public void findByListIDSortByName_withCategories() throws InterruptedException {
+
+        List<Product> products = createProducts(5);
+        products.get(0).setListID(mProductsListID_1);
+        products.get(0).setName("#1");
+        products.get(0).setCategoryID(mCategoryID_2);
+
+        products.get(1).setListID(mProductsListID_1);
+        products.get(1).setName("#3");
+        products.get(1).setCategoryID(mCategoryID_2);
+
+        products.get(2).setListID(mProductsListID_2);
+
+        products.get(3).setListID(mProductsListID_1);
+        products.get(3).setName("#4");
+        products.get(3).setCategoryID(mCategoryID_1);
+
+        products.get(4).setListID(mProductsListID_1);
+        products.get(4).setName("#2");
+        products.get(4).setCategoryID(mCategoryID_2);
+
+        insertProducts(products);
+
+        DataSource.Factory<Integer, CategoryProductItem> factory =
+                mSubjectDao.findByListIDSortByNameWithCategory(mProductsListID_1);
+        PagedList<CategoryProductItem> pagedGroupedList = TestUtils.getPagedListSync(factory);
+
+        // product order: cat 1, prod 3, cat 2, prod 0, prod 4, prod 1
+        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
+        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
+        expectedGroupedList.add(new CategoryProductItem(category1));
+        expectedGroupedList.add(new CategoryProductItem(products.get(3)));
+        expectedGroupedList.add(new CategoryProductItem(category2));
+        expectedGroupedList.add(new CategoryProductItem(products.get(0)));
+        expectedGroupedList.add(new CategoryProductItem(products.get(4)));
+        expectedGroupedList.add(new CategoryProductItem(products.get(1)));
+
+        TestUtils.assertEquals(pagedGroupedList, expectedGroupedList);
     }
 
     private Product createProduct() throws InterruptedException {

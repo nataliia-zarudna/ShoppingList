@@ -1,19 +1,14 @@
 package com.nzarudna.shoppinglist.product;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.paging.PagedList;
+import android.arch.paging.DataSource;
 import android.os.AsyncTask;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.persistence.CategoryProductItem;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
 
@@ -163,7 +158,9 @@ public class ShoppingList {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public LiveData<PagedList<Product>> getProducts(@ProductList.ProductSorting int sorting) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) {
+
+        return mProductDao.findByListIDSortByNameWithCategory(mListID);
+
     }
 }

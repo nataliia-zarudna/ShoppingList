@@ -71,9 +71,32 @@ public abstract class AppDatabase extends RoomDatabase {
             values.put("created_by", selfUserID);
             values.put("created_at", new Date().getTime());
             values.put("status", ProductList.STATUS_ACTIVE);
+            values.put("sorting", ProductList.SORT_PRODUCTS_BY_NAME);
+            values.put("is_grouped_view", false);
 
             long productsListsID = db.insert("product_lists", OnConflictStrategy.IGNORE, values);
             Log.d(LOG, "Shopping list #" + i + " id " + productsListsID);
+        }
+
+        for (int i = 0; i < 3; i++) {
+            ContentValues values = new ContentValues();
+            values.put("name", "Category #" + i);
+
+            db.insert("categories", OnConflictStrategy.IGNORE, values);
+        }
+
+        for (int i = 0; i < 8; i++) {
+            int categoryID = i % 2 + 1;
+            ContentValues values = new ContentValues();
+            values.put("name", "Product #" + i + " cat " + categoryID);
+            values.put("category_id", categoryID);
+            values.put("list_id", 1);
+            values.put("count", 0);
+            values.put("unit_id", 0);
+            values.put("status", Product.TO_BUY);
+            values.put("`order`", 0);
+
+            db.insert("products", OnConflictStrategy.IGNORE, values);
         }
     }
 

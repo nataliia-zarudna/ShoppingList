@@ -36,7 +36,7 @@ public class ProductListsViewModel extends ViewModel {
             DataSource.Factory<Integer, ProductListWithStatistics> listFactory
                     = mShoppingListRepository.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
 
-            return new LivePagedListBuilder<Integer, ProductListWithStatistics>(listFactory, pageSize).build();
+            return new LivePagedListBuilder<>(listFactory, pageSize).build();
 
         } catch (ShoppingListException e) {
             //TODO: handle exception

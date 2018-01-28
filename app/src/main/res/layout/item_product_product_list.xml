@@ -2,19 +2,21 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
         <variable
             name="viewModel"
-            type="com.nzarudna.shoppinglist.ui.shoppinglist.ShoppingListViewModel" />
+            type="com.nzarudna.shoppinglist.ui.shoppinglist.CategoryProductItemViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/products_recycle_view"
+        <TextView
+            android:id="@+id/product_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.name}" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

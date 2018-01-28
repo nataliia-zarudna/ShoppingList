@@ -159,7 +159,7 @@ public class ProductList {
     }
 
     public void setIsGroupedView(boolean isGroupedView) {
-        isGroupedView = isGroupedView;
+        this.isGroupedView = isGroupedView;
     }
 
     public Integer getAssignedID() {

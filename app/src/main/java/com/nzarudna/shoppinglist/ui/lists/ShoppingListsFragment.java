@@ -48,6 +48,10 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mViewModel = ViewModelProviders.of(this).get(ProductListsViewModel.class);
+        mViewModel.setObserver(this);
+        ShoppingListApplication.getAppComponent().inject(mViewModel);
     }
 
     @Nullable
@@ -55,10 +59,6 @@ public class ShoppingListsFragment extends Fragment implements ProductListItemVi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         mFragmentView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
-
-        mViewModel = ViewModelProviders.of(this).get(ProductListsViewModel.class);
-        mViewModel.setObserver(this);
-        ShoppingListApplication.getAppComponent().inject(mViewModel);
 
         mListRecyclerView = mFragmentView.findViewById(R.id.lists_recycle_view);
         mListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

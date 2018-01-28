@@ -139,9 +139,6 @@ public class ShoppingListRepository {
     }
 
     public ShoppingList getList(int productListID) {
-        if (mProductListDao.findByIDSync(productListID) == null) {
-            return null;
-        }
 
         ShoppingList shoppingList = new ShoppingList(productListID);
         ShoppingListApplication.getAppComponent().inject(shoppingList);
