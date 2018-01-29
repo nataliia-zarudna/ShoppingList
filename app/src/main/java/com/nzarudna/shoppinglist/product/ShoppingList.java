@@ -8,9 +8,8 @@ import android.support.annotation.NonNull;
 import com.nzarudna.shoppinglist.persistence.CategoryProductItem;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
-import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
 
-import javax.inject.Inject;
+import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 
 /**
  * Class that contains productsList object
@@ -23,18 +22,17 @@ public class ShoppingList {
 
     private int mListID;
 
-    @Inject
-    public ProductTemplateRepository mProductTemplateRepository;
-    @Inject
-    public ProductListDao mProductListDao;
-    @Inject
-    public ProductTemplateDao mProductTemplateDao;
-    @Inject
-    public ProductDao mProductDao;
+    private ProductTemplateRepository mProductTemplateRepository;
+    private ProductListDao mProductListDao;
+    private ProductDao mProductDao;
 
-    public ShoppingList(/*ProductListDao productListDao,*/ int listID) {
-        //mProductListDao = productListDao;
+    public ShoppingList(int listID, ProductListDao productListDao, ProductDao productDao,
+                        ProductTemplateRepository productTemplateRepository) {
+
         mListID = listID;
+        mProductListDao = productListDao;
+        mProductTemplateRepository = productTemplateRepository;
+        mProductDao = productDao;
     }
 
     public LiveData<ProductList> getListData() {
@@ -77,7 +75,7 @@ public class ShoppingList {
         ProductList productList = mProductListDao.findByIDSync(mListID);
         if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
             double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
-            product.setOrder(maxProductOrder + 10);
+            product.setOrder(maxProductOrder + PRODUCT_ORDER_STEP);
         }
 
         new AsyncTask<Void, Void, Void>() {
@@ -135,9 +133,9 @@ public class ShoppingList {
 
                 double newProductOrder;
                 if (productBefore == null) {
-                    newProductOrder = mProductDao.getMinProductOrderByListID(mListID) - 10;
+                    newProductOrder = mProductDao.getMinProductOrderByListID(mListID) - PRODUCT_ORDER_STEP;
                 } else if (productAfter == null) {
-                    newProductOrder = mProductDao.getMaxProductOrderByListID(mListID) + 10;
+                    newProductOrder = mProductDao.getMaxProductOrderByListID(mListID) + PRODUCT_ORDER_STEP;
                 } else {
                     if (resortPerformed) {
                         productAfter = mProductDao.findByIDSync(productAfter.getProductID());

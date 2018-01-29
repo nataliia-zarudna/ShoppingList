@@ -1,8 +1,5 @@
 package com.nzarudna.shoppinglist;
 
-import android.arch.lifecycle.LiveData;
-import android.content.Context;
-
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.product.Product;
@@ -11,7 +8,6 @@ import com.nzarudna.shoppinglist.product.ProductTemplate;
 import com.nzarudna.shoppinglist.product.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListException;
-import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,25 +31,19 @@ public class ShoppingListTest {
     private static final int MOCKED_PRODUCTS_LIST_ID = 3;
 
     @Mock
-    private Context mMockContext;
-    @Mock
     private ProductListDao mProductListDao;
     @Mock
     private ProductDao mProductDao;
     @Mock
     private ProductTemplateRepository mProductTemplateRepository;
-    @Mock
-    private ShoppingListRepository mShoppingListRepository;
 
     private ShoppingList mSubject;
 
     @Before
     public void setUp() {
 
-        mSubject = new ShoppingList(MOCKED_PRODUCTS_LIST_ID);
-        mSubject.mProductListDao = mProductListDao;
-        mSubject.mProductDao = mProductDao;
-        mSubject.mProductTemplateRepository = mProductTemplateRepository;
+        mSubject = new ShoppingList(MOCKED_PRODUCTS_LIST_ID, mProductListDao, mProductDao,
+                mProductTemplateRepository);
     }
 
     @Test
@@ -289,8 +276,6 @@ public class ShoppingListTest {
         product3.setOrder(8.7);
         products.add(product3);
 
-        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
-
         mSubject.moveProduct(product3, product2, product1);
 
         product3.setOrder((8.7 - 4.1) / 2);
@@ -322,8 +307,6 @@ public class ShoppingListTest {
         product3.setOrder(8.7);
         products.add(product3);
 
-        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
-
         mSubject.moveProduct(product1, product2, null);
 
         product1.setOrder(2 - 10);
@@ -354,8 +337,6 @@ public class ShoppingListTest {
         product3.setName("Product 3");
         product3.setOrder(8.7);
         products.add(product3);
-
-        //when(mProductDao.findByListIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(products);
 
         mSubject.moveProduct(product2, null, product3);
 

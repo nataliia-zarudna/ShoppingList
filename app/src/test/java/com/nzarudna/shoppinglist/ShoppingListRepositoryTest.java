@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
+import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ProductList;
 import com.nzarudna.shoppinglist.product.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.product.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.product.ShoppingList;
 import com.nzarudna.shoppinglist.product.ShoppingListException;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
@@ -58,6 +60,10 @@ public class ShoppingListRepositoryTest {
     private ProductListDao mProductListDao;
     @Mock
     private ProductDao mProductDao;
+    @Mock
+    private ProductTemplateRepository mProductTemplateRepository;
+    @Mock
+    private ProductTemplateDao mProductTemplateDao;
 
     @Before
     public void setUp() {
@@ -70,8 +76,10 @@ public class ShoppingListRepositoryTest {
 
         when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
-        mSubject = new ShoppingListRepository(mProductListDao, mProductDao, mUserRepository,
-                mResourceResolver, mSharedPreferences);
+        mSubject = new ShoppingListRepository(mProductListDao, mProductDao, mProductTemplateRepository,
+                mProductTemplateDao, mUserRepository, mResourceResolver, mSharedPreferences);
+
+        //mSubject.
     }
 
     @Test
@@ -105,12 +113,15 @@ public class ShoppingListRepositoryTest {
 
         when(mSharedPreferences.getString(DEFAULT_PRODUCT_LIST_NAME, MOCKED_DEFAULT_LIST_NAME))
                 .thenReturn(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
+        when(mSharedPreferences.getBoolean(DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW, false))
+                .thenReturn(true);
 
         final long mockListID = 33;
 
         ProductList expectedProductList = new ProductList();
         expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+        expectedProductList.setIsGroupedView(true);
         expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
         when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
@@ -137,6 +148,7 @@ public class ShoppingListRepositoryTest {
         etalonList.setListID(etalonListID);
         etalonList.setName("Some list name");
         etalonList.setSorting(SORT_LISTS_BY_CREATED_AT);
+        etalonList.setIsGroupedView(true);
         etalonList.setStatus(ProductList.STATUS_ARCHIVED);
         when(mProductListDao.findByIDSync(etalonListID)).thenReturn(etalonList);
 
@@ -146,6 +158,7 @@ public class ShoppingListRepositoryTest {
         expectedList.setCreatedAt(new Date());
         expectedList.setCreatedBy(MOCKED_SELF_USER_ID);
         expectedList.setSorting(SORT_LISTS_BY_CREATED_AT);
+        expectedList.setIsGroupedView(true);
         expectedList.setStatus(ProductList.STATUS_ACTIVE);
         when(mProductListDao.insert(expectedList)).thenReturn(mockNewListID);
 

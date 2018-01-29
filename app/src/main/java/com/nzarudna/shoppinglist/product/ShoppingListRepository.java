@@ -1,6 +1,5 @@
 package com.nzarudna.shoppinglist.product;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import android.util.Log;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
-import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.persistence.ProductDao;
 import com.nzarudna.shoppinglist.persistence.ProductListDao;
 import com.nzarudna.shoppinglist.user.UserRepository;
@@ -33,16 +31,19 @@ public class ShoppingListRepository {
 
     private ProductListDao mProductListDao;
     private ProductDao mProductDao;
+    private ProductTemplateRepository mProductTemplateRepository;
     private UserRepository mUserRepository;
     private ResourceResolver mResourceResolver;
     private SharedPreferences mSharedPreferences;
 
     @Inject
     public ShoppingListRepository(ProductListDao productListDao, ProductDao productDao,
+                                  ProductTemplateRepository productTemplateRepository,
                                   UserRepository userRepository, ResourceResolver resourceResolver,
                                   SharedPreferences sharedPreferences) {
         mProductListDao = productListDao;
         mProductDao = productDao;
+        mProductTemplateRepository = productTemplateRepository;
         mUserRepository = userRepository;
         mResourceResolver = resourceResolver;
         mSharedPreferences = sharedPreferences;
@@ -74,6 +75,10 @@ public class ShoppingListRepository {
 
         productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
+        boolean defaultIsGroupedView = mSharedPreferences.getBoolean(
+                SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW, false);
+        productList.setIsGroupedView(defaultIsGroupedView);
+
         int selfUserID = mUserRepository.getSelfUserID();
         productList.setCreatedBy(selfUserID);
 
@@ -92,6 +97,7 @@ public class ShoppingListRepository {
         final ProductList newProductList = createProductsList();
         newProductList.setName(etalonList.getName());
         newProductList.setSorting(etalonList.getSorting());
+        newProductList.setIsGroupedView(etalonList.isGroupedView());
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -140,8 +146,8 @@ public class ShoppingListRepository {
 
     public ShoppingList getList(int productListID) {
 
-        ShoppingList shoppingList = new ShoppingList(productListID);
-        ShoppingListApplication.getAppComponent().inject(shoppingList);
+        ShoppingList shoppingList = new ShoppingList(productListID, mProductListDao,
+                mProductDao, mProductTemplateRepository);
         return shoppingList;
     }
 
