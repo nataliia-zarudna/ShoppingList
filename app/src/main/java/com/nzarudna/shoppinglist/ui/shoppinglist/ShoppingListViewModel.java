@@ -10,6 +10,7 @@ import android.support.annotation.IntDef;
 import com.nzarudna.shoppinglist.persistence.CategoryProductItem;
 import com.nzarudna.shoppinglist.product.Product;
 import com.nzarudna.shoppinglist.product.ShoppingList;
+import com.nzarudna.shoppinglist.product.ShoppingListException;
 import com.nzarudna.shoppinglist.product.ShoppingListRepository;
 
 import javax.inject.Inject;
@@ -34,7 +35,13 @@ public class ShoppingListViewModel extends ViewModel {
 
     public LiveData<PagedList<CategoryProductItem>> getProducts(int productSort, int pageSize) {
 
-        DataSource.Factory<Integer, CategoryProductItem> productsFactory = mShoppingList.getProducts(productSort, true);
+        DataSource.Factory<Integer, CategoryProductItem> productsFactory = null;
+        try {
+            productsFactory = mShoppingList.getProducts(productSort, true);
+        } catch (ShoppingListException e) {
+            //TODO: handle error
+            e.printStackTrace();
+        }
         return new LivePagedListBuilder<>(productsFactory, pageSize).build();
     }
 }

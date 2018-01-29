@@ -152,13 +152,42 @@ public class ShoppingList {
         }.execute(product, productAfter, productBefore);
     }
 
-    public void removeProduct(Product product) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void removeProduct(final Product product) {
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductDao.delete(product);
+                return null;
+            }
+        }.execute();
     }
 
-    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) {
+    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
 
-        return mProductDao.findByListIDSortByNameWithCategory(mListID);
+        if (isGroupedView) {
+            switch (sorting) {
+                case ProductList.SORT_PRODUCTS_BY_NAME:
+                    return mProductDao.findByListIDSortByNameWithCategory(mListID);
+                case ProductList.SORT_PRODUCTS_BY_STATUS:
+                    return mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID);
+                case ProductList.SORT_PRODUCTS_BY_ORDER:
+                    return mProductDao.findByListIDSortByProductOrderWithCategory(mListID);
+                default:
+                    throw new ShoppingListException("Unknown products sorting " + sorting);
+            }
+        } else {
+            switch (sorting) {
+                case ProductList.SORT_PRODUCTS_BY_NAME:
+                    return mProductDao.findByListIDSortByName(mListID);
+                case ProductList.SORT_PRODUCTS_BY_STATUS:
+                    return mProductDao.findByListIDSortByStatusAndName(mListID);
+                case ProductList.SORT_PRODUCTS_BY_ORDER:
+                    return mProductDao.findByListIDSortByProductOrder(mListID);
+                default:
+                    throw new ShoppingListException("Unknown products sorting " + sorting);
+            }
+        }
 
     }
 }

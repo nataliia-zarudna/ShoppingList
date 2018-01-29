@@ -554,4 +554,66 @@ public class ShoppingListTest {
     public void moveProduct_exceptionOnNullBeforeAndAfterProducts() throws ShoppingListException {
         mSubject.moveProduct(new Product(), null, null);
     }
+
+    @Test
+    public void removeProduct() {
+
+        Product product = new Product();
+
+        mSubject.removeProduct(product);
+
+        verify(mProductDao).delete(product);
+    }
+
+    @Test
+    public void findProductsByListID_sortByName() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, false);
+        verify(mProductDao).findByListIDSortByName(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
+    public void findProductsByListID_sortByStatus() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, false);
+        verify(mProductDao).findByListIDSortByStatusAndName(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
+    public void findProductsByListID_sortByOrder() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, false);
+        verify(mProductDao).findByListIDSortByProductOrder(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
+    public void findProductsByListID_sortByName_groupeView() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, true);
+        verify(mProductDao).findByListIDSortByNameWithCategory(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
+    public void findProductsByListID_sortByStatus_groupeView() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, true);
+        verify(mProductDao).findByListIDSortByStatusAndNameWithCategory(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
+    public void findProductsByListID_sortByOrder_groupeView() throws ShoppingListException {
+
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, true);
+        verify(mProductDao).findByListIDSortByProductOrderWithCategory(MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test(expected = ShoppingListException.class)
+    public void findProductsByListID_exceptionOnUnknownSorting() throws ShoppingListException {
+        mSubject.getProducts(99, false);
+    }
+
+    @Test(expected = ShoppingListException.class)
+    public void findProductsByListID_exceptionOnUnknownSorting_groupeView() throws ShoppingListException {
+        mSubject.getProducts(99, true);
+    }
 }

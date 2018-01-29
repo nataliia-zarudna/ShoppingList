@@ -77,9 +77,7 @@ public class ShoppingListRepositoryTest {
         when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
         mSubject = new ShoppingListRepository(mProductListDao, mProductDao, mProductTemplateRepository,
-                mProductTemplateDao, mUserRepository, mResourceResolver, mSharedPreferences);
-
-        //mSubject.
+                mUserRepository, mResourceResolver, mSharedPreferences);
     }
 
     @Test
