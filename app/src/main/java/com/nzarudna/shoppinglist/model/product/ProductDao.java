@@ -140,4 +140,9 @@ public interface ProductDao {
             "               AND list_id = :listID" +
             "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP)
     void updateProductOrdersByListIDSortByStatusAndName(int listID);
+
+    @Query(value = "UPDATE products" +
+            "       SET template_id = null" +
+            "       WHERE template_id = :templateID")
+    void clearTemplateIDs(int templateID);
 }

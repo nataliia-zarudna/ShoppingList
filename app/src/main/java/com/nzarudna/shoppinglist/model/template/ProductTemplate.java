@@ -27,6 +27,9 @@ public class ProductTemplate {
     @ColumnInfo(name = "category_id")
     private Integer categoryID;
 
+    @ColumnInfo(name = "unit_id")
+    private Integer unitID;
+
     public int getTemplateID() {
         return templateID;
     }
@@ -51,16 +54,26 @@ public class ProductTemplate {
         this.categoryID = categoryID;
     }
 
+    public Integer getUnitID() {
+        return unitID;
+    }
+
+    public void setUnitID(Integer unitID) {
+        this.unitID = unitID;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ProductTemplate that = (ProductTemplate) o;
+        ProductTemplate template = (ProductTemplate) o;
 
-        if (templateID != that.templateID) return false;
-        if (!name.equals(that.name)) return false;
-        return categoryID != null ? categoryID.equals(that.categoryID) : that.categoryID == null;
+        if (templateID != template.templateID) return false;
+        if (!name.equals(template.name)) return false;
+        if (categoryID != null ? !categoryID.equals(template.categoryID) : template.categoryID != null)
+            return false;
+        return unitID != null ? unitID.equals(template.unitID) : template.unitID == null;
     }
 
     @Override
@@ -68,6 +81,7 @@ public class ProductTemplate {
         int result = templateID;
         result = 31 * result + name.hashCode();
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
+        result = 31 * result + (unitID != null ? unitID.hashCode() : 0);
         return result;
     }
 
@@ -77,6 +91,7 @@ public class ProductTemplate {
                 "templateID=" + templateID +
                 ", name='" + name + '\'' +
                 ", categoryID=" + categoryID +
+                ", unitID=" + unitID +
                 '}';
     }
 }

@@ -16,6 +16,7 @@ import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
@@ -32,6 +33,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -43,13 +45,18 @@ import static org.junit.Assert.assertTrue;
 public class ProductDaoTest {
 
     private AppDatabase mDatabase;
+
     private ProductDao mSubjectDao;
     private CategoryDao mCategoryDao;
+    private ProductTemplateDao mProductTemplateDao;
+
     private int mUserID_1;
     private int mProductsListID_1;
     private int mProductsListID_2;
     private int mCategoryID_1;
     private int mCategoryID_2;
+    private int mTemplateID_1;
+    private int mTemplateID_2;
 
     @Before
     public void createDB() {
@@ -68,6 +75,10 @@ public class ProductDaoTest {
         mCategoryDao = mDatabase.categoryDao();
         mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
         mCategoryID_2 = TestUtils.insertCategory(mCategoryDao);
+
+        mProductTemplateDao = mDatabase.productTemplateDao();
+        mTemplateID_1 = TestUtils.insertProductTemplate(mProductTemplateDao);
+        mTemplateID_2 = TestUtils.insertProductTemplate(mProductTemplateDao);
     }
 
     @After
@@ -587,6 +598,27 @@ public class ProductDaoTest {
         product3.setOrder(3 *  + PRODUCT_ORDER_STEP); // 3 2 1 4
 
         TestUtils.assertEquals(products, actualList);
+    }
+
+    @Test
+    public void clearTemplateIDs() throws InterruptedException {
+
+        List<Product> products = createProducts(3);
+        products.get(0).setTemplateID(mTemplateID_1);
+        products.get(1).setTemplateID(mTemplateID_2);
+        products.get(2).setTemplateID(mTemplateID_1);
+        insertProducts(products);
+
+        mSubjectDao.clearTemplateIDs(mTemplateID_1);
+
+        Product product_0 = mSubjectDao.findByIDSync(products.get(0).getProductID());
+        assertNull(product_0.getTemplateID());
+
+        Product product_1 = mSubjectDao.findByIDSync(products.get(1).getProductID());
+        assertEquals(product_1.getTemplateID(), new Integer(mTemplateID_2));
+
+        Product product_2 = mSubjectDao.findByIDSync(products.get(2).getProductID());
+        assertNull(product_2.getTemplateID());
     }
 
     private Product createProduct() throws InterruptedException {

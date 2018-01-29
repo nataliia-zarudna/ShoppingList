@@ -1,7 +1,9 @@
 package com.nzarudna.shoppinglist.model.template;
 
+import android.os.AsyncTask;
+
 import com.nzarudna.shoppinglist.model.product.Product;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,19 +14,64 @@ import javax.inject.Singleton;
 @Singleton
 public class ProductTemplateRepository {
 
+
+    private ProductTemplateDao mProductTemplateDao;
+    private ProductDao mProductDao;
+
     @Inject
-    public ProductTemplateRepository() {}
+    public ProductTemplateRepository(ProductTemplateDao productTemplateDao, ProductDao productDao) {
+        mProductTemplateDao = productTemplateDao;
+        mProductDao = productDao;
+    }
 
     public void createTemplate(ProductTemplate template) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        insertTemplate(template);
     }
 
     public void createTemplateFromProduct(Product product) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        ProductTemplate template = new ProductTemplate();
+        template.setName(product.getName());
+        template.setCategoryID(product.getCategoryID());
+        template.setUnitID(product.getUnitID());
+
+        insertTemplate(template);
     }
 
-    public void updateTemplate(ProductTemplate template) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    private void insertTemplate(final ProductTemplate template) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductTemplateDao.insert(template);
+                return null;
+            }
+        }.execute();
     }
+
+    public void updateTemplate(final ProductTemplate template) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mProductTemplateDao.update(template);
+                mProductDao.clearTemplateIDs(template.getTemplateID());
+
+                return null;
+            }
+        }.execute();
+    }
+
+    public void removeTemplate(final ProductTemplate template) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mProductTemplateDao.delete(template);
+
+                return null;
+            }
+        }.execute();
+    }
+
 
 }
