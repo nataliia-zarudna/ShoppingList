@@ -5,7 +5,7 @@
     <data>
         <variable
             name="editListViewModel"
-            type="com.nzarudna.shoppinglist.ui.editshoppinglist.EditProductListViewModel" />
+            type="com.nzarudna.shoppinglist.ui.editproductlist.EditProductListViewModel" />
     </data>
 
     <android.support.v7.widget.Toolbar

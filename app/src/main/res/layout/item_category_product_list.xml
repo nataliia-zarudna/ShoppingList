@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.nzarudna.shoppinglist.ui.shoppinglist.CategoryProductItemViewModel" />
+            type="com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout

@@ -10,14 +10,14 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
-import com.nzarudna.shoppinglist.persistence.CategoryProductItem;
-import com.nzarudna.shoppinglist.persistence.ProductListDao;
-import com.nzarudna.shoppinglist.product.Category;
-import com.nzarudna.shoppinglist.product.Product;
-import com.nzarudna.shoppinglist.persistence.CategoryDao;
-import com.nzarudna.shoppinglist.persistence.ProductDao;
-import com.nzarudna.shoppinglist.persistence.UserDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
+import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.category.CategoryDao;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.user.UserDao;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class ProductDaoTest {
         UserDao userDao = mDatabase.userDao();
         mUserID_1 = TestUtils.insertUser(userDao);
 
-        ProductListDao productListDao = mDatabase.productsListDao();
+        ProductListDao productListDao = mDatabase.productListDao();
         mProductsListID_1 = TestUtils.insertProductsList(productListDao, mUserID_1);
         mProductsListID_2 = TestUtils.insertProductsList(productListDao, mUserID_1);
 

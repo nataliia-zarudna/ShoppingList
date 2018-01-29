@@ -10,9 +10,9 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
-import com.nzarudna.shoppinglist.user.User;
-import com.nzarudna.shoppinglist.persistence.UserDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.user.User;
+import com.nzarudna.shoppinglist.model.user.UserDao;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;

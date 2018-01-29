@@ -7,16 +7,16 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.support.annotation.Nullable;
 
-import com.nzarudna.shoppinglist.persistence.ProductListDao;
-import com.nzarudna.shoppinglist.product.Category;
-import com.nzarudna.shoppinglist.product.Product;
-import com.nzarudna.shoppinglist.product.ProductList;
-import com.nzarudna.shoppinglist.product.ProductTemplate;
-import com.nzarudna.shoppinglist.user.User;
-import com.nzarudna.shoppinglist.persistence.CategoryDao;
-import com.nzarudna.shoppinglist.persistence.ProductDao;
-import com.nzarudna.shoppinglist.persistence.ProductTemplateDao;
-import com.nzarudna.shoppinglist.persistence.UserDao;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
+import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.user.User;
+import com.nzarudna.shoppinglist.model.category.CategoryDao;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+import com.nzarudna.shoppinglist.model.user.UserDao;
 
 import org.junit.Assert;
 

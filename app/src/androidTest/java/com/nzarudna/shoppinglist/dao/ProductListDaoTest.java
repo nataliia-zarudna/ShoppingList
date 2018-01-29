@@ -12,13 +12,13 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
-import com.nzarudna.shoppinglist.persistence.ProductDao;
-import com.nzarudna.shoppinglist.product.Product;
-import com.nzarudna.shoppinglist.product.ProductList;
-import com.nzarudna.shoppinglist.product.ProductListWithStatistics;
-import com.nzarudna.shoppinglist.persistence.ProductListDao;
-import com.nzarudna.shoppinglist.persistence.UserDao;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
+import com.nzarudna.shoppinglist.model.user.UserDao;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.nzarudna.shoppinglist.product.ShoppingListRepository.SORT_LISTS_BY_CREATED_AT;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_CREATED_AT;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
@@ -58,7 +58,7 @@ public class ProductListDaoTest {
 
         Context context = InstrumentationRegistry.getContext();
         mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
-        mSubjectDao = mDatabase.productsListDao();
+        mSubjectDao = mDatabase.productListDao();
         mProductDao = mDatabase.productDao();
 
         UserDao userDao = mDatabase.userDao();

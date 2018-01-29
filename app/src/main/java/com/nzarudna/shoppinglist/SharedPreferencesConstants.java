@@ -1,7 +1,5 @@
 package com.nzarudna.shoppinglist;
 
-import com.nzarudna.shoppinglist.product.ProductList;
-
 /**
  * Shared Preferences Constants
  */

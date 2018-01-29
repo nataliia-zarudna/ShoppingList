@@ -1,10 +1,12 @@
 package com.nzarudna.shoppinglist;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
 
-import com.nzarudna.shoppinglist.persistence.RoomDaoModule;
-import com.nzarudna.shoppinglist.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.dependency.AppComponent;
+import com.nzarudna.shoppinglist.dependency.AppModule;
+import com.nzarudna.shoppinglist.dependency.DaggerAppComponent;
+import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
 /**
  * Application class
