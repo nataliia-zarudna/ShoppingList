@@ -19,7 +19,7 @@ public class CategoryProductItemViewModel extends ViewModel {
 
     public String getName() {
         if (mCategoryProductItem != null) {
-            return CategoryProductItem.ITEM_PRODUCT_TYPE.equals(mCategoryProductItem.getType())
+            return CategoryProductItem.TYPE_PRODUCT.equals(mCategoryProductItem.getType())
                     ? mCategoryProductItem.getProduct().getName()
                     : mCategoryProductItem.getCategory().getName();
         } else {

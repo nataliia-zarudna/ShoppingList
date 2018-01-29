@@ -113,7 +113,7 @@ public class ProductListFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            return CategoryProductItem.ITEM_CATEGORY_TYPE.equals(getItem(position).getType())
+            return CategoryProductItem.TYPE_CATEGORY.equals(getItem(position).getType())
                     ? CATEGORY_VIEW_TYPE : PRODUCT_VIEW_TYPE;
         }
 
@@ -137,12 +137,12 @@ public class ProductListFragment extends Fragment {
 
         @Override
         public boolean areItemsTheSame(@NonNull CategoryProductItem oldItem, @NonNull CategoryProductItem newItem) {
-            if (oldItem.getType().equals(CategoryProductItem.ITEM_PRODUCT_TYPE)
-                    && newItem.getType().equals(CategoryProductItem.ITEM_PRODUCT_TYPE)) {
+            if (oldItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)
+                    && newItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)) {
                 return oldItem.getProduct().getProductID() == newItem.getProduct().getProductID();
             }
-            if (oldItem.getType().equals(CategoryProductItem.ITEM_CATEGORY_TYPE)
-                    && newItem.getType().equals(CategoryProductItem.ITEM_CATEGORY_TYPE)) {
+            if (oldItem.getType().equals(CategoryProductItem.TYPE_CATEGORY)
+                    && newItem.getType().equals(CategoryProductItem.TYPE_CATEGORY)) {
                 return oldItem.getCategory().getCategoryID() == newItem.getCategory().getCategoryID();
             }
             return false;

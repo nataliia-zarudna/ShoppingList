@@ -17,8 +17,8 @@ import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
  */
 @Dao
 public interface ProductDao {
-    
-    String QUERY_GROUPED_PRODUCTS_BY_LIST_ID = 
+
+    String QUERY_GROUPED_PRODUCTS_BY_LIST_ID = "" +
             "SELECT product_id AS prod_product_id, " +
             "   name AS prod_name, " +
             "   category_id AS prod_category_id, " +
@@ -32,7 +32,7 @@ public interface ProductDao {
             "   null AS cat_category_id, " +
             "   null AS cat_name, " +
             "   category_id AS category_id, " +
-            "   'product' AS type " +
+            "   '" + CategoryProductItem.TYPE_PRODUCT + "' AS type " +
             "FROM products  " +
             "WHERE list_id = :listID " +
             "UNION  " +
@@ -49,7 +49,7 @@ public interface ProductDao {
             "   category_id AS cat_category_id, " +
             "   name AS cat_name, " +
             "   category_id AS category_id, " +
-            "   'category' AS type " +
+            "   '" + CategoryProductItem.TYPE_CATEGORY + "' AS type " +
             "FROM categories " +
             "WHERE category_id in (SELECT DISTINCT category_id " +
             "                      FROM products " +
@@ -58,21 +58,21 @@ public interface ProductDao {
 
     String QUERY_PRODUCTS_BY_LIST_ID =
             "SELECT product_id AS prod_product_id, " +
-            "   name AS prod_name, " +
-            "   category_id AS prod_category_id, " +
-            "   list_id AS prod_list_id, " +
-            "   unit_id AS prod_unit_id, " +
-            "   count AS prod_count, " +
-            "   status AS prod_status, " +
-            "   comment AS prod_comment, " +
-            "   template_id AS prod_template_id, " +
-            "   `order` AS prod_order, " +
-            "   null AS cat_category_id, " +
-            "   null AS cat_name, " +
-            "   category_id AS category_id, " +
-            "   'product' AS type " +
-            "FROM products  " +
-            "WHERE list_id = :listID ";
+                    "   name AS prod_name, " +
+                    "   category_id AS prod_category_id, " +
+                    "   list_id AS prod_list_id, " +
+                    "   unit_id AS prod_unit_id, " +
+                    "   count AS prod_count, " +
+                    "   status AS prod_status, " +
+                    "   comment AS prod_comment, " +
+                    "   template_id AS prod_template_id, " +
+                    "   `order` AS prod_order, " +
+                    "   null AS cat_category_id, " +
+                    "   null AS cat_name, " +
+                    "   category_id AS category_id, " +
+                    "   '" + CategoryProductItem.TYPE_PRODUCT + "' AS type " +
+                    "FROM products  " +
+                    "WHERE list_id = :listID ";
 
     @Insert
     long insert(Product product);

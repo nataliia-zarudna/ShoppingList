@@ -14,23 +14,25 @@ import java.lang.annotation.RetentionPolicy;
 
 public class CategoryProductItem {
 
-    public static final String ITEM_PRODUCT_TYPE = "product";
-    public static final String ITEM_CATEGORY_TYPE = "category";
+    public static final String TYPE_PRODUCT = "product";
+    public static final String TYPE_CATEGORY = "category";
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({ITEM_PRODUCT_TYPE, ITEM_CATEGORY_TYPE})
-    @interface ItemType {}
+    @StringDef({TYPE_PRODUCT, TYPE_CATEGORY})
+    @interface ItemType {
+    }
 
-    public CategoryProductItem() {}
+    public CategoryProductItem() {
+    }
 
     public CategoryProductItem(Product product) {
         this.product = product;
-        type = ITEM_PRODUCT_TYPE;
+        type = TYPE_PRODUCT;
     }
 
     public CategoryProductItem(Category category) {
         this.category = category;
-        type = ITEM_CATEGORY_TYPE;
+        type = TYPE_CATEGORY;
     }
 
     @ItemType
