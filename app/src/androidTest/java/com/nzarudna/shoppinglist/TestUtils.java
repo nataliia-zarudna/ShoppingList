@@ -5,8 +5,12 @@ import android.arch.lifecycle.Observer;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.test.InstrumentationRegistry;
 
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.Product;
@@ -34,6 +38,16 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class TestUtils {
+
+    public static AppDatabase buildInMemoryDB() {
+
+        Context context = InstrumentationRegistry.getContext();
+        AppDatabase appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+
+        insertDefaultCategory(appDatabase.categoryDao());
+
+        return appDatabase;
+    }
 
     public static <T> T getLiveDataValueSync(LiveData<T> liveData) throws InterruptedException {
 
@@ -133,6 +147,14 @@ public class TestUtils {
         category.setName("Some name");
 
         return (int) categoryDao.insert(category);
+    }
+
+    private static void insertDefaultCategory(CategoryDao categoryDao) {
+
+        Category defaultCategory = new Category();
+        defaultCategory.setCategoryID(Category.DEFAULT_CATEGORY_ID);
+        defaultCategory.setName("Some category");
+        categoryDao.insert(defaultCategory);
     }
 
     public static int insertProduct(ProductDao productDao, int listID) {

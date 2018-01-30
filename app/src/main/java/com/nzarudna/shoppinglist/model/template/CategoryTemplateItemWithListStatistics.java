@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.model.template;
 
+import android.arch.persistence.room.ColumnInfo;
+
 import com.nzarudna.shoppinglist.model.category.Category;
 
 /**
@@ -9,9 +11,11 @@ import com.nzarudna.shoppinglist.model.category.Category;
 
 public class CategoryTemplateItemWithListStatistics extends CategoryTemplateItem {
 
+    @ColumnInfo(name = "is_used_in_list")
     private boolean mIsUsedInList;
 
-    public CategoryTemplateItemWithListStatistics() {}
+    public CategoryTemplateItemWithListStatistics() {
+    }
 
     public CategoryTemplateItemWithListStatistics(Category category) {
         super(category);
@@ -52,6 +56,9 @@ public class CategoryTemplateItemWithListStatistics extends CategoryTemplateItem
     public String toString() {
         return "CategoryTemplateItemWithListStatistics{" +
                 "mIsUsedInList=" + mIsUsedInList +
+                ", type='" + type + '\'' +
+                ", mCategory=" + mCategory +
+                ", mTemplate=" + mTemplate +
                 '}';
     }
 }

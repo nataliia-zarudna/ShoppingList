@@ -56,8 +56,7 @@ public class ProductListDaoTest {
     @Before
     public void createDB() {
 
-        Context context = InstrumentationRegistry.getContext();
-        mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        mDatabase = TestUtils.buildInMemoryDB();
         mSubjectDao = mDatabase.productListDao();
         mProductDao = mDatabase.productDao();
 

@@ -30,6 +30,10 @@ public class ProductTemplate {
     @ColumnInfo(name = "unit_id")
     private Integer unitID;
 
+    public ProductTemplate() {
+        categoryID = Category.DEFAULT_CATEGORY_ID;
+    }
+
     public int getTemplateID() {
         return templateID;
     }

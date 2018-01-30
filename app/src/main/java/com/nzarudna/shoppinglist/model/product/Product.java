@@ -70,6 +70,7 @@ public class Product implements Cloneable {
 
     public Product() {
         this.status = TO_BUY;
+        this.categoryID = Category.DEFAULT_CATEGORY_ID;
     }
 
     public int getProductID() {

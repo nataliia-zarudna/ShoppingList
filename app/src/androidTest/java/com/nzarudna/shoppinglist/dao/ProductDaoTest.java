@@ -61,8 +61,7 @@ public class ProductDaoTest {
     @Before
     public void createDB() {
 
-        Context context = InstrumentationRegistry.getContext();
-        mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        mDatabase = TestUtils.buildInMemoryDB();
         mSubjectDao = mDatabase.productDao();
 
         UserDao userDao = mDatabase.userDao();
@@ -116,11 +115,12 @@ public class ProductDaoTest {
     }
 
     @Test
-    public void createWithToBuyStatus() throws InterruptedException {
+    public void createWithDefaultParams() throws InterruptedException {
 
         Product product = insertProduct();
 
         assertThat(product.getStatus(), is(Product.TO_BUY));
+        assertThat(product.getCategoryID(), is(Category.DEFAULT_CATEGORY_ID));
     }
 
     @Test(expected = SQLiteConstraintException.class)
@@ -298,7 +298,6 @@ public class ProductDaoTest {
 
         products.get(1).setListID(mProductsListID_1);
         products.get(1).setName("#3");
-        products.get(1).setCategoryID(mCategoryID_2);
 
         products.get(2).setListID(mProductsListID_2);
 
@@ -319,12 +318,15 @@ public class ProductDaoTest {
         // product order: cat 1, prod 3, cat 2, prod 0, prod 4, prod 1
         Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
         Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
+
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
         expectedGroupedList.add(new CategoryProductItem(category1));
         expectedGroupedList.add(new CategoryProductItem(products.get(3)));
         expectedGroupedList.add(new CategoryProductItem(category2));
         expectedGroupedList.add(new CategoryProductItem(products.get(0)));
         expectedGroupedList.add(new CategoryProductItem(products.get(4)));
+        expectedGroupedList.add(new CategoryProductItem(defaultCategory));
         expectedGroupedList.add(new CategoryProductItem(products.get(1)));
 
         TestUtils.assertEquals(pagedGroupedList, expectedGroupedList);
@@ -354,7 +356,6 @@ public class ProductDaoTest {
         products.get(4).setListID(mProductsListID_1);
         products.get(4).setName("#2");
         products.get(4).setStatus(Product.BOUGHT);
-        products.get(4).setCategoryID(mCategoryID_2);
 
         insertProducts(products);
 
@@ -365,12 +366,15 @@ public class ProductDaoTest {
         // product order: cat 1, prod 3, cat 2, prod 1, prod 0, prod 4
         Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
         Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
+
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
         expectedGroupedList.add(new CategoryProductItem(category1));
         expectedGroupedList.add(new CategoryProductItem(products.get(3)));
         expectedGroupedList.add(new CategoryProductItem(category2));
         expectedGroupedList.add(new CategoryProductItem(products.get(1)));
         expectedGroupedList.add(new CategoryProductItem(products.get(0)));
+        expectedGroupedList.add(new CategoryProductItem(defaultCategory));
         expectedGroupedList.add(new CategoryProductItem(products.get(4)));
 
         TestUtils.assertEquals(pagedGroupedList, expectedGroupedList);
@@ -379,11 +383,10 @@ public class ProductDaoTest {
     @Test
     public void findByListIDSortByProductOrder_withCategories() throws InterruptedException {
 
-        List<Product> products = createProducts(5);
+        List<Product> products = createProducts(6);
         products.get(0).setListID(mProductsListID_1);
         products.get(0).setName("#1");
         products.get(0).setOrder(9);
-        products.get(0).setCategoryID(mCategoryID_2);
 
         products.get(1).setListID(mProductsListID_1);
         products.get(1).setName("#3");
@@ -415,14 +418,17 @@ public class ProductDaoTest {
         // product order: cat 1, prod 3, cat 2, prod 1, prod 4, prod 0
         Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
         Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
+
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
         expectedGroupedList.add(new CategoryProductItem(category1));
         expectedGroupedList.add(new CategoryProductItem(products.get(3)));
         expectedGroupedList.add(new CategoryProductItem(category2));
         expectedGroupedList.add(new CategoryProductItem(products.get(1)));
         expectedGroupedList.add(new CategoryProductItem(products.get(4)));
-        expectedGroupedList.add(new CategoryProductItem(products.get(0)));
+        expectedGroupedList.add(new CategoryProductItem(defaultCategory));
         expectedGroupedList.add(new CategoryProductItem(products.get(5)));
+        expectedGroupedList.add(new CategoryProductItem(products.get(0)));
 
         TestUtils.assertEquals(pagedGroupedList, expectedGroupedList);
     }

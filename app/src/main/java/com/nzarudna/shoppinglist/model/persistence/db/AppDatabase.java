@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
+import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -39,7 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase sInstance;
 
-    public static synchronized AppDatabase getInstance(Context context) {
+    public static synchronized AppDatabase getInstance(final Context context) {
         if (sInstance == null) {
             sInstance = Room.databaseBuilder(context, AppDatabase.class, DATABASE_NAME)
                     .addCallback(new Callback() {
@@ -48,7 +49,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
                             Log.d(LOG, "onCreate initDB start");
 
-                            initDB(db);
+                            db.beginTransaction();
+                            initDB(db, context);
+                            db.endTransaction();
 
                             Log.d(LOG, "onCreate initDB end");
                         }
@@ -58,12 +61,14 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    private static void initDB(SupportSQLiteDatabase db) {
+    private static void initDB(SupportSQLiteDatabase db, Context context) {
 
         // For testing
 
         int selfUserID = insertSelfUser(db);
         Log.d(LOG, "selfUserID " + selfUserID);
+
+        int defaultCategoryID = insertDefaultCatefory(db, context);
 
         for (int i = 10; i < 40; i++) {
             ContentValues values = new ContentValues();
@@ -85,8 +90,8 @@ public abstract class AppDatabase extends RoomDatabase {
             db.insert("categories", OnConflictStrategy.IGNORE, values);
         }
 
-        for (int i = 0; i < 8; i++) {
-            int categoryID = i % 2 + 1;
+        for (int i = 0; i < 10; i++) {
+            int categoryID = (i < 8) ? (i % 2 + 1) : defaultCategoryID;
             ContentValues values = new ContentValues();
             values.put("name", "Product #" + i + " cat " + categoryID);
             values.put("category_id", categoryID);
@@ -113,9 +118,20 @@ public abstract class AppDatabase extends RoomDatabase {
         return selfUserID;
     }
 
+    private static int insertDefaultCatefory(SupportSQLiteDatabase db, Context context) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("category_id", Category.DEFAULT_CATEGORY_ID);
+        contentValues.put("name", context.getString(R.string.default_category_name));
+
+        return (int) db.insert("categories", OnConflictStrategy.IGNORE, contentValues);
+    }
+
     @VisibleForTesting
     public static synchronized AppDatabase switchToInMemory(Context context) {
         sInstance = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+
+        insertDefaultCatefory(sInstance.mDatabase, context);
+
         return sInstance;
     }
 

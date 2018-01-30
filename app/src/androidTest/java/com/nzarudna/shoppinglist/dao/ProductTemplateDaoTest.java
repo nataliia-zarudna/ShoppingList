@@ -11,11 +11,16 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.user.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -39,15 +45,22 @@ public class ProductTemplateDaoTest {
     private AppDatabase mDatabase;
     private ProductTemplateDao mSubjectDao;
     private CategoryDao mCategoryDao;
+    private ProductListDao mProductListDao;
+    private ProductDao mProductDao;
+
     private int mCategoryID_1;
     private int mCategoryID_2;
+    private int mUser_1;
 
     @Before
     public void createDB() {
 
-        Context context = InstrumentationRegistry.getContext();
-        mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        mDatabase = TestUtils.buildInMemoryDB();
         mSubjectDao = mDatabase.productTemplateDao();
+        mProductListDao = mDatabase.productListDao();
+        mProductDao = mDatabase.productDao();
+
+        mUser_1 = TestUtils.insertUser(mDatabase.userDao());
 
         mCategoryDao = mDatabase.categoryDao();
         mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
@@ -84,6 +97,14 @@ public class ProductTemplateDaoTest {
         assertThat(insertedTemplate, equalTo(template));
     }
 
+    @Test
+    public void create_withDefaultParams() throws InterruptedException {
+
+        ProductTemplate template = createTemplate();
+
+        assertThat(template.getCategoryID(), equalTo(Category.DEFAULT_CATEGORY_ID));
+    }
+
     @Test(expected = SQLiteConstraintException.class)
     public void constrainedExceptionOnCreateWithNullName() throws InterruptedException {
 
@@ -96,7 +117,7 @@ public class ProductTemplateDaoTest {
     @Test
     public void findAllSortByName() throws InterruptedException {
 
-        List<ProductTemplate> templates = createTemplates(3);
+        List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
         templates.get(0).setCategoryID(mCategoryID_2);
 
@@ -114,46 +135,135 @@ public class ProductTemplateDaoTest {
                 mSubjectDao.findAllSortByName();
         PagedList<CategoryTemplateItem> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
+        List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(0)));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(2)));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(1)));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(3)));
+
+        TestUtils.assertEquals(foundTemplates, expectedTemplates);
+    }
+
+    @Test
+    public void findAllSortByName_groupedByCategory() throws InterruptedException {
+
+        List<ProductTemplate> templates = createTemplates(4);
+        templates.get(0).setName("#1");
+        templates.get(0).setCategoryID(mCategoryID_2);
+
+        templates.get(1).setName("#3");
+
+        templates.get(2).setName("#2");
+        templates.get(2).setCategoryID(mCategoryID_1);
+
+        templates.get(3).setName("#4");
+        templates.get(3).setCategoryID(mCategoryID_2);
+
+        insertTemplates(templates);
+
+        DataSource.Factory<Integer, CategoryTemplateItem> foundTemplatesDataSource =
+                mSubjectDao.findAllSortByNameWithCategory();
+        PagedList<CategoryTemplateItem> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
+
         Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
         Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
+
         List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
         expectedTemplates.add(new CategoryTemplateItem(category1));
         expectedTemplates.add(new CategoryTemplateItem(templates.get(2)));
         expectedTemplates.add(new CategoryTemplateItem(category2));
         expectedTemplates.add(new CategoryTemplateItem(templates.get(0)));
         expectedTemplates.add(new CategoryTemplateItem(templates.get(3)));
+        expectedTemplates.add(new CategoryTemplateItem(defaultCategory));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(1)));
 
-        TestUtils.assertEquals(expectedTemplates, foundTemplates);
+        TestUtils.assertEquals(foundTemplates, expectedTemplates);
     }
 
     @Test
-    public void findAllSortByCategoryIDAndName() throws InterruptedException {
+    public void findAllSortByName_withListStatistics() throws InterruptedException {
 
         List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
+        templates.get(0).setCategoryID(mCategoryID_2);
 
-        templates.get(1).setCategoryID(mCategoryID_1);
-        templates.get(1).setName("#4");
+        templates.get(1).setName("#3");
 
-        templates.get(2).setCategoryID(mCategoryID_2);
-        templates.get(2).setName("#3");
+        templates.get(2).setName("#2");
+        templates.get(2).setCategoryID(mCategoryID_1);
 
-        templates.get(3).setCategoryID(mCategoryID_1);
-        templates.get(3).setName("#2");
+        templates.get(3).setName("#4");
+        templates.get(3).setCategoryID(mCategoryID_2);
 
         insertTemplates(templates);
 
-        List<ProductTemplate> expectedTemplates = new ArrayList<>();
-        expectedTemplates.add(templates.get(0));
-        expectedTemplates.add(templates.get(3));
-        expectedTemplates.add(templates.get(1));
-        expectedTemplates.add(templates.get(2));
+        int listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        for (int i = 0; i < 2; i++) {
+            Product product = new Product();
+            product.setName("Some prod");
+            product.setTemplateID(templates.get(i).getTemplateID());
+            product.setListID(listID);
+            mProductDao.insert(product);
+        }
 
-        DataSource.Factory<Integer, ProductTemplate> foundTemplatesDataSource =
-                mSubjectDao.findAllSortByCategoryIDAndName();
-        PagedList<ProductTemplate> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
+        DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> foundTemplatesDataSource =
+                mSubjectDao.findAllSortByNameWithListStatistics(listID);
+        PagedList<CategoryTemplateItemWithListStatistics> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
-        TestUtils.assertEquals(expectedTemplates, foundTemplates);
+        List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(0), true));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(2), false));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(1), true));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(3), false));
+
+        TestUtils.assertEquals(foundTemplates, expectedTemplates);
+    }
+
+    @Test
+    public void findAllSortByName_withListStatistics_groupedByCategory() throws InterruptedException {
+
+        List<ProductTemplate> templates = createTemplates(4);
+        templates.get(0).setName("#1");
+        templates.get(0).setCategoryID(mCategoryID_2);
+
+        templates.get(1).setName("#3");
+
+        templates.get(2).setName("#2");
+        templates.get(2).setCategoryID(mCategoryID_1);
+
+        templates.get(3).setName("#4");
+        templates.get(3).setCategoryID(mCategoryID_2);
+
+        insertTemplates(templates);
+
+        int listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        for (int i = 0; i < 2; i++) {
+            Product product = new Product();
+            product.setName("Some prod");
+            product.setTemplateID(templates.get(i + 1).getTemplateID());
+            product.setListID(listID);
+            mProductDao.insert(product);
+        }
+
+        DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> foundTemplatesDataSource =
+                mSubjectDao.findAllSortByNameWithCategoryAndListStatistics(listID);
+        PagedList<CategoryTemplateItemWithListStatistics> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
+
+        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
+        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
+
+        List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(category1));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(2), true));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(category2));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(0), false));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(3), false));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(defaultCategory));
+        expectedTemplates.add(new CategoryTemplateItemWithListStatistics(templates.get(1), true));
+
+        TestUtils.assertEquals(foundTemplates, expectedTemplates);
     }
 
     private ProductTemplate createTemplate() throws InterruptedException {

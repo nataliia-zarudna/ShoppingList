@@ -11,6 +11,8 @@ import android.support.annotation.NonNull;
 @Entity(tableName = "categories")
 public class Category {
 
+    public static final int DEFAULT_CATEGORY_ID = Integer.MAX_VALUE;
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "category_id")
     private int categoryID;

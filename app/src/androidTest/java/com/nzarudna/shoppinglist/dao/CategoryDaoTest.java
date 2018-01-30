@@ -38,8 +38,7 @@ public class CategoryDaoTest {
     @Before
     public void createDB() {
 
-        Context context = InstrumentationRegistry.getContext();
-        mAppDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
+        mAppDatabase = TestUtils.buildInMemoryDB();
         mSubjectDao = mAppDatabase.categoryDao();
     }
 

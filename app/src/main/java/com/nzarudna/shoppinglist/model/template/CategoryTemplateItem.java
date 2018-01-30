@@ -35,13 +35,13 @@ public class CategoryTemplateItem {
     }
 
     @ItemType
-    private String type;
+    protected String type;
 
     @Embedded(prefix = "cat_")
-    private Category mCategory;
+    protected Category mCategory;
 
     @Embedded(prefix = "temp_")
-    private ProductTemplate mTemplate;
+    protected ProductTemplate mTemplate;
 
     public String getType() {
         return type;
@@ -86,5 +86,14 @@ public class CategoryTemplateItem {
         result = 31 * result + (mCategory != null ? mCategory.hashCode() : 0);
         result = 31 * result + (mTemplate != null ? mTemplate.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryTemplateItem{" +
+                "type='" + type + '\'' +
+                ", mCategory=" + mCategory +
+                ", mTemplate=" + mTemplate +
+                '}';
     }
 }
