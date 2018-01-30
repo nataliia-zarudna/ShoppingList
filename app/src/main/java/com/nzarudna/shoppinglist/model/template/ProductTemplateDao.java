@@ -117,4 +117,14 @@ public interface ProductTemplateDao {
 
     @Query(value = QUERY_ALL_GROUPED_TEMPLATES_WITH_USED_IN_LIST)
     DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> findAllSortByNameWithCategoryAndListStatistics(int listID);
+
+    @Query(value = "SELECT * " +
+            "       FROM product_templates template " +
+            "           LEFT JOIN products product" +
+            "               ON product.template_id = template.template_id " +
+            "       WHERE lower(template.name) like '%' || lower(:name) || '%' " +
+            "           AND (product.list_id IS NULL" +
+            "               OR product.list_id <> :listID) " +
+            "       ORDER BY lower(template.name) ")
+    DataSource.Factory<Integer, ProductTemplate> findAllByNameLike(String name, int listID);
 }

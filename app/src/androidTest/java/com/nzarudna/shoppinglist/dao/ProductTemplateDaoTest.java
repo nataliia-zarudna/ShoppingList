@@ -266,6 +266,57 @@ public class ProductTemplateDaoTest {
         TestUtils.assertEquals(foundTemplates, expectedTemplates);
     }
 
+    @Test
+    public void findAllByNameLike_withNoListUsed() throws InterruptedException {
+
+        List<ProductTemplate> templates = createTemplates(4);
+        templates.get(0).setName("abc");
+        templates.get(1).setName("abcd");
+        templates.get(2).setName("aBCde");
+        templates.get(3).setName("abcdef");
+
+        insertTemplates(templates);
+
+        DataSource.Factory<Integer, ProductTemplate> templateFactory =
+                mSubjectDao.findAllByNameLike("bcd", 5);
+        PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
+
+        List<ProductTemplate> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(templates.get(1));
+        expectedTemplates.add(templates.get(2));
+        expectedTemplates.add(templates.get(3));
+
+        TestUtils.assertEquals(expectedTemplates, resultList);
+    }
+
+    @Test
+    public void findAllByNameLike_withInListUsed() throws InterruptedException {
+
+        List<ProductTemplate> templates = createTemplates(4);
+        templates.get(0).setName("abc");
+        templates.get(1).setName("abcd");
+        templates.get(2).setName("aBCde");
+        templates.get(3).setName("abcdef");
+
+        insertTemplates(templates);
+
+        int productListID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product = new Product();
+        product.setName("Some name");
+        product.setListID(productListID);
+        product.setTemplateID(templates.get(1).getTemplateID());
+
+        DataSource.Factory<Integer, ProductTemplate> templateFactory =
+                mSubjectDao.findAllByNameLike("bcd", productListID);
+        PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
+
+        List<ProductTemplate> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(templates.get(2));
+        expectedTemplates.add(templates.get(3));
+
+        TestUtils.assertEquals(expectedTemplates, resultList);
+    }
+
     private ProductTemplate createTemplate() throws InterruptedException {
         ProductTemplate template = new ProductTemplate();
         template.setName("Some name");
