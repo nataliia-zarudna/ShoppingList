@@ -10,6 +10,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
+import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
@@ -36,6 +38,7 @@ public class ProductTemplateDaoTest {
 
     private AppDatabase mDatabase;
     private ProductTemplateDao mSubjectDao;
+    private CategoryDao mCategoryDao;
     private int mCategoryID_1;
     private int mCategoryID_2;
 
@@ -46,9 +49,9 @@ public class ProductTemplateDaoTest {
         mDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
         mSubjectDao = mDatabase.productTemplateDao();
 
-        CategoryDao categoryDao = mDatabase.categoryDao();
-        mCategoryID_1 = TestUtils.insertCategory(categoryDao);
-        mCategoryID_2 = TestUtils.insertCategory(categoryDao);
+        mCategoryDao = mDatabase.categoryDao();
+        mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
+        mCategoryID_2 = TestUtils.insertCategory(mCategoryDao);
     }
 
     @After
@@ -95,19 +98,30 @@ public class ProductTemplateDaoTest {
 
         List<ProductTemplate> templates = createTemplates(3);
         templates.get(0).setName("#1");
+        templates.get(0).setCategoryID(mCategoryID_2);
+
         templates.get(1).setName("#3");
+
         templates.get(2).setName("#2");
+        templates.get(2).setCategoryID(mCategoryID_1);
+
+        templates.get(3).setName("#4");
+        templates.get(3).setCategoryID(mCategoryID_2);
 
         insertTemplates(templates);
 
-        List<ProductTemplate> expectedTemplates = new ArrayList<>();
-        expectedTemplates.add(templates.get(0));
-        expectedTemplates.add(templates.get(2));
-        expectedTemplates.add(templates.get(1));
-
-        DataSource.Factory<Integer, ProductTemplate> foundTemplatesDataSource =
+        DataSource.Factory<Integer, CategoryTemplateItem> foundTemplatesDataSource =
                 mSubjectDao.findAllSortByName();
-        PagedList<ProductTemplate> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
+        PagedList<CategoryTemplateItem> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
+
+        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
+        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
+        expectedTemplates.add(new CategoryTemplateItem(category1));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(2)));
+        expectedTemplates.add(new CategoryTemplateItem(category2));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(0)));
+        expectedTemplates.add(new CategoryTemplateItem(templates.get(3)));
 
         TestUtils.assertEquals(expectedTemplates, foundTemplates);
     }

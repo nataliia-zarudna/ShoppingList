@@ -402,6 +402,10 @@ public class ProductDaoTest {
         products.get(4).setOrder(0.8);
         products.get(4).setCategoryID(mCategoryID_2);
 
+        products.get(5).setListID(mProductsListID_1);
+        products.get(5).setName("#5");
+        products.get(5).setOrder(1.8);
+
         insertProducts(products);
 
         DataSource.Factory<Integer, CategoryProductItem> factory =
@@ -418,6 +422,7 @@ public class ProductDaoTest {
         expectedGroupedList.add(new CategoryProductItem(products.get(1)));
         expectedGroupedList.add(new CategoryProductItem(products.get(4)));
         expectedGroupedList.add(new CategoryProductItem(products.get(0)));
+        expectedGroupedList.add(new CategoryProductItem(products.get(5)));
 
         TestUtils.assertEquals(pagedGroupedList, expectedGroupedList);
     }
