@@ -7,6 +7,7 @@ import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 
 import javax.inject.Singleton;
@@ -56,4 +57,9 @@ public class RoomDaoModule {
         return AppDatabase.getInstance(context).productTemplateDao();
     }
 
+    @Singleton
+    @Provides
+    public UnitDao provideUnitDao(Context context) {
+        return AppDatabase.getInstance(context).unitDao();
+    }
 }

@@ -19,6 +19,8 @@ import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.unit.Unit;
+import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
@@ -30,7 +32,8 @@ import java.util.Date;
 /**
  * Room application database
  */
-@Database(entities = {Product.class, Category.class, ProductTemplate.class, ProductList.class, User.class}, version = 1)
+@Database(entities = {Product.class, Category.class, ProductTemplate.class,
+        ProductList.class, User.class, Unit.class}, version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -50,8 +53,14 @@ public abstract class AppDatabase extends RoomDatabase {
                             Log.d(LOG, "onCreate initDB start");
 
                             db.beginTransaction();
-                            initDB(db, context);
-                            db.endTransaction();
+                            try {
+
+                                initDB(db, context);
+                                db.setTransactionSuccessful();
+
+                            } finally {
+                                db.endTransaction();
+                            }
 
                             Log.d(LOG, "onCreate initDB end");
                         }
@@ -144,4 +153,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CategoryDao categoryDao();
 
     public abstract ProductTemplateDao productTemplateDao();
+
+    public abstract UnitDao unitDao();
 }
