@@ -566,6 +566,16 @@ public class ProductListTest {
     }
 
     @Test
+    public void removeProductsWithTemplate() {
+
+        int templateID = 11;
+
+        mSubject.removeProductsWithTemplate(templateID);
+
+        verify(mProductDao).delete(templateID, MOCKED_PRODUCTS_LIST_ID);
+    }
+
+    @Test
     public void findProductsByListID_sortByName() throws ShoppingListException {
 
         mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, false);

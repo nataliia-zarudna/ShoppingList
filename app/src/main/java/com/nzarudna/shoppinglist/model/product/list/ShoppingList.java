@@ -166,6 +166,16 @@ public class ShoppingList {
         }.execute();
     }
 
+    public void removeProductsWithTemplate(final int templateID) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductDao.delete(templateID, mListID);
+                return null;
+            }
+        }.execute();
+    }
+
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
 
         if (isGroupedView) {

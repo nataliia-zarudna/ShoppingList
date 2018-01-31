@@ -83,6 +83,9 @@ public interface ProductDao {
     @Delete
     void delete(Product product);
 
+    @Query(value = "DELETE FROM products WHERE template_id = :templateID AND list_id = :listID")
+    void delete(int templateID, int listID);
+
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
     LiveData<Product> findByID(int productID);
 

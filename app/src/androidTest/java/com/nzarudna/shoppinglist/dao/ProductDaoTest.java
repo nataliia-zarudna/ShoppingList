@@ -33,9 +33,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -48,6 +48,7 @@ public class ProductDaoTest {
 
     private ProductDao mSubjectDao;
     private CategoryDao mCategoryDao;
+    private ProductListDao mProductListDao;
     private ProductTemplateDao mProductTemplateDao;
 
     private int mUserID_1;
@@ -63,6 +64,7 @@ public class ProductDaoTest {
 
         mDatabase = TestUtils.buildInMemoryDB();
         mSubjectDao = mDatabase.productDao();
+        mProductListDao = mDatabase.productListDao();
 
         UserDao userDao = mDatabase.userDao();
         mUserID_1 = TestUtils.insertUser(userDao);
@@ -166,6 +168,35 @@ public class ProductDaoTest {
         product.setTemplateID(99);
 
         mSubjectDao.insert(product);
+    }
+
+    @Test
+    public void deleteByTemplateIDAndListID() {
+
+        int templateID = TestUtils.insertProductTemplate(mProductTemplateDao);
+
+        int listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+
+        Product product_1 = new Product();
+        product_1.setName("Some name");
+        product_1.setListID(listID_1);
+        product_1.setTemplateID(templateID);
+        int productID_1 = (int) mSubjectDao.insert(product_1);
+
+        int productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
+
+        int listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+        Product product_3 = new Product();
+        product_3.setName("Some name");
+        product_3.setListID(listID_2);
+        product_3.setTemplateID(templateID);
+        int productID_3 = (int) mSubjectDao.insert(product_3);
+
+        mSubjectDao.delete(templateID, listID_1);
+
+        assertNull(mSubjectDao.findByIDSync(productID_1));
+        assertNotNull(mSubjectDao.findByIDSync(productID_2));
+        assertNotNull(mSubjectDao.findByIDSync(productID_3));
     }
 
     @Test
