@@ -33,4 +33,17 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories")
     DataSource.Factory<Integer, Category> findAll();
+
+    @Query("SELECT category.*, " +
+            "   (SELECT 1 " +
+            "    FROM products " +
+            "    WHERE category_id = category.category_id " +
+            "    UNION " +
+            "    SELECT 1 " +
+            "    FROM product_templates " +
+            "    WHERE category_id = category.category_id " +
+            "    LIMIT 1 " +
+            "    ) AS is_used " +
+            "FROM categories category")
+    DataSource.Factory<Integer, CategoryStatisticsItem> findAllWithStatistics();
 }
