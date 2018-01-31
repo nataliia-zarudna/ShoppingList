@@ -269,22 +269,25 @@ public class ProductTemplateDaoTest {
     @Test
     public void findAllByNameLike_withNoListUsed() throws InterruptedException {
 
-        List<ProductTemplate> templates = createTemplates(4);
-        templates.get(0).setName("abc");
-        templates.get(1).setName("abcd");
-        templates.get(2).setName("aBCde");
-        templates.get(3).setName("abcdef");
+        List<ProductTemplate> templates = createTemplates(6);
+        templates.get(0).setName("abc"); // -
+        templates.get(1).setName("aBCde"); // +
+        templates.get(2).setName("bcDef"); // +
+        templates.get(3).setName("abcD"); // +
+        templates.get(4).setName("Bce"); // -
+        templates.get(5).setName("BCD"); // +
 
         insertTemplates(templates);
 
         DataSource.Factory<Integer, ProductTemplate> templateFactory =
-                mSubjectDao.findAllByNameLike("bcd", 5);
+                mSubjectDao.findAllByNameLike("BcD", 5);
         PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();
-        expectedTemplates.add(templates.get(1));
-        expectedTemplates.add(templates.get(2));
         expectedTemplates.add(templates.get(3));
+        expectedTemplates.add(templates.get(1));
+        expectedTemplates.add(templates.get(5));
+        expectedTemplates.add(templates.get(2));
 
         TestUtils.assertEquals(expectedTemplates, resultList);
     }
@@ -293,21 +296,29 @@ public class ProductTemplateDaoTest {
     public void findAllByNameLike_withInListUsed() throws InterruptedException {
 
         List<ProductTemplate> templates = createTemplates(4);
-        templates.get(0).setName("abc");
-        templates.get(1).setName("abcd");
-        templates.get(2).setName("aBCde");
-        templates.get(3).setName("abcdef");
+        templates.get(0).setName("abc"); // -
+        templates.get(1).setName("abcd"); // -
+        templates.get(2).setName("aBCde"); // +
+        templates.get(3).setName("abcdef"); // +
 
         insertTemplates(templates);
 
-        int productListID = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product = new Product();
-        product.setName("Some name");
-        product.setListID(productListID);
-        product.setTemplateID(templates.get(1).getTemplateID());
+        int productListID_1 = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product_1 = new Product();
+        product_1.setName("Some name");
+        product_1.setListID(productListID_1);
+        product_1.setTemplateID(templates.get(1).getTemplateID());
+        mProductDao.insert(product_1);
+
+        int productListID_2 = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product_2 = new Product();
+        product_2.setName("Some name");
+        product_2.setListID(productListID_2);
+        product_2.setTemplateID(templates.get(3).getTemplateID());
+        mProductDao.insert(product_2);
 
         DataSource.Factory<Integer, ProductTemplate> templateFactory =
-                mSubjectDao.findAllByNameLike("bcd", productListID);
+                mSubjectDao.findAllByNameLike("bcd", productListID_1);
         PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();

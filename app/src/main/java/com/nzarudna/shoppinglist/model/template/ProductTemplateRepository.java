@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.model.template;
 
+import android.arch.paging.DataSource;
 import android.os.AsyncTask;
 
 import com.nzarudna.shoppinglist.model.product.Product;
@@ -73,5 +74,25 @@ public class ProductTemplateRepository {
         }.execute();
     }
 
+    public DataSource.Factory<Integer, CategoryTemplateItem> getTemplates(boolean isGroupedView) {
 
+        if (isGroupedView) {
+            return mProductTemplateDao.findAllSortByNameWithCategory();
+        } else {
+            return mProductTemplateDao.findAllSortByName();
+        }
+    }
+
+    public DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> getTemplates(boolean isGroupedView, int listID) {
+
+        if (isGroupedView) {
+            return mProductTemplateDao.findAllSortByNameWithCategoryAndListStatistics(listID);
+        } else {
+            return mProductTemplateDao.findAllSortByNameWithListStatistics(listID);
+        }
+    }
+
+    public DataSource.Factory<Integer, ProductTemplate> getTemplatesByNameLike(String name, int listID) {
+        return mProductTemplateDao.findAllByNameLike(name, listID);
+    }
 }

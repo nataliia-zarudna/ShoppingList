@@ -120,11 +120,11 @@ public interface ProductTemplateDao {
 
     @Query(value = "SELECT * " +
             "       FROM product_templates template " +
-            "           LEFT JOIN products product" +
-            "               ON product.template_id = template.template_id " +
             "       WHERE lower(template.name) like '%' || lower(:name) || '%' " +
-            "           AND (product.list_id IS NULL" +
-            "               OR product.list_id <> :listID) " +
+            "           AND (SELECT COUNT(product_id) " +
+            "                FROM products product " +
+            "                WHERE product.template_id = template.template_id" +
+            "                   AND product.list_id = :listID) = 0 " +
             "       ORDER BY lower(template.name) ")
     DataSource.Factory<Integer, ProductTemplate> findAllByNameLike(String name, int listID);
 }

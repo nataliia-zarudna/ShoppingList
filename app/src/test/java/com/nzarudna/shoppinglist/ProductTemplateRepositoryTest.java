@@ -78,7 +78,6 @@ public class ProductTemplateRepositoryTest {
 
         ProductTemplate expectedTemplate = new ProductTemplate();
         expectedTemplate.setName(name);
-        expectedTemplate.setCategoryID(null);
         expectedTemplate.setUnitID(null);
 
         verify(mProductTemplateDao).insert(expectedTemplate);
@@ -106,5 +105,44 @@ public class ProductTemplateRepositoryTest {
         mSubject.removeTemplate(template);
 
         verify(mProductTemplateDao).delete(template);
+    }
+
+    @Test
+    public void findAll() {
+        mSubject.getTemplates(false);
+
+        verify(mProductTemplateDao).findAllSortByName();
+    }
+
+    @Test
+    public void findAll_groupedByCategory() {
+        mSubject.getTemplates(true);
+
+        verify(mProductTemplateDao).findAllSortByNameWithCategory();
+    }
+
+    @Test
+    public void findAll_withListStatisctics() {
+        int listID = 5;
+        mSubject.getTemplates(false, listID);
+
+        verify(mProductTemplateDao).findAllSortByNameWithListStatistics(listID);
+    }
+
+    @Test
+    public void findAll_withListStatisctics_groupedByCategory() {
+        int listID = 5;
+        mSubject.getTemplates(true, listID);
+
+        verify(mProductTemplateDao).findAllSortByNameWithCategoryAndListStatistics(listID);
+    }
+
+    @Test
+    public void findAll_byNameLike() {
+        String name = "Some name";
+        int listID = 5;
+        mSubject.getTemplatesByNameLike(name, listID);
+
+        verify(mProductTemplateDao).findAllByNameLike(name, listID);
     }
 }
