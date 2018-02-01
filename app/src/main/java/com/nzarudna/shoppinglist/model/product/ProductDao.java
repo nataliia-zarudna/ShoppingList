@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 
@@ -75,7 +76,7 @@ public interface ProductDao {
                     "WHERE list_id = :listID ";
 
     @Insert
-    long insert(Product product);
+    void insert(Product product);
 
     @Update
     void update(Product product);
@@ -84,40 +85,40 @@ public interface ProductDao {
     void delete(Product product);
 
     @Query(value = "DELETE FROM products WHERE template_id = :templateID AND list_id = :listID")
-    void delete(int templateID, int listID);
+    void delete(UUID templateID, UUID listID);
 
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
-    LiveData<Product> findByID(int productID);
+    LiveData<Product> findByID(UUID productID);
 
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
-    Product findByIDSync(int productID);
+    Product findByIDSync(UUID productID);
 
     @Query(value = "SELECT * FROM products WHERE list_id = :listID")
-    List<Product> findByListIDSync(int listID);
+    List<Product> findByListIDSync(UUID listID);
 
     @Query(value = QUERY_PRODUCTS_BY_LIST_ID + " ORDER BY prod_name")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByName(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByName(UUID listID);
 
     @Query(value = QUERY_PRODUCTS_BY_LIST_ID + " ORDER BY prod_status, prod_name")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByStatusAndName(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByStatusAndName(UUID listID);
 
     @Query(value = QUERY_PRODUCTS_BY_LIST_ID + " ORDER BY prod_order")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByProductOrder(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByProductOrder(UUID listID);
 
     @Query(value = QUERY_GROUPED_PRODUCTS_BY_LIST_ID + ", prod_name")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByNameWithCategory(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByNameWithCategory(UUID listID);
 
     @Query(value = QUERY_GROUPED_PRODUCTS_BY_LIST_ID + ", prod_status, prod_name")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByStatusAndNameWithCategory(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByStatusAndNameWithCategory(UUID listID);
 
     @Query(value = QUERY_GROUPED_PRODUCTS_BY_LIST_ID + ", prod_order")
-    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByProductOrderWithCategory(int listID);
+    DataSource.Factory<Integer, CategoryProductItem> findByListIDSortByProductOrderWithCategory(UUID listID);
 
     @Query(value = "SELECT max(`order`) FROM products WHERE list_id = :listID")
-    double getMaxProductOrderByListID(int listID);
+    double getMaxProductOrderByListID(UUID listID);
 
     @Query(value = "SELECT min(`order`) FROM products WHERE list_id = :listID")
-    double getMinProductOrderByListID(int listID);
+    double getMinProductOrderByListID(UUID listID);
 
     @Query(value = "UPDATE products " +
             "       SET `order` = (" +
@@ -129,7 +130,7 @@ public interface ProductDao {
             "           WHERE products.product_id = product.product_id" +
             "               AND list_id = :listID" +
             "           ORDER BY name) * " + PRODUCT_ORDER_STEP)
-    void updateProductOrdersByListIDSortByName(int listID);
+    void updateProductOrdersByListIDSortByName(UUID listID);
 
     @Query(value = "UPDATE products " +
             "       SET `order` = (" +
@@ -142,10 +143,10 @@ public interface ProductDao {
             "           WHERE products.product_id = product.product_id" +
             "               AND list_id = :listID" +
             "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP)
-    void updateProductOrdersByListIDSortByStatusAndName(int listID);
+    void updateProductOrdersByListIDSortByStatusAndName(UUID listID);
 
     @Query(value = "UPDATE products" +
             "       SET template_id = null" +
             "       WHERE template_id = :templateID")
-    void clearTemplateIDs(int templateID);
+    void clearTemplateIDs(UUID templateID);
 }

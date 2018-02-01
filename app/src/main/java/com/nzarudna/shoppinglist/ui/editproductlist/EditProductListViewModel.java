@@ -11,6 +11,9 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
+import com.nzarudna.shoppinglist.model.unit.Unit;
+
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -32,7 +35,7 @@ public class EditProductListViewModel extends ViewModel implements Observable {
     @Bindable
     private ProductList mProductList;
 
-    public void setProductListID(int productListID) {
+    public void setProductListID(UUID productListID) {
 
         mShoppingList = mProductListRepository.getShoppingList(productListID);
     }

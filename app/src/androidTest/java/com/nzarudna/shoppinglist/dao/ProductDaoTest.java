@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 import static org.hamcrest.core.Is.is;
@@ -51,13 +52,13 @@ public class ProductDaoTest {
     private ProductListDao mProductListDao;
     private ProductTemplateDao mProductTemplateDao;
 
-    private int mUserID_1;
-    private int mProductsListID_1;
-    private int mProductsListID_2;
-    private int mCategoryID_1;
-    private int mCategoryID_2;
-    private int mTemplateID_1;
-    private int mTemplateID_2;
+    private UUID mUserID_1;
+    private UUID mProductsListID_1;
+    private UUID mProductsListID_2;
+    private UUID mLesserCategoryID;
+    private UUID mGreaterCategoryID;
+    private UUID mTemplateID_1;
+    private UUID mTemplateID_2;
 
     @Before
     public void createDB() {
@@ -74,8 +75,10 @@ public class ProductDaoTest {
         mProductsListID_2 = TestUtils.insertProductsList(productListDao, mUserID_1);
 
         mCategoryDao = mDatabase.categoryDao();
-        mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
-        mCategoryID_2 = TestUtils.insertCategory(mCategoryDao);
+        UUID categoryID_1 = TestUtils.insertCategory(mCategoryDao);
+        UUID categoryID_2 = TestUtils.insertCategory(mCategoryDao);
+        mLesserCategoryID = TestUtils.getLesserUUIDByString(categoryID_1, categoryID_2);
+        mGreaterCategoryID = TestUtils.getGreaterUUIDByString(categoryID_1, categoryID_2);
 
         mProductTemplateDao = mDatabase.productTemplateDao();
         mTemplateID_1 = TestUtils.insertProductTemplate(mProductTemplateDao);
@@ -91,26 +94,22 @@ public class ProductDaoTest {
     public void create() throws InterruptedException {
 
         Product product = createProduct();
-        long listID = mSubjectDao.insert(product);
-
-        assertThat(listID, not(0l));
+        mSubjectDao.insert(product);
     }
 
     @Test
     public void createAndRead() throws InterruptedException {
 
-        Product product = new Product();
-        product.setName("new name");
+        Product product = new Product("new name");
         product.setListID(mProductsListID_1);
-        product.setCategoryID(mCategoryID_1);
+        product.setCategoryID(mLesserCategoryID);
         product.setComment("comments");
         product.setCount(5);
         //TODO: add units
 
-        int productID = (int) mSubjectDao.insert(product);
-        product.setProductID(productID);
+        mSubjectDao.insert(product);
 
-        LiveData<Product> productLiveData = mSubjectDao.findByID(productID);
+        LiveData<Product> productLiveData = mSubjectDao.findByID(product.getProductID());
         Product insertedProduct = TestUtils.getLiveDataValueSync(productLiveData);
 
         assertThat(insertedProduct, equalTo(product));
@@ -138,7 +137,7 @@ public class ProductDaoTest {
     public void constrainedException_OnCreateWithInvalid_ListID() throws InterruptedException {
 
         Product product = createProduct();
-        product.setListID(99);
+        product.setListID(UUID.randomUUID());
 
         mSubjectDao.insert(product);
     }
@@ -147,7 +146,7 @@ public class ProductDaoTest {
     public void constrainedException_OnCreateWithInvalid_CategoryID() throws InterruptedException {
 
         Product product = createProduct();
-        product.setCategoryID(99);
+        product.setCategoryID(UUID.randomUUID());
 
         mSubjectDao.insert(product);
     }
@@ -156,7 +155,7 @@ public class ProductDaoTest {
     public void constrainedException_OnCreateWithInvalid_UnitID() throws InterruptedException {
 
         Product product = createProduct();
-        product.setUnitID(99);
+        product.setUnitID(UUID.randomUUID());
 
         mSubjectDao.insert(product);
     }
@@ -165,7 +164,7 @@ public class ProductDaoTest {
     public void constrainedException_OnCreateWithInvalid_TemplateID() throws InterruptedException {
 
         Product product = createProduct();
-        product.setTemplateID(99);
+        product.setTemplateID(UUID.randomUUID());
 
         mSubjectDao.insert(product);
     }
@@ -173,30 +172,28 @@ public class ProductDaoTest {
     @Test
     public void deleteByTemplateIDAndListID() {
 
-        int templateID = TestUtils.insertProductTemplate(mProductTemplateDao);
+        UUID templateID = TestUtils.insertProductTemplate(mProductTemplateDao);
 
-        int listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+        UUID listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
 
-        Product product_1 = new Product();
-        product_1.setName("Some name");
+        Product product_1 = new Product("Some name");
         product_1.setListID(listID_1);
         product_1.setTemplateID(templateID);
-        int productID_1 = (int) mSubjectDao.insert(product_1);
+        mSubjectDao.insert(product_1);
 
-        int productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
+        UUID productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
 
-        int listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
-        Product product_3 = new Product();
-        product_3.setName("Some name");
+        UUID listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+        Product product_3 = new Product("Some name");
         product_3.setListID(listID_2);
         product_3.setTemplateID(templateID);
-        int productID_3 = (int) mSubjectDao.insert(product_3);
+        mSubjectDao.insert(product_3);
 
         mSubjectDao.delete(templateID, listID_1);
 
-        assertNull(mSubjectDao.findByIDSync(productID_1));
+        assertNull(mSubjectDao.findByIDSync(product_1.getProductID()));
         assertNotNull(mSubjectDao.findByIDSync(productID_2));
-        assertNotNull(mSubjectDao.findByIDSync(productID_3));
+        assertNotNull(mSubjectDao.findByIDSync(product_3.getProductID()));
     }
 
     @Test
@@ -325,7 +322,7 @@ public class ProductDaoTest {
         List<Product> products = createProducts(5);
         products.get(0).setListID(mProductsListID_1);
         products.get(0).setName("#1");
-        products.get(0).setCategoryID(mCategoryID_2);
+        products.get(0).setCategoryID(mGreaterCategoryID);
 
         products.get(1).setListID(mProductsListID_1);
         products.get(1).setName("#3");
@@ -334,11 +331,11 @@ public class ProductDaoTest {
 
         products.get(3).setListID(mProductsListID_1);
         products.get(3).setName("#4");
-        products.get(3).setCategoryID(mCategoryID_1);
+        products.get(3).setCategoryID(mLesserCategoryID);
 
         products.get(4).setListID(mProductsListID_1);
         products.get(4).setName("#2");
-        products.get(4).setCategoryID(mCategoryID_2);
+        products.get(4).setCategoryID(mGreaterCategoryID);
 
         insertProducts(products);
 
@@ -347,8 +344,8 @@ public class ProductDaoTest {
         PagedList<CategoryProductItem> pagedGroupedList = TestUtils.getPagedListSync(factory);
 
         // product order: cat 1, prod 3, cat 2, prod 0, prod 4, prod 1
-        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
-        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category category1 = mCategoryDao.findByIDSync(mLesserCategoryID);
+        Category category2 = mCategoryDao.findByIDSync(mGreaterCategoryID);
         Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
 
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
@@ -370,19 +367,19 @@ public class ProductDaoTest {
         products.get(0).setListID(mProductsListID_1);
         products.get(0).setName("#1");
         products.get(0).setStatus(Product.BOUGHT);
-        products.get(0).setCategoryID(mCategoryID_2);
+        products.get(0).setCategoryID(mGreaterCategoryID);
 
         products.get(1).setListID(mProductsListID_1);
         products.get(1).setName("#3");
         products.get(1).setStatus(Product.ABSENT);
-        products.get(1).setCategoryID(mCategoryID_2);
+        products.get(1).setCategoryID(mGreaterCategoryID);
 
         products.get(2).setListID(mProductsListID_2);
 
         products.get(3).setListID(mProductsListID_1);
         products.get(3).setName("#4");
         products.get(3).setStatus(Product.TO_BUY);
-        products.get(3).setCategoryID(mCategoryID_1);
+        products.get(3).setCategoryID(mLesserCategoryID);
 
         products.get(4).setListID(mProductsListID_1);
         products.get(4).setName("#2");
@@ -395,8 +392,8 @@ public class ProductDaoTest {
         PagedList<CategoryProductItem> pagedGroupedList = TestUtils.getPagedListSync(factory);
 
         // product order: cat 1, prod 3, cat 2, prod 1, prod 0, prod 4
-        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
-        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category category1 = mCategoryDao.findByIDSync(mLesserCategoryID);
+        Category category2 = mCategoryDao.findByIDSync(mGreaterCategoryID);
         Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
 
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
@@ -422,19 +419,19 @@ public class ProductDaoTest {
         products.get(1).setListID(mProductsListID_1);
         products.get(1).setName("#3");
         products.get(1).setOrder(-5);
-        products.get(1).setCategoryID(mCategoryID_2);
+        products.get(1).setCategoryID(mGreaterCategoryID);
 
         products.get(2).setListID(mProductsListID_2);
 
         products.get(3).setListID(mProductsListID_1);
         products.get(3).setName("#4");
         products.get(3).setOrder(9.1);
-        products.get(3).setCategoryID(mCategoryID_1);
+        products.get(3).setCategoryID(mLesserCategoryID);
 
         products.get(4).setListID(mProductsListID_1);
         products.get(4).setName("#2");
         products.get(4).setOrder(0.8);
-        products.get(4).setCategoryID(mCategoryID_2);
+        products.get(4).setCategoryID(mGreaterCategoryID);
 
         products.get(5).setListID(mProductsListID_1);
         products.get(5).setName("#5");
@@ -447,8 +444,8 @@ public class ProductDaoTest {
         PagedList<CategoryProductItem> pagedGroupedList = TestUtils.getPagedListSync(factory);
 
         // product order: cat 1, prod 3, cat 2, prod 1, prod 4, prod 0
-        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
-        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category category1 = mCategoryDao.findByIDSync(mLesserCategoryID);
+        Category category2 = mCategoryDao.findByIDSync(mGreaterCategoryID);
         Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
 
         List<CategoryProductItem> expectedGroupedList = new ArrayList<>();
@@ -517,26 +514,22 @@ public class ProductDaoTest {
     @Test
     public void setOrderToAllProductsInList_orderByName() {
 
-        int listID = 2;
+        UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product();
-        product1.setName("Product 2");
+        Product product1 = new Product("Product 2");
         product1.setListID(listID);
         products.add(product1);
 
-        Product product2 = new Product();
-        product2.setName("Product 1");
+        Product product2 = new Product("Product 1");
         product2.setListID(listID);
         products.add(product2);
 
-        Product product3 = new Product();
-        product3.setName("Product 4");
+        Product product3 = new Product("Product 4");
         product3.setListID(listID);
         products.add(product3);
 
-        Product product4 = new Product();
-        product4.setName("Product 3");
+        Product product4 = new Product("Product 3");
         product4.setListID(listID);
         products.add(product4);
 
@@ -557,31 +550,27 @@ public class ProductDaoTest {
     @Test
     public void setOrderToAllProductsInList_orderByStatus() {
 
-        int listID = 2;
+        UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product();
-        product1.setName("Product 2");
-        product1.setStatus(Product.ABSENT);
+        Product product1 = new Product("Product 2");
         product1.setListID(listID);
+        product1.setStatus(Product.ABSENT);
         products.add(product1);
 
-        Product product2 = new Product();
-        product2.setName("Product 1");
-        product2.setStatus(Product.ABSENT);
+        Product product2 = new Product("Product 1");
         product2.setListID(listID);
+        product2.setStatus(Product.ABSENT);
         products.add(product2);
 
-        Product product3 = new Product();
-        product3.setName("Product 4");
-        product3.setStatus(Product.TO_BUY);
+        Product product3 = new Product("Product 4");
         product3.setListID(listID);
+        product3.setStatus(Product.TO_BUY);
         products.add(product3);
 
-        Product product4 = new Product();
-        product4.setName("Product 3");
-        product4.setStatus(Product.BOUGHT);
+        Product product4 = new Product("Product 3");
         product4.setListID(listID);
+        product4.setStatus(Product.BOUGHT);
         products.add(product4);
 
         insertProducts(products);
@@ -601,31 +590,27 @@ public class ProductDaoTest {
     @Test
     public void setOrderToAllProductsInList_orderByStatus_equalsStatus() {
 
-        int listID = 2;
+        UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product();
-        product1.setName("Product 2");
-        product1.setStatus(Product.TO_BUY);
+        Product product1 = new Product("Product 2");
         product1.setListID(listID);
+        product1.setStatus(Product.TO_BUY);
         products.add(product1);
 
-        Product product2 = new Product();
-        product2.setName("Product 1");
-        product2.setStatus(Product.TO_BUY);
+        Product product2 = new Product("Product 1");
         product2.setListID(listID);
+        product2.setStatus(Product.TO_BUY);
         products.add(product2);
 
-        Product product3 = new Product();
-        product3.setName("Product 4");
-        product3.setStatus(Product.TO_BUY);
+        Product product3 = new Product("Product 4");
         product3.setListID(listID);
+        product3.setStatus(Product.TO_BUY);
         products.add(product3);
 
-        Product product4 = new Product();
-        product4.setName("Product 3");
-        product4.setStatus(Product.TO_BUY);
+        Product product4 = new Product("Product 3");
         product4.setListID(listID);
+        product4.setStatus(Product.TO_BUY);
         products.add(product4);
 
         insertProducts(products);
@@ -657,17 +642,15 @@ public class ProductDaoTest {
         assertNull(product_0.getTemplateID());
 
         Product product_1 = mSubjectDao.findByIDSync(products.get(1).getProductID());
-        assertEquals(product_1.getTemplateID(), new Integer(mTemplateID_2));
+        assertEquals(product_1.getTemplateID(), mTemplateID_2);
 
         Product product_2 = mSubjectDao.findByIDSync(products.get(2).getProductID());
         assertNull(product_2.getTemplateID());
     }
 
     private Product createProduct() throws InterruptedException {
-        Product product = new Product();
-        product.setName("Some name");
+        Product product = new Product("Some name");
         product.setListID(mProductsListID_1);
-
         return product;
     }
 
@@ -683,16 +666,15 @@ public class ProductDaoTest {
     private Product insertProduct() throws InterruptedException {
         Product product = createProduct();
 
-        long productID = mSubjectDao.insert(product);
-        LiveData<Product> createdProduct = mSubjectDao.findByID((int) productID);
+        mSubjectDao.insert(product);
+        LiveData<Product> createdProduct = mSubjectDao.findByID(product.getProductID());
 
         return TestUtils.getLiveDataValueSync(createdProduct);
     }
 
     private void insertProducts(List<Product> products) {
         for (Product product : products) {
-            long insertedID = mSubjectDao.insert(product);
-            product.setProductID((int) insertedID);
+            mSubjectDao.insert(product);
         }
     }
 }

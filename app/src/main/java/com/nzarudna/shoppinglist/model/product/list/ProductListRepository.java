@@ -19,6 +19,7 @@ import com.nzarudna.shoppinglist.model.user.UserRepository;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -57,9 +58,11 @@ public class ProductListRepository {
             @Override
             protected Integer doInBackground(Void... voids) {
 
-                int listID = (int) mProductListDao.insert(createProductList());
+                ProductList productList = createProductList();
+                mProductListDao.insert(productList);
+
                 if (onProductListCreateListener != null) {
-                    onProductListCreateListener.onCreate(listID);
+                    onProductListCreateListener.onCreate(productList.getListID());
                 }
 
                 return null;
@@ -68,27 +71,25 @@ public class ProductListRepository {
     }
 
     public ProductList createProductList() {
-        ProductList productList = new ProductList();
 
         String defaultName = mResourceResolver.getString(R.string.default_list_name);
         String defaultNameFromPrefs = mSharedPreferences.getString(
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_NAME, defaultName);
-        productList.setName(defaultNameFromPrefs);
 
+        UUID selfUserID = mUserRepository.getSelfUserID();
+
+        ProductList productList = new ProductList(defaultNameFromPrefs, selfUserID);
         productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         boolean defaultIsGroupedView = mSharedPreferences.getBoolean(
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW, false);
         productList.setIsGroupedView(defaultIsGroupedView);
 
-        int selfUserID = mUserRepository.getSelfUserID();
-        productList.setCreatedBy(selfUserID);
-
         return productList;
     }
 
 
-    public void copyList(final int etalonListID, @Nullable final OnProductListCreateListener onProductListCreateListener)
+    public void copyList(final UUID etalonListID, @Nullable final OnProductListCreateListener onProductListCreateListener)
             throws ShoppingListException {
 
         ProductList etalonList = mProductListDao.findByIDSync(etalonListID);
@@ -105,11 +106,11 @@ public class ProductListRepository {
             @Override
             protected Void doInBackground(Void... voids) {
 
-                int newListID = (int) mProductListDao.insert(newProductList);
-                copyProductsFromList(etalonListID, newListID);
+                mProductListDao.insert(newProductList);
+                copyProductsFromList(etalonListID, newProductList.getListID());
 
                 if (onProductListCreateListener != null) {
-                    onProductListCreateListener.onCreate(newListID);
+                    onProductListCreateListener.onCreate(newProductList.getListID());
                 }
 
                 return null;
@@ -117,7 +118,7 @@ public class ProductListRepository {
         }.execute();
     }
 
-    private void copyProductsFromList(int fromListID, int toListID) {
+    private void copyProductsFromList(UUID fromListID, UUID toListID) {
 
         try {
             List<Product> etalonProducts = mProductDao.findByListIDSync(fromListID);
@@ -136,7 +137,7 @@ public class ProductListRepository {
         }
     }
 
-    public void removeList(final int productListID) {
+    public void removeList(final UUID productListID) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -146,7 +147,7 @@ public class ProductListRepository {
         }.execute();
     }
 
-    public ShoppingList getShoppingList(int productListID) {
+    public ShoppingList getShoppingList(UUID productListID) {
 
         ShoppingList shoppingList = new ShoppingList(productListID, mProductListDao,
                 mProductDao, mProductTemplateRepository);
@@ -188,6 +189,6 @@ public class ProductListRepository {
     public static final int SORT_LISTS_BY_PRODUCT_ORDER = 6;
 
     public interface OnProductListCreateListener {
-        void onCreate(int productListID);
+        void onCreate(UUID productListID);
     }
 }

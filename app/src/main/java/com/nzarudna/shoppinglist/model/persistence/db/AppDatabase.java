@@ -129,7 +129,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static int insertDefaultCatefory(SupportSQLiteDatabase db, Context context) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("category_id", Category.DEFAULT_CATEGORY_ID);
+        contentValues.put("category_id", Category.DEFAULT_CATEGORY_ID.toString());
         contentValues.put("name", context.getString(R.string.default_category_name));
 
         return (int) db.insert("categories", OnConflictStrategy.IGNORE, contentValues);

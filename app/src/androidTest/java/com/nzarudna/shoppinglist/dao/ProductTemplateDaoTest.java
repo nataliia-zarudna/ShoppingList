@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
@@ -48,9 +49,9 @@ public class ProductTemplateDaoTest {
     private ProductListDao mProductListDao;
     private ProductDao mProductDao;
 
-    private int mCategoryID_1;
-    private int mCategoryID_2;
-    private int mUser_1;
+    private UUID mLesserCategoryID;
+    private UUID mGreaterCategoryID;
+    private UUID mUser_1;
 
     @Before
     public void createDB() {
@@ -63,8 +64,10 @@ public class ProductTemplateDaoTest {
         mUser_1 = TestUtils.insertUser(mDatabase.userDao());
 
         mCategoryDao = mDatabase.categoryDao();
-        mCategoryID_1 = TestUtils.insertCategory(mCategoryDao);
-        mCategoryID_2 = TestUtils.insertCategory(mCategoryDao);
+        UUID categoryID_1 = TestUtils.insertCategory(mCategoryDao);
+        UUID categoryID_2 = TestUtils.insertCategory(mCategoryDao);
+        mLesserCategoryID = TestUtils.getLesserUUIDByString(categoryID_1, categoryID_2);
+        mGreaterCategoryID = TestUtils.getGreaterUUIDByString(categoryID_1, categoryID_2);
     }
 
     @After
@@ -76,9 +79,7 @@ public class ProductTemplateDaoTest {
     public void create() throws InterruptedException {
 
         ProductTemplate template = createTemplate();
-        long listID = mSubjectDao.insert(template);
-
-        assertThat(listID, not(0l));
+        mSubjectDao.insert(template);
     }
 
     @Test
@@ -86,12 +87,11 @@ public class ProductTemplateDaoTest {
 
         ProductTemplate template = createTemplate();
         template.setName("new name");
-        template.setCategoryID(mCategoryID_1);
+        template.setCategoryID(mLesserCategoryID);
 
-        int templateID = (int) mSubjectDao.insert(template);
-        template.setTemplateID(templateID);
+        mSubjectDao.insert(template);
 
-        LiveData<ProductTemplate> templateLiveData = mSubjectDao.findByID(templateID);
+        LiveData<ProductTemplate> templateLiveData = mSubjectDao.findByID(template.getTemplateID());
         ProductTemplate insertedTemplate = TestUtils.getLiveDataValueSync(templateLiveData);
 
         assertThat(insertedTemplate, equalTo(template));
@@ -119,15 +119,15 @@ public class ProductTemplateDaoTest {
 
         List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
-        templates.get(0).setCategoryID(mCategoryID_2);
+        templates.get(0).setCategoryID(mGreaterCategoryID);
 
         templates.get(1).setName("#3");
 
         templates.get(2).setName("#2");
-        templates.get(2).setCategoryID(mCategoryID_1);
+        templates.get(2).setCategoryID(mLesserCategoryID);
 
         templates.get(3).setName("#4");
-        templates.get(3).setCategoryID(mCategoryID_2);
+        templates.get(3).setCategoryID(mGreaterCategoryID);
 
         insertTemplates(templates);
 
@@ -149,15 +149,15 @@ public class ProductTemplateDaoTest {
 
         List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
-        templates.get(0).setCategoryID(mCategoryID_2);
+        templates.get(0).setCategoryID(mGreaterCategoryID);
 
         templates.get(1).setName("#3");
 
         templates.get(2).setName("#2");
-        templates.get(2).setCategoryID(mCategoryID_1);
+        templates.get(2).setCategoryID(mLesserCategoryID);
 
         templates.get(3).setName("#4");
-        templates.get(3).setCategoryID(mCategoryID_2);
+        templates.get(3).setCategoryID(mGreaterCategoryID);
 
         insertTemplates(templates);
 
@@ -165,8 +165,8 @@ public class ProductTemplateDaoTest {
                 mSubjectDao.findAllSortByNameWithCategory();
         PagedList<CategoryTemplateItem> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
-        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
-        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category category1 = mCategoryDao.findByIDSync(mLesserCategoryID);
+        Category category2 = mCategoryDao.findByIDSync(mGreaterCategoryID);
         Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
 
         List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
@@ -186,24 +186,23 @@ public class ProductTemplateDaoTest {
 
         List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
-        templates.get(0).setCategoryID(mCategoryID_2);
+        templates.get(0).setCategoryID(mGreaterCategoryID);
 
         templates.get(1).setName("#3");
 
         templates.get(2).setName("#2");
-        templates.get(2).setCategoryID(mCategoryID_1);
+        templates.get(2).setCategoryID(mLesserCategoryID);
 
         templates.get(3).setName("#4");
-        templates.get(3).setCategoryID(mCategoryID_2);
+        templates.get(3).setCategoryID(mGreaterCategoryID);
 
         insertTemplates(templates);
 
-        int listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
         for (int i = 0; i < 2; i++) {
-            Product product = new Product();
-            product.setName("Some prod");
-            product.setTemplateID(templates.get(i).getTemplateID());
+            Product product = new Product("Some prod");
             product.setListID(listID);
+            product.setTemplateID(templates.get(i).getTemplateID());
             mProductDao.insert(product);
         }
 
@@ -225,24 +224,23 @@ public class ProductTemplateDaoTest {
 
         List<ProductTemplate> templates = createTemplates(4);
         templates.get(0).setName("#1");
-        templates.get(0).setCategoryID(mCategoryID_2);
+        templates.get(0).setCategoryID(mGreaterCategoryID);
 
         templates.get(1).setName("#3");
 
         templates.get(2).setName("#2");
-        templates.get(2).setCategoryID(mCategoryID_1);
+        templates.get(2).setCategoryID(mLesserCategoryID);
 
         templates.get(3).setName("#4");
-        templates.get(3).setCategoryID(mCategoryID_2);
+        templates.get(3).setCategoryID(mGreaterCategoryID);
 
         insertTemplates(templates);
 
-        int listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
         for (int i = 0; i < 2; i++) {
-            Product product = new Product();
-            product.setName("Some prod");
-            product.setTemplateID(templates.get(i + 1).getTemplateID());
+            Product product = new Product("Some prod");
             product.setListID(listID);
+            product.setTemplateID(templates.get(i + 1).getTemplateID());
             mProductDao.insert(product);
         }
 
@@ -250,8 +248,8 @@ public class ProductTemplateDaoTest {
                 mSubjectDao.findAllSortByNameWithCategoryAndListStatistics(listID);
         PagedList<CategoryTemplateItemWithListStatistics> foundTemplates = TestUtils.getPagedListSync(foundTemplatesDataSource);
 
-        Category category1 = mCategoryDao.findByIDSync(mCategoryID_1);
-        Category category2 = mCategoryDao.findByIDSync(mCategoryID_2);
+        Category category1 = mCategoryDao.findByIDSync(mLesserCategoryID);
+        Category category2 = mCategoryDao.findByIDSync(mGreaterCategoryID);
         Category defaultCategory = mCategoryDao.findByIDSync(Category.DEFAULT_CATEGORY_ID);
 
         List<CategoryTemplateItem> expectedTemplates = new ArrayList<>();
@@ -280,7 +278,7 @@ public class ProductTemplateDaoTest {
         insertTemplates(templates);
 
         DataSource.Factory<Integer, ProductTemplate> templateFactory =
-                mSubjectDao.findAllByNameLike("BcD", 5);
+                mSubjectDao.findAllByNameLike("BcD", UUID.randomUUID());
         PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();
@@ -303,16 +301,14 @@ public class ProductTemplateDaoTest {
 
         insertTemplates(templates);
 
-        int productListID_1 = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product_1 = new Product();
-        product_1.setName("Some name");
+        UUID productListID_1 = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product_1 = new Product("Some name");
         product_1.setListID(productListID_1);
         product_1.setTemplateID(templates.get(1).getTemplateID());
         mProductDao.insert(product_1);
 
-        int productListID_2 = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product_2 = new Product();
-        product_2.setName("Some name");
+        UUID productListID_2 = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product_2 = new Product("Some name");
         product_2.setListID(productListID_2);
         product_2.setTemplateID(templates.get(3).getTemplateID());
         mProductDao.insert(product_2);
@@ -329,10 +325,7 @@ public class ProductTemplateDaoTest {
     }
 
     private ProductTemplate createTemplate() throws InterruptedException {
-        ProductTemplate template = new ProductTemplate();
-        template.setName("Some name");
-
-        return template;
+        return new ProductTemplate("Some name");
     }
 
     public List<ProductTemplate> createTemplates(int count) throws InterruptedException {
@@ -347,16 +340,15 @@ public class ProductTemplateDaoTest {
     private ProductTemplate insertTemplate() throws InterruptedException {
         ProductTemplate template = createTemplate();
 
-        long templateID = mSubjectDao.insert(template);
-        LiveData<ProductTemplate> createdTemplate = mSubjectDao.findByID((int) templateID);
+        mSubjectDao.insert(template);
+        LiveData<ProductTemplate> createdTemplate = mSubjectDao.findByID(template.getTemplateID());
 
         return TestUtils.getLiveDataValueSync(createdTemplate);
     }
 
     private void insertTemplates(List<ProductTemplate> templates) {
         for (ProductTemplate template : templates) {
-            long insertedID = mSubjectDao.insert(template);
-            template.setTemplateID((int) insertedID);
+            mSubjectDao.insert(template);
         }
     }
 }

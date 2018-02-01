@@ -2,6 +2,8 @@ package com.nzarudna.shoppinglist.model.product.list;
 
 import android.arch.persistence.room.ColumnInfo;
 
+import java.util.UUID;
+
 /**
  * Class to query product lists with statistics
  * of bought/all products count
@@ -10,7 +12,7 @@ import android.arch.persistence.room.ColumnInfo;
 public class ProductListWithStatistics {
 
     @ColumnInfo(name = "list_id")
-    private int listID;
+    private UUID listID;
 
     private String name;
 
@@ -23,7 +25,7 @@ public class ProductListWithStatistics {
     @ColumnInfo(name = "bought_products_count")
     private int boughtProductsCount;
 
-    public ProductListWithStatistics(int listID, String name, int toBuyProductsCount, int absentProductsCount, int boughtProductsCount) {
+    public ProductListWithStatistics(UUID listID, String name, int toBuyProductsCount, int absentProductsCount, int boughtProductsCount) {
         this.listID = listID;
         this.name = name;
         this.toBuyProductsCount = toBuyProductsCount;
@@ -31,11 +33,11 @@ public class ProductListWithStatistics {
         this.boughtProductsCount = boughtProductsCount;
     }
 
-    public int getListID() {
+    public UUID getListID() {
         return listID;
     }
 
-    public void setListID(int listID) {
+    public void setListID(UUID listID) {
         this.listID = listID;
     }
 
@@ -78,16 +80,16 @@ public class ProductListWithStatistics {
 
         ProductListWithStatistics that = (ProductListWithStatistics) o;
 
-        if (listID != that.listID) return false;
         if (toBuyProductsCount != that.toBuyProductsCount) return false;
         if (absentProductsCount != that.absentProductsCount) return false;
         if (boughtProductsCount != that.boughtProductsCount) return false;
+        if (listID != null ? !listID.equals(that.listID) : that.listID != null) return false;
         return name != null ? name.equals(that.name) : that.name == null;
     }
 
     @Override
     public int hashCode() {
-        int result = listID;
+        int result = listID != null ? listID.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + toBuyProductsCount;
         result = 31 * result + absentProductsCount;

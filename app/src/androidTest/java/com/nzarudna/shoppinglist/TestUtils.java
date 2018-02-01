@@ -27,6 +27,7 @@ import org.junit.Assert;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -107,28 +108,24 @@ public class TestUtils {
         assertTrue(diffWithE);
     }
 
-    public static int insertUser(UserDao userDao) {
-        User user = new User();
-        user.setName("new user");
-        return (int) userDao.insert(user);
+    public static UUID insertUser(UserDao userDao) {
+        User user = new User("new user");
+        userDao.insert(user);
+        return user.getUserID();
     }
 
-    public static int insertProductsList(ProductListDao productListDao, int createdBy) {
+    public static UUID insertProductsList(ProductListDao productListDao, UUID createdBy) {
 
-        ProductList list = new ProductList();
-        list.setName("Some name");
-        list.setCreatedBy(createdBy);
-
-        return (int) productListDao.insert(list);
+        ProductList list = new ProductList("Some name", createdBy);
+        productListDao.insert(list);
+        return list.getListID();
     }
 
-    public static List<ProductList> createProductsLists(int count, int createdBy) {
+    public static List<ProductList> createProductsLists(int count, UUID createdBy) {
 
         List<ProductList> lists = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            ProductList productList = new ProductList();
-            productList.setName("Some name");
-            productList.setCreatedBy(createdBy);
+            ProductList productList = new ProductList("Some name", createdBy);
             lists.add(productList);
         }
         return lists;
@@ -136,46 +133,50 @@ public class TestUtils {
 
     public static void insertProductsLists(ProductListDao productListDao, List<ProductList> listsToInsert) {
         for (ProductList list : listsToInsert) {
-            int insertedID = (int) productListDao.insert(list);
-            list.setListID(insertedID);
+            productListDao.insert(list);
         }
     }
 
-    public static int insertCategory(CategoryDao categoryDao) {
+    public static UUID insertCategory(CategoryDao categoryDao) {
 
-        Category category = new Category();
-        category.setName("Some name");
-
-        return (int) categoryDao.insert(category);
+        Category category = new Category("Some name");
+        categoryDao.insert(category);
+        return category.getCategoryID();
     }
 
     private static void insertDefaultCategory(CategoryDao categoryDao) {
 
-        Category defaultCategory = new Category();
+        Category defaultCategory = new Category("Some category");
         defaultCategory.setCategoryID(Category.DEFAULT_CATEGORY_ID);
-        defaultCategory.setName("Some category");
         categoryDao.insert(defaultCategory);
     }
 
-    public static int insertProduct(ProductDao productDao, int listID) {
+    public static UUID insertProduct(ProductDao productDao, UUID listID) {
         return insertProduct(productDao, listID, 0);
     }
 
-    public static int insertProduct(ProductDao productDao, int listID, @Product.ProductStatus int status) {
+    public static UUID insertProduct(ProductDao productDao, UUID listID, @Product.ProductStatus int status) {
 
-        Product product = new Product();
-        product.setName("Some name");
+        Product product = new Product("Some name");
         product.setListID(listID);
         product.setStatus(status);
 
-        return (int) productDao.insert(product);
+        productDao.insert(product);
+        return product.getProductID();
     }
 
-    public static int insertProductTemplate(ProductTemplateDao productTemplateDao) {
+    public static UUID insertProductTemplate(ProductTemplateDao productTemplateDao) {
 
-        ProductTemplate template = new ProductTemplate();
-        template.setName("Some name");
+        ProductTemplate template = new ProductTemplate("Some name");
+        productTemplateDao.insert(template);
+        return template.getTemplateID();
+    }
 
-        return (int) productTemplateDao.insert(template);
+    public static UUID getLesserUUIDByString(UUID id1, UUID id2) {
+        return id1.toString().compareTo(id2.toString()) < 0 ? id1 : id2;
+    }
+
+    public static UUID getGreaterUUIDByString(UUID id1, UUID id2) {
+        return id1.toString().compareTo(id2.toString()) > 0 ? id1 : id2;
     }
 }

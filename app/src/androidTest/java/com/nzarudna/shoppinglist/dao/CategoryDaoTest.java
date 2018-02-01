@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
@@ -48,18 +49,15 @@ public class CategoryDaoTest {
     @Test
     public void create() {
 
-        Category category = new Category();
-        category.setName("New name");
+        Category category = new Category("New name");
 
-        long categoryID = mSubjectDao.insert(category);
-
-        assertThat(categoryID, not(0l));
+        mSubjectDao.insert(category);
     }
 
     @Test(expected = SQLiteConstraintException.class)
     public void constrainedExceptionOnCreateWithNullName() {
 
-        Category category = new Category();
+        Category category = new Category("New name");
         category.setName(null);
 
         mSubjectDao.insert(category);
@@ -68,13 +66,11 @@ public class CategoryDaoTest {
     @Test
     public void createAndRead() throws InterruptedException {
 
-        Category category = new Category();
-        category.setName("New name");
+        Category category = new Category("New name");
 
-        long categoryID = mSubjectDao.insert(category);
-        category.setCategoryID((int) categoryID);
+        mSubjectDao.insert(category);
 
-        LiveData<Category> categoryLiveData = mSubjectDao.findByID((int) categoryID);
+        LiveData<Category> categoryLiveData = mSubjectDao.findByID(category.getCategoryID());
         Category foundCategory = TestUtils.getLiveDataValueSync(categoryLiveData);
 
         assertEquals(category, foundCategory);
@@ -96,18 +92,17 @@ public class CategoryDaoTest {
 
         List<Category> categories = createCategories(3);
 
-        int userID = TestUtils.insertUser(mAppDatabase.userDao());
-        int listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
+        UUID userID = TestUtils.insertUser(mAppDatabase.userDao());
+        UUID listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
 
-        Product product = new Product();
-        product.setName("Some product");
+        Product product = new Product("Some product");
         product.setListID(listID);
         product.setCategoryID(categories.get(1).getCategoryID());
         mAppDatabase.productDao().insert(product);
 
-        ProductTemplate template = new ProductTemplate();
-        template.setName("Some template");
+        ProductTemplate template = new ProductTemplate("Some template");
         template.setCategoryID(categories.get(2).getCategoryID());
+        mAppDatabase.productTemplateDao().insert(template);
 
         DataSource.Factory<Integer, CategoryStatisticsItem> factory =
                 mSubjectDao.findAllWithStatistics();
@@ -115,8 +110,8 @@ public class CategoryDaoTest {
 
         List<CategoryStatisticsItem> expectedList = new ArrayList<>();
         expectedList.add(new CategoryStatisticsItem(categories.get(0), false));
-        expectedList.add(new CategoryStatisticsItem(categories.get(1), false));
-        expectedList.add(new CategoryStatisticsItem(categories.get(2), false));
+        expectedList.add(new CategoryStatisticsItem(categories.get(1), true));
+        expectedList.add(new CategoryStatisticsItem(categories.get(2), true));
 
         TestUtils.assertEquals(foundList, expectedList);
     }
@@ -127,12 +122,8 @@ public class CategoryDaoTest {
     }
 
     private Category createCategory(String name) throws InterruptedException {
-        Category category = new Category();
-        category.setName(name);
-
-        int categoryID = (int) mSubjectDao.insert(category);
-        category.setCategoryID(categoryID);
-
+        Category category = new Category(name);
+        mSubjectDao.insert(category);
         return category;
     }
 

@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -31,8 +33,7 @@ public class ProductTemplateRepository {
 
     public void createTemplateFromProduct(Product product) {
 
-        ProductTemplate template = new ProductTemplate();
-        template.setName(product.getName());
+        ProductTemplate template = new ProductTemplate(product.getName());
         template.setCategoryID(product.getCategoryID());
         template.setUnitID(product.getUnitID());
 
@@ -83,7 +84,7 @@ public class ProductTemplateRepository {
         }
     }
 
-    public DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> getTemplates(boolean isGroupedView, int listID) {
+    public DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> getTemplates(boolean isGroupedView, UUID listID) {
 
         if (isGroupedView) {
             return mProductTemplateDao.findAllSortByNameWithCategoryAndListStatistics(listID);
@@ -92,7 +93,7 @@ public class ProductTemplateRepository {
         }
     }
 
-    public DataSource.Factory<Integer, ProductTemplate> getTemplatesByNameLike(String name, int listID) {
+    public DataSource.Factory<Integer, ProductTemplate> getTemplatesByNameLike(String name, UUID listID) {
         return mProductTemplateDao.findAllByNameLike(name, listID);
     }
 }

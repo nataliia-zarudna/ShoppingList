@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -45,19 +46,14 @@ public class UserDaoTest {
     @Test
     public void create() {
 
-        User user = new User();
-        user.setName("New user");
-
-        long userID = mSubjectDao.insert(user);
-
-        assertThat(userID, not(0l));
+        User user = new User("New user");
+        mSubjectDao.insert(user);
     }
 
     @Test(expected = SQLiteConstraintException.class)
     public void exceptionOnCreateWithNullName() {
 
-        User user = new User();
-        user.setName(null);
+        User user = new User(null);
 
         mSubjectDao.insert(user);
     }
@@ -65,13 +61,11 @@ public class UserDaoTest {
     @Test
     public void createAndRead() throws InterruptedException {
 
-        User user = new User();
-        user.setName("New user");
+        User user = new User("New user");
 
-        long userID = mSubjectDao.insert(user);
-        user.setUserID((int) userID);
+        mSubjectDao.insert(user);
 
-        LiveData<User> userLiveData = mSubjectDao.findByID((int) userID);
+        LiveData<User> userLiveData = mSubjectDao.findByID(user.getUserID());
         User insertedUser = TestUtils.getLiveDataValueSync(userLiveData);
 
         assertThat(user, is(insertedUser));
@@ -82,7 +76,7 @@ public class UserDaoTest {
 
         List<User> users = createUsers(3);
 
-        int excludeUserID = users.get(1).getUserID();
+        UUID excludeUserID = users.get(1).getUserID();
         DataSource.Factory<Integer, User> actualUsersDataSourse = mSubjectDao.findByExcludeID(excludeUserID);
         PagedList<User> actualUsers = TestUtils.getPagedListSync(actualUsersDataSourse);
 
@@ -100,12 +94,11 @@ public class UserDaoTest {
 
     private User createUser() throws InterruptedException {
 
-        User user = new User();
-        user.setName("New user");
+        User user = new User("New user");
 
-        long userID = mSubjectDao.insert(user);
+        mSubjectDao.insert(user);
 
-        LiveData<User> userLiveData = mSubjectDao.findByID((int) userID);
+        LiveData<User> userLiveData = mSubjectDao.findByID(user.getUserID());
         return TestUtils.getLiveDataValueSync(userLiveData);
     }
 

@@ -8,7 +8,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.nzarudna.shoppinglist.model.category.Category;
+import java.util.UUID;
 
 /**
  * Category DAO
@@ -17,7 +17,7 @@ import com.nzarudna.shoppinglist.model.category.Category;
 public interface CategoryDao {
 
     @Insert
-    long insert(Category category);
+    void insert(Category category);
 
     @Update
     void update(Category category);
@@ -26,12 +26,12 @@ public interface CategoryDao {
     void delete(Category category);
 
     @Query("SELECT * FROM categories WHERE category_id = :categoryID")
-    Category findByIDSync(int categoryID);
+    Category findByIDSync(UUID categoryID);
 
     @Query("SELECT * FROM categories WHERE category_id = :categoryID")
-    LiveData<Category> findByID(int categoryID);
+    LiveData<Category> findByID(UUID categoryID);
 
-    @Query("SELECT * FROM categories")
+    @Query("SELECT * FROM categories WHERE category_id <> 'ffffffff-ffff-ffff-ffff-ffffffffffff'")
     DataSource.Factory<Integer, Category> findAll();
 
     @Query("SELECT category.*, " +
@@ -44,6 +44,8 @@ public interface CategoryDao {
             "    WHERE category_id = category.category_id " +
             "    LIMIT 1 " +
             "    ) AS is_used " +
-            "FROM categories category")
+            "FROM categories category " +
+            "WHERE category_id <> 'ffffffff-ffff-ffff-ffff-ffffffffffff' " +
+            "ORDER BY name ")
     DataSource.Factory<Integer, CategoryStatisticsItem> findAllWithStatistics();
 }

@@ -11,6 +11,8 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 /**
@@ -22,10 +24,10 @@ public class ProductListViewModel extends ViewModel {
     @Inject
     ProductListRepository mProductListRepository;
 
-    private int mProductListID;
+    private UUID mProductListID;
     private ShoppingList mShoppingList;
 
-    public void setProductListID(int productListID) {
+    public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
 
         mShoppingList = mProductListRepository.getShoppingList(productListID);

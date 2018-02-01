@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public class ProductListRepositoryTest {
 
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
     private static final String MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES = "My own default List Name";
-    private static final int MOCKED_SELF_USER_ID = 2;
+    private static final UUID MOCKED_SELF_USER_ID = UUID.randomUUID();
 
     private ProductListRepository mSubject;
 
@@ -85,16 +86,13 @@ public class ProductListRepositoryTest {
 
         final long mockListID = 33;
 
-        ProductList expectedProductList = new ProductList();
-        expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME);
+        ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
-        expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
-        when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         mSubject.createList(new ProductListRepository.OnProductListCreateListener() {
             @Override
-            public void onCreate(int productListID) {
+            public void onCreate(UUID productListID) {
 
                 assertEquals(productListID, mockListID);
                 countDownLatch.countDown();
@@ -116,17 +114,14 @@ public class ProductListRepositoryTest {
 
         final long mockListID = 33;
 
-        ProductList expectedProductList = new ProductList();
-        expectedProductList.setName(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES);
+        ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES, MOCKED_SELF_USER_ID);
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
         expectedProductList.setIsGroupedView(true);
-        expectedProductList.setCreatedBy(MOCKED_SELF_USER_ID);
-        when(mProductListDao.insert(expectedProductList)).thenReturn(mockListID);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         mSubject.createList(new ProductListRepository.OnProductListCreateListener() {
             @Override
-            public void onCreate(int productListID) {
+            public void onCreate(UUID productListID) {
 
                 assertEquals(productListID, mockListID);
                 countDownLatch.countDown();
@@ -141,29 +136,25 @@ public class ProductListRepositoryTest {
     @Test
     public void copyList_testEqualsData() throws InterruptedException, ShoppingListException {
 
-        int etalonListID = 2;
-        ProductList etalonList = new ProductList();
+        UUID etalonListID = UUID.randomUUID();
+        ProductList etalonList = new ProductList("Some list name", UUID.randomUUID());
         etalonList.setListID(etalonListID);
-        etalonList.setName("Some list name");
         etalonList.setSorting(SORT_LISTS_BY_CREATED_AT);
         etalonList.setIsGroupedView(true);
         etalonList.setStatus(ProductList.STATUS_ARCHIVED);
         when(mProductListDao.findByIDSync(etalonListID)).thenReturn(etalonList);
 
         final long mockNewListID = 12;
-        ProductList expectedList = new ProductList();
-        expectedList.setName(etalonList.getName());
+        ProductList expectedList = new ProductList(etalonList.getName(), MOCKED_SELF_USER_ID);
         expectedList.setCreatedAt(new Date());
-        expectedList.setCreatedBy(MOCKED_SELF_USER_ID);
         expectedList.setSorting(SORT_LISTS_BY_CREATED_AT);
         expectedList.setIsGroupedView(true);
         expectedList.setStatus(ProductList.STATUS_ACTIVE);
-        when(mProductListDao.insert(expectedList)).thenReturn(mockNewListID);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         mSubject.copyList(etalonListID, new ProductListRepository.OnProductListCreateListener() {
             @Override
-            public void onCreate(int productListID) {
+            public void onCreate(UUID productListID) {
 
                 assertEquals(productListID, mockNewListID);
                 countDownLatch.countDown();
@@ -177,18 +168,17 @@ public class ProductListRepositoryTest {
     @Test
     public void copyList_testEqualsProducts() throws InterruptedException, ShoppingListException {
 
-        int etalonListID = 2;
-        ProductList etalonList = new ProductList();
+        UUID etalonListID = UUID.randomUUID();
+        ProductList etalonList = new ProductList("Some etalon name", UUID.randomUUID());
         when(mProductListDao.findByIDSync(etalonListID)).thenReturn(etalonList);
 
         List<Product> etalonProducts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            Product etalonProduct = new Product();
+            Product etalonProduct = new Product("Custom name");
             etalonProduct.setStatus(Product.BOUGHT);
-            etalonProduct.setName("Custom name");
             etalonProduct.setComment("Some comments");
-            etalonProduct.setCategoryID(2);
-            etalonProduct.setUnitID(3);
+            etalonProduct.setCategoryID(UUID.randomUUID());
+            etalonProduct.setUnitID(UUID.randomUUID());
             etalonProduct.setCount(i + 5.5);
             etalonProduct.setOrder(i);
 
@@ -201,7 +191,7 @@ public class ProductListRepositoryTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         mSubject.copyList(etalonListID, new ProductListRepository.OnProductListCreateListener() {
             @Override
-            public void onCreate(int productListID) {
+            public void onCreate(UUID productListID) {
                 countDownLatch.countDown();
             }
         });
@@ -218,12 +208,12 @@ public class ProductListRepositoryTest {
     @Test(expected = ShoppingListException.class)
     public void copyList_testException_OnNonexistentList() throws InterruptedException, ShoppingListException {
 
-        mSubject.copyList(99, null);
+        mSubject.copyList(UUID.randomUUID(), null);
     }
 
     @Test
     public void removeList() {
-        ProductList listToRemove = new ProductList();
+        ProductList listToRemove = new ProductList("Some name", UUID.randomUUID());
 
         mSubject.removeList(listToRemove.getListID());
 
@@ -233,10 +223,10 @@ public class ProductListRepositoryTest {
     @Test
     public void getList() {
 
-        int listID = 3;
+        UUID listID = UUID.randomUUID();
         LiveData<ProductList> productsListLiveData = Mockito.mock(LiveData.class);
         when(mProductListDao.findByID(listID)).thenReturn(productsListLiveData);
-        when(mProductListDao.findByIDSync(listID)).thenReturn(new ProductList());
+        when(mProductListDao.findByIDSync(listID)).thenReturn(new ProductList("Some name", UUID.randomUUID()));
 
         ShoppingList shoppingList = mSubject.getShoppingList(listID);
 
@@ -247,7 +237,7 @@ public class ProductListRepositoryTest {
     @Test
     public void getList_testNull_onNonexistentList() {
 
-        ShoppingList shoppingList = mSubject.getShoppingList(99);
+        ShoppingList shoppingList = mSubject.getShoppingList(UUID.randomUUID());
 
         assertNull(shoppingList);
     }

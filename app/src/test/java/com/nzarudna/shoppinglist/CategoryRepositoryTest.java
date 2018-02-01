@@ -32,7 +32,7 @@ public class CategoryRepositoryTest {
 
     @Test
     public void create() {
-        Category category = new Category();
+        Category category = new Category("Some name");
         mSubject.create(category);
 
         verify(mCategoryDao).insert(category);
@@ -40,7 +40,7 @@ public class CategoryRepositoryTest {
 
     @Test
     public void update() {
-        Category category = new Category();
+        Category category = new Category("Some name");
         mSubject.update(category);
 
         verify(mCategoryDao).update(category);
@@ -48,7 +48,7 @@ public class CategoryRepositoryTest {
 
     @Test
     public void remove() {
-        Category category = new Category();
+        Category category = new Category("Some name");
         mSubject.remove(category);
 
         verify(mCategoryDao).delete(category);

@@ -10,6 +10,8 @@ import android.arch.persistence.room.Update;
 
 import com.nzarudna.shoppinglist.model.product.Product;
 
+import java.util.UUID;
+
 /**
  * Dao
  */
@@ -36,7 +38,7 @@ public interface ProductListDao {
             "       GROUP BY list.list_id";
 
     @Insert
-    long insert(ProductList list);
+    void insert(ProductList list);
 
     @Update
     void update(ProductList list);
@@ -45,13 +47,13 @@ public interface ProductListDao {
     void delete(ProductList productList);
 
     @Query(value = "DELETE FROM product_lists WHERE list_id = :productListID")
-    void deleteByID(int productListID);
+    void deleteByID(UUID productListID);
 
     @Query(value = "SELECT * FROM product_lists WHERE list_id = :listID")
-    ProductList findByIDSync(long listID);
+    ProductList findByIDSync(UUID listID);
 
     @Query(value = "SELECT * FROM product_lists WHERE list_id = :listID")
-    LiveData<ProductList> findByID(long listID);
+    LiveData<ProductList> findByID(UUID listID);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.name")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByName(

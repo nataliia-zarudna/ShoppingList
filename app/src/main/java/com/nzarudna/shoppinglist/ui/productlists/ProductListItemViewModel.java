@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 
+import java.util.UUID;
+
 /**
  * View Model for item of product lists
  */
@@ -50,6 +52,6 @@ public class ProductListItemViewModel extends BaseObservable {
 
     public interface ProductListItemViewModelObserver {
 
-        void startProductListActivity(int productsListID);
+        void startProductListActivity(UUID productsListID);
     }
 }

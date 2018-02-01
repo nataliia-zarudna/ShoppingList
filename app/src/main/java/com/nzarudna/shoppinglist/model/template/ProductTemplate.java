@@ -7,62 +7,75 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.unit.Unit;
+
+import java.util.UUID;
 
 /**
  * Product item user can add to his shopping card
  */
 @Entity(tableName = "product_templates",
-        foreignKeys = @ForeignKey(entity = Category.class,
-                parentColumns = "category_id",
-                childColumns = "category_id"))
+        foreignKeys = {
+                @ForeignKey(entity = Category.class,
+                        parentColumns = "category_id",
+                        childColumns = "category_id"),
+                @ForeignKey(entity = Unit.class,
+                        parentColumns = "unit_id",
+                        childColumns = "unit_id")
+        })
 public class ProductTemplate {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
+    @NonNull
     @ColumnInfo(name = "template_id")
-    private int templateID;
+    private UUID templateID;
 
     @NonNull
     private String name;
 
     @ColumnInfo(name = "category_id")
-    private Integer categoryID;
+    private UUID categoryID;
 
     @ColumnInfo(name = "unit_id")
-    private Integer unitID;
+    private UUID unitID;
 
-    public ProductTemplate() {
+    public ProductTemplate(@NonNull String name) {
+        this.templateID = UUID.randomUUID();
+        this.name = name;
         categoryID = Category.DEFAULT_CATEGORY_ID;
     }
 
-    public int getTemplateID() {
+    @NonNull
+    public UUID getTemplateID() {
         return templateID;
     }
 
-    public void setTemplateID(int templateID) {
+    public void setTemplateID(@NonNull UUID templateID) {
         this.templateID = templateID;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
-    public Integer getCategoryID() {
+    public UUID getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(Integer categoryID) {
+    public void setCategoryID(UUID categoryID) {
         this.categoryID = categoryID;
     }
 
-    public Integer getUnitID() {
+    public UUID getUnitID() {
         return unitID;
     }
 
-    public void setUnitID(Integer unitID) {
+    public void setUnitID(UUID unitID) {
         this.unitID = unitID;
     }
 
@@ -73,7 +86,7 @@ public class ProductTemplate {
 
         ProductTemplate template = (ProductTemplate) o;
 
-        if (templateID != template.templateID) return false;
+        if (!templateID.equals(template.templateID)) return false;
         if (!name.equals(template.name)) return false;
         if (categoryID != null ? !categoryID.equals(template.categoryID) : template.categoryID != null)
             return false;
@@ -82,7 +95,7 @@ public class ProductTemplate {
 
     @Override
     public int hashCode() {
-        int result = templateID;
+        int result = templateID.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
         result = 31 * result + (unitID != null ? unitID.hashCode() : 0);

@@ -10,6 +10,8 @@ import android.arch.persistence.room.Update;
 
 import com.nzarudna.shoppinglist.model.user.User;
 
+import java.util.UUID;
+
 /**
  * Created by Nataliia on 29.12.2017.
  */
@@ -18,7 +20,7 @@ import com.nzarudna.shoppinglist.model.user.User;
 public interface UserDao {
 
     @Insert
-    long insert(User user);
+    void insert(User user);
 
     @Update
     void update(User user);
@@ -27,8 +29,8 @@ public interface UserDao {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE user_id = :userID")
-    LiveData<User> findByID(int userID);
+    LiveData<User> findByID(UUID userID);
 
     @Query("SELECT * FROM users WHERE user_id <> :userID")
-    DataSource.Factory<Integer, User> findByExcludeID(int userID);
+    DataSource.Factory<Integer, User> findByExcludeID(UUID userID);
 }

@@ -14,20 +14,23 @@ import com.nzarudna.shoppinglist.model.user.User;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * List of products to buy
  */
 @Entity(tableName = "product_lists",
-        foreignKeys = {@ForeignKey(entity = User.class,
-                parentColumns = "user_id",
-                childColumns = "created_by"),
+        foreignKeys = {
+                @ForeignKey(entity = User.class,
+                        parentColumns = "user_id",
+                        childColumns = "created_by"),
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
                         childColumns = "modified_by"),
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
-                        childColumns = "assigned_id")},
+                        childColumns = "assigned_id")
+        },
         indices = @Index("created_by"))
 public class ProductList {
 
@@ -48,9 +51,10 @@ public class ProductList {
     public static final int SORT_PRODUCTS_BY_STATUS = 2;
     public static final int SORT_PRODUCTS_BY_ORDER = 3;
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
+    @NonNull
     @ColumnInfo(name = "list_id")
-    private int listID;
+    private UUID listID;
 
     @NonNull
     private String name;
@@ -61,13 +65,13 @@ public class ProductList {
 
     @ColumnInfo(name = "created_by")
     @NonNull
-    private Integer createdBy;
+    private UUID createdBy;
 
     @ColumnInfo(name = "modified_at")
     private Date modifiedAt;
 
     @ColumnInfo(name = "modified_by")
-    private Integer modifiedBy;
+    private UUID modifiedBy;
 
     private int status;
 
@@ -78,18 +82,22 @@ public class ProductList {
     private boolean isGroupedView;
 
     @ColumnInfo(name = "assigned_id")
-    private Integer assignedID;
+    private UUID assignedID;
 
-    public ProductList() {
+    public ProductList(@NonNull String name, @NonNull UUID createdBy) {
+        this.listID = UUID.randomUUID();
+        this.name = name;
+        this.createdBy = createdBy;
         this.createdAt = new Date();
         this.setStatus(STATUS_ACTIVE);
     }
 
-    public int getListID() {
+    @NonNull
+    public UUID getListID() {
         return listID;
     }
 
-    public void setListID(int listID) {
+    public void setListID(@NonNull UUID listID) {
         this.listID = listID;
     }
 
@@ -112,11 +120,11 @@ public class ProductList {
     }
 
     @NonNull
-    public Integer getCreatedBy() {
+    public UUID getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(@NonNull Integer createdBy) {
+    public void setCreatedBy(@NonNull UUID createdBy) {
         this.createdBy = createdBy;
     }
 
@@ -128,11 +136,11 @@ public class ProductList {
         this.modifiedAt = modifiedAt;
     }
 
-    public Integer getModifiedBy() {
+    public UUID getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(Integer modifiedBy) {
+    public void setModifiedBy(UUID modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
@@ -162,11 +170,11 @@ public class ProductList {
         this.isGroupedView = isGroupedView;
     }
 
-    public Integer getAssignedID() {
+    public UUID getAssignedID() {
         return assignedID;
     }
 
-    public void setAssignedID(Integer assignedID) {
+    public void setAssignedID(UUID assignedID) {
         this.assignedID = assignedID;
     }
 
@@ -177,12 +185,12 @@ public class ProductList {
 
         ProductList that = (ProductList) o;
 
-        if (listID != that.listID) return false;
         if (status != that.status) return false;
         if (sorting != that.sorting) return false;
         if (isGroupedView != that.isGroupedView) return false;
+        if (!listID.equals(that.listID)) return false;
         if (!name.equals(that.name)) return false;
-        if (DateUtils.getTimeInSeconds(createdAt) != DateUtils.getTimeInSeconds(that.createdAt)) return false;
+        if (!createdAt.equals(that.createdAt)) return false;
         if (!createdBy.equals(that.createdBy)) return false;
         if (modifiedAt != null ? !modifiedAt.equals(that.modifiedAt) : that.modifiedAt != null)
             return false;
@@ -193,7 +201,7 @@ public class ProductList {
 
     @Override
     public int hashCode() {
-        int result = listID;
+        int result = listID.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + createdAt.hashCode();
         result = 31 * result + createdBy.hashCode();

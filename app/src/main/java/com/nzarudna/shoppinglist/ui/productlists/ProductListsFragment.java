@@ -28,6 +28,8 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListActivity;
 
+import java.util.UUID;
+
 /**
  * Fragment with set of shopping lists
  */
@@ -133,13 +135,13 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
     }
 
     @Override
-    public void startProductListActivity(int productListID) {
+    public void startProductListActivity(UUID productListID) {
         Intent intent = ProductListActivity.newIntent(getActivity(), productListID);
         startActivity(intent);
     }
 
     @Override
-    public void startEditProductListActivity(int productListID) {
+    public void startEditProductListActivity(UUID productListID) {
         Intent intent = EditProductListActivity.newIntent(getActivity(), productListID);
         startActivity(intent);
     }

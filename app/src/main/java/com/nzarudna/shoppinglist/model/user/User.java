@@ -5,15 +5,18 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.util.UUID;
+
 /**
  * App user
  */
 @Entity(tableName = "users")
 public class User {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
+    @NonNull
     @ColumnInfo(name = "user_id")
-    private int userID;
+    private UUID userID;
 
     @ColumnInfo(name = "phone_number")
     private String phoneNumber;
@@ -23,11 +26,17 @@ public class User {
 
     private String token;
 
-    public int getUserID() {
+    public User(@NonNull String name) {
+        this.userID = UUID.randomUUID();
+        this.name = name;
+    }
+
+    @NonNull
+    public UUID getUserID() {
         return userID;
     }
 
-    public void setUserID(int userID) {
+    public void setUserID(@NonNull UUID userID) {
         this.userID = userID;
     }
 
@@ -63,7 +72,7 @@ public class User {
 
         User user = (User) o;
 
-        if (userID != user.userID) return false;
+        if (!userID.equals(user.userID)) return false;
         if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null)
             return false;
         if (!name.equals(user.name)) return false;
@@ -72,7 +81,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        int result = userID;
+        int result = userID.hashCode();
         result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + name.hashCode();
         result = 31 * result + (token != null ? token.hashCode() : 0);

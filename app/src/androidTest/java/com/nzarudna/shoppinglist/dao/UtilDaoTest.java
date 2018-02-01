@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by nsirobaba on 1/31/18.
@@ -41,13 +42,14 @@ public class UtilDaoTest {
             for (int i = 0; i < 3; i++) {
 
                 String name = "Unit #" + i;
+                UUID unitID = UUID.randomUUID();
 
-                int unitID = (int) mDatabase
-                        .compileStatement("INSERT INTO units(name) VALUES('" + name + "')")
+                mDatabase
+                        .compileStatement("INSERT INTO units(unit_id, name)" +
+                                "                VALUES('" + unitID + "', '" + name + "')")
                         .executeInsert();
 
-                Unit unit = new Unit();
-                unit.setName(name);
+                Unit unit = new Unit(name);
                 unit.setUnitID(unitID);
                 expectedUnits.add(unit);
             }

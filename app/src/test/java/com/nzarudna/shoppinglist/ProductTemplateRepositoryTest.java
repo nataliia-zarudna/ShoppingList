@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.UUID;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +40,7 @@ public class ProductTemplateRepositoryTest {
     @Test
     public void createTemplate() {
 
-        ProductTemplate template = new ProductTemplate();
+        ProductTemplate template = new ProductTemplate("Some name");
         mSubject.createTemplate(template);
 
         verify(mProductTemplateDao).insert(template);
@@ -48,18 +50,16 @@ public class ProductTemplateRepositoryTest {
     public void createTemplateFromProduct() {
 
         String name = "Some product";
-        int categoryID = 8;
-        int unitID = 7;
+        UUID categoryID = UUID.randomUUID();
+        UUID unitID = UUID.randomUUID();
 
-        Product product = new Product();
-        product.setName(name);
+        Product product = new Product(name);
         product.setCategoryID(categoryID);
         product.setUnitID(unitID);
 
         mSubject.createTemplateFromProduct(product);
 
-        ProductTemplate expectedTemplate = new ProductTemplate();
-        expectedTemplate.setName(name);
+        ProductTemplate expectedTemplate = new ProductTemplate(name);
         expectedTemplate.setCategoryID(categoryID);
         expectedTemplate.setUnitID(unitID);
 
@@ -70,14 +70,11 @@ public class ProductTemplateRepositoryTest {
     public void createTemplateFromProduct_withoutFKs() {
 
         String name = "Some product";
-
-        Product product = new Product();
-        product.setName(name);
+        Product product = new Product(name);
 
         mSubject.createTemplateFromProduct(product);
 
-        ProductTemplate expectedTemplate = new ProductTemplate();
-        expectedTemplate.setName(name);
+        ProductTemplate expectedTemplate = new ProductTemplate(name);
         expectedTemplate.setUnitID(null);
 
         verify(mProductTemplateDao).insert(expectedTemplate);
@@ -86,10 +83,9 @@ public class ProductTemplateRepositoryTest {
     @Test
     public void updateTemplate_andClearLinksToProducts() {
 
-        int templateID = 5;
+        UUID templateID = UUID.randomUUID();
 
-        ProductTemplate template = new ProductTemplate();
-        template.setName("Some name");
+        ProductTemplate template = new ProductTemplate("Some name");
         template.setTemplateID(templateID);
 
         mSubject.updateTemplate(template);
@@ -101,7 +97,7 @@ public class ProductTemplateRepositoryTest {
     @Test
     public void removeTemplate() {
 
-        ProductTemplate template = new ProductTemplate();
+        ProductTemplate template = new ProductTemplate("Some name");
         mSubject.removeTemplate(template);
 
         verify(mProductTemplateDao).delete(template);
@@ -123,7 +119,7 @@ public class ProductTemplateRepositoryTest {
 
     @Test
     public void findAll_withListStatisctics() {
-        int listID = 5;
+        UUID listID = UUID.randomUUID();
         mSubject.getTemplates(false, listID);
 
         verify(mProductTemplateDao).findAllSortByNameWithListStatistics(listID);
@@ -131,7 +127,7 @@ public class ProductTemplateRepositoryTest {
 
     @Test
     public void findAll_withListStatisctics_groupedByCategory() {
-        int listID = 5;
+        UUID listID = UUID.randomUUID();
         mSubject.getTemplates(true, listID);
 
         verify(mProductTemplateDao).findAllSortByNameWithCategoryAndListStatistics(listID);
@@ -140,7 +136,7 @@ public class ProductTemplateRepositoryTest {
     @Test
     public void findAll_byNameLike() {
         String name = "Some name";
-        int listID = 5;
+        UUID listID = UUID.randomUUID();
         mSubject.getTemplatesByNameLike(name, listID);
 
         verify(mProductTemplateDao).findAllByNameLike(name, listID);

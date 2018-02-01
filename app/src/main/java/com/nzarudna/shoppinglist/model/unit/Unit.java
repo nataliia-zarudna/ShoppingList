@@ -5,24 +5,33 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import java.util.UUID;
+
 /**
  * Unit of products
  */
 @Entity(tableName = "units")
 public class Unit {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
+    @NonNull
     @ColumnInfo(name = "unit_id")
-    private int unitID;
+    private UUID unitID;
 
     @NonNull
     private String name;
 
-    public int getUnitID() {
+    public Unit(@NonNull String name) {
+        this.unitID = UUID.randomUUID();
+        this.name = name;
+    }
+
+    @NonNull
+    public UUID getUnitID() {
         return unitID;
     }
 
-    public void setUnitID(int unitID) {
+    public void setUnitID(@NonNull UUID unitID) {
         this.unitID = unitID;
     }
 
@@ -42,13 +51,13 @@ public class Unit {
 
         Unit unit = (Unit) o;
 
-        if (unitID != unit.unitID) return false;
+        if (!unitID.equals(unit.unitID)) return false;
         return name.equals(unit.name);
     }
 
     @Override
     public int hashCode() {
-        int result = unitID;
+        int result = unitID.hashCode();
         result = 31 * result + name.hashCode();
         return result;
     }

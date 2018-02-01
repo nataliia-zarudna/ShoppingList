@@ -10,9 +10,11 @@ import android.support.annotation.NonNull;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.unit.Unit;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.UUID;
 
 /**
  * Product item user can add to his shopping list
@@ -24,10 +26,14 @@ import java.lang.annotation.RetentionPolicy;
                         childColumns = "category_id"),
                 @ForeignKey(entity = ProductList.class,
                         parentColumns = "list_id",
-                        childColumns = "list_id"),
+                        childColumns = "list_id",
+                        onDelete = ForeignKey.CASCADE),
                 @ForeignKey(entity = ProductTemplate.class,
                         parentColumns = "template_id",
-                        childColumns = "template_id")})
+                        childColumns = "template_id"),
+                @ForeignKey(entity = Unit.class,
+                        parentColumns = "unit_id",
+                        childColumns = "unit_id")})
 public class Product implements Cloneable {
 
     @Retention(RetentionPolicy.SOURCE)
@@ -39,21 +45,22 @@ public class Product implements Cloneable {
     public static final int ABSENT = 2;
     public static final int BOUGHT = 3;
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
+    @NonNull
     @ColumnInfo(name = "product_id")
-    private int productID;
+    private UUID productID;
 
     @NonNull
     private String name;
 
     @ColumnInfo(name = "category_id")
-    private Integer categoryID;
+    private UUID categoryID;
 
     @ColumnInfo(name = "list_id")
-    private int listID;
+    private UUID listID;
 
     @ColumnInfo(name = "unit_id")
-    private int unitID;
+    private UUID unitID;
 
     @ColumnInfo(name = "count")
     private double count;
@@ -64,52 +71,56 @@ public class Product implements Cloneable {
     private String comment;
 
     @ColumnInfo(name = "template_id")
-    private Integer templateID;
+    private UUID templateID;
 
     private double order;
 
-    public Product() {
+    public Product(@NonNull String name) {
+        this.productID = UUID.randomUUID();
+        this.name = name;
         this.status = TO_BUY;
         this.categoryID = Category.DEFAULT_CATEGORY_ID;
     }
 
-    public int getProductID() {
+    @NonNull
+    public UUID getProductID() {
         return productID;
     }
 
-    public void setProductID(int productID) {
+    public void setProductID(@NonNull UUID productID) {
         this.productID = productID;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
-    public Integer getCategoryID() {
+    public UUID getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(Integer categoryID) {
+    public void setCategoryID(UUID categoryID) {
         this.categoryID = categoryID;
     }
 
-    public int getListID() {
+    public UUID getListID() {
         return listID;
     }
 
-    public void setListID(int listID) {
+    public void setListID(UUID listID) {
         this.listID = listID;
     }
 
-    public int getUnitID() {
+    public UUID getUnitID() {
         return unitID;
     }
 
-    public void setUnitID(int unitID) {
+    public void setUnitID(UUID unitID) {
         this.unitID = unitID;
     }
 
@@ -121,12 +132,11 @@ public class Product implements Cloneable {
         this.count = count;
     }
 
-    @NonNull
     public int getStatus() {
         return status;
     }
 
-    public void setStatus(@NonNull int status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -138,11 +148,11 @@ public class Product implements Cloneable {
         this.comment = comment;
     }
 
-    public Integer getTemplateID() {
+    public UUID getTemplateID() {
         return templateID;
     }
 
-    public void setTemplateID(Integer templateID) {
+    public void setTemplateID(UUID templateID) {
         this.templateID = templateID;
     }
 
@@ -157,7 +167,7 @@ public class Product implements Cloneable {
     @Override
     public Product clone() throws CloneNotSupportedException {
         Product clone = (Product) super.clone();
-        clone.setProductID(0);
+        clone.setProductID(null);
 
         return clone;
     }
@@ -169,33 +179,34 @@ public class Product implements Cloneable {
 
         Product product = (Product) o;
 
-        if (productID != product.productID) return false;
-        if (listID != product.listID) return false;
-        if (unitID != product.unitID) return false;
         if (Double.compare(product.count, count) != 0) return false;
         if (status != product.status) return false;
         if (Double.compare(product.order, order) != 0) return false;
+        if (!productID.equals(product.productID)) return false;
         if (!name.equals(product.name)) return false;
-        if (templateID != product.templateID) return false;
         if (categoryID != null ? !categoryID.equals(product.categoryID) : product.categoryID != null)
             return false;
-        return comment != null ? comment.equals(product.comment) : product.comment == null;
+        if (listID != null ? !listID.equals(product.listID) : product.listID != null) return false;
+        if (unitID != null ? !unitID.equals(product.unitID) : product.unitID != null) return false;
+        if (comment != null ? !comment.equals(product.comment) : product.comment != null)
+            return false;
+        return templateID != null ? templateID.equals(product.templateID) : product.templateID == null;
     }
 
     @Override
     public int hashCode() {
         int result;
         long temp;
-        result = productID;
+        result = productID.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
-        result = 31 * result + listID;
-        result = 31 * result + unitID;
-        result = 31 * result + templateID;
+        result = 31 * result + (listID != null ? listID.hashCode() : 0);
+        result = 31 * result + (unitID != null ? unitID.hashCode() : 0);
         temp = Double.doubleToLongBits(count);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + status;
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (templateID != null ? templateID.hashCode() : 0);
         temp = Double.doubleToLongBits(order);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;

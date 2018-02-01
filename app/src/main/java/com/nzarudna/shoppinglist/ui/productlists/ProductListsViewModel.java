@@ -11,6 +11,8 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_NAME;
@@ -52,7 +54,7 @@ public class ProductListsViewModel extends ViewModel {
 
         mProductListRepository.createList(new ProductListRepository.OnProductListCreateListener() {
             @Override
-            public void onCreate(int productListID) {
+            public void onCreate(UUID productListID) {
 
                 if (mObserver != null) {
                     mObserver.startEditProductListActivity(productListID);
@@ -63,6 +65,6 @@ public class ProductListsViewModel extends ViewModel {
 
     public interface ProductListViewModelObserver {
 
-        void startEditProductListActivity(int productListID);
+        void startEditProductListActivity(UUID productListID);
     }
 }

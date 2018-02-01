@@ -16,6 +16,8 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 
+import java.util.UUID;
+
 /**
  * Created by Nataliia on 21.01.2018.
  */
@@ -46,7 +48,7 @@ public class EditProductListFragment extends Fragment {
 
         mFragmentView = inflater.inflate(R.layout.fragment_edit_product_list, container, false);
 
-        int productListID = getArguments().getInt(ARG_PRODUCTS_LIST_ID);
+        UUID productListID = (UUID) getArguments().getSerializable(ARG_PRODUCTS_LIST_ID);
         mViewModel = ViewModelProviders.of(this).get(EditProductListViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
         mViewModel.setProductListID(productListID);

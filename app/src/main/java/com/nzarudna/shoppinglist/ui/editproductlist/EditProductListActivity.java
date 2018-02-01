@@ -10,6 +10,8 @@ import android.support.v7.app.ActionBar;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.SingleFragmentActivity;
 
+import java.util.UUID;
+
 /**
  * Created by Nataliia on 21.01.2018.
  */
@@ -20,7 +22,7 @@ public class EditProductListActivity extends SingleFragmentActivity {
 
     private EditProductListFragment mEditProductListFragment;
 
-    public static Intent newIntent(Context packageContext, int productListID) {
+    public static Intent newIntent(Context packageContext, UUID productListID) {
         Intent intent = new Intent(packageContext, EditProductListActivity.class);
         intent.putExtra(EXTRA_PRODUCTS_LIST_ID, productListID);
         return intent;

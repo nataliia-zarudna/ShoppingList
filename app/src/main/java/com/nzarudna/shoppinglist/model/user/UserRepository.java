@@ -2,6 +2,8 @@ package com.nzarudna.shoppinglist.model.user;
 
 import android.content.SharedPreferences;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -20,14 +22,15 @@ public class UserRepository {
         mSharedPreferences = sharedPreferences;
     }
 
-    public int getSelfUserID() {
-        return mSharedPreferences.getInt(SELF_USER_ID, 0);
+    public UUID getSelfUserID() {
+        String strUUID = mSharedPreferences.getString(SELF_USER_ID, "");
+        return UUID.fromString(strUUID);
     }
 
-    public void setSelfUserID(int selfUserID) {
+    public void setSelfUserID(UUID selfUserID) {
         mSharedPreferences
                 .edit()
-                .putInt(SELF_USER_ID, selfUserID)
+                .putString(SELF_USER_ID, selfUserID.toString())
                 .commit();
     }
 

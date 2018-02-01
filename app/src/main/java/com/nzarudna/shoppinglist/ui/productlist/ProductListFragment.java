@@ -24,6 +24,8 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 
+import java.util.UUID;
+
 /**
  * Created by Nataliia on 21.01.2018.
  */
@@ -50,7 +52,7 @@ public class ProductListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        int productListID = getArguments().getInt(ARG_PRODUCT_LIST_ID);
+        UUID productListID = (UUID) getArguments().getSerializable(ARG_PRODUCT_LIST_ID);
 
         mViewModel = ViewModelProviders.of(this).get(ProductListViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);

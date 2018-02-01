@@ -8,6 +8,8 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.UUID;
+
 /**
  * Product Template DAO
  */
@@ -92,7 +94,7 @@ public interface ProductTemplateDao {
             "ORDER BY temp_name ";
 
     @Insert
-    long insert(ProductTemplate template);
+    void insert(ProductTemplate template);
 
     @Update
     void update(ProductTemplate template);
@@ -101,10 +103,10 @@ public interface ProductTemplateDao {
     void delete(ProductTemplate template);
 
     @Query(value = "SELECT * FROM product_templates WHERE template_id = :templateID")
-    ProductTemplate findByIDSync(int templateID);
+    ProductTemplate findByIDSync(UUID templateID);
 
     @Query(value = "SELECT * FROM product_templates WHERE template_id = :templateID")
-    LiveData<ProductTemplate> findByID(int templateID);
+    LiveData<ProductTemplate> findByID(UUID templateID);
 
     @Query(value = QUERY_ALL_TEMPLATES)
     DataSource.Factory<Integer, CategoryTemplateItem> findAllSortByName();
@@ -113,10 +115,10 @@ public interface ProductTemplateDao {
     DataSource.Factory<Integer, CategoryTemplateItem> findAllSortByNameWithCategory();
 
     @Query(value = QUERY_ALL_TEMPLATES_WITH_USED_IN_LIST)
-    DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> findAllSortByNameWithListStatistics(int listID);
+    DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> findAllSortByNameWithListStatistics(UUID listID);
 
     @Query(value = QUERY_ALL_GROUPED_TEMPLATES_WITH_USED_IN_LIST)
-    DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> findAllSortByNameWithCategoryAndListStatistics(int listID);
+    DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> findAllSortByNameWithCategoryAndListStatistics(UUID listID);
 
     @Query(value = "SELECT * " +
             "       FROM product_templates template " +
@@ -126,5 +128,5 @@ public interface ProductTemplateDao {
             "                WHERE product.template_id = template.template_id" +
             "                   AND product.list_id = :listID) = 0 " +
             "       ORDER BY lower(template.name) ")
-    DataSource.Factory<Integer, ProductTemplate> findAllByNameLike(String name, int listID);
+    DataSource.Factory<Integer, ProductTemplate> findAllByNameLike(String name, UUID listID);
 }

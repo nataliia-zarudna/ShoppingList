@@ -12,6 +12,8 @@ import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 
+import java.util.UUID;
+
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 
 /**
@@ -23,13 +25,13 @@ public class ShoppingList {
 
     public static final String TAG = "ShoppingList";
 
-    private int mListID;
+    private UUID mListID;
 
     private ProductTemplateRepository mProductTemplateRepository;
     private ProductListDao mProductListDao;
     private ProductDao mProductDao;
 
-    public ShoppingList(int listID, ProductListDao productListDao, ProductDao productDao,
+    public ShoppingList(UUID listID, ProductListDao productListDao, ProductDao productDao,
                         ProductTemplateRepository productTemplateRepository) {
 
         mListID = listID;
@@ -42,7 +44,7 @@ public class ShoppingList {
         return mProductListDao.findByID(mListID);
     }
 
-    public int getListID() {
+    public UUID getListID() {
         return mListID;
     }
 
@@ -64,8 +66,8 @@ public class ShoppingList {
 
     public void addProductFromTemplate(ProductTemplate template) {
 
-        Product product = new Product();
-        product.setName(template.getName());
+        Product product = new Product(template.getName());
+        product.setListID(mListID);
         product.setCategoryID(template.getCategoryID());
         product.setTemplateID(template.getTemplateID());
 
@@ -96,7 +98,7 @@ public class ShoppingList {
         if (!oldProduct.getName().equals(product.getName())
                 || oldProduct.getCategoryID() != product.getCategoryID()
                 || oldProduct.getUnitID() != product.getUnitID()) {
-            product.setTemplateID(0);
+            product.setTemplateID(null);
         }
 
         new AsyncTask<Void, Void, Void>() {
@@ -166,7 +168,7 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void removeProductsWithTemplate(final int templateID) {
+    public void removeProductsWithTemplate(final UUID templateID) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
