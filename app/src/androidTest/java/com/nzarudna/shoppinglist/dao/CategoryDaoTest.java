@@ -12,7 +12,10 @@ import android.support.test.runner.AndroidJUnit4;
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
+import com.nzarudna.shoppinglist.model.category.CategoryStatisticsItem;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,25 +91,56 @@ public class CategoryDaoTest {
         TestUtils.assertEquals(createdCategories, actualCategories);
     }
 
+    @Test
+    public void findAllWithStatistics() throws InterruptedException {
+
+        List<Category> categories = createCategories(3);
+
+        int userID = TestUtils.insertUser(mAppDatabase.userDao());
+        int listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
+
+        Product product = new Product();
+        product.setName("Some product");
+        product.setListID(listID);
+        product.setCategoryID(categories.get(1).getCategoryID());
+        mAppDatabase.productDao().insert(product);
+
+        ProductTemplate template = new ProductTemplate();
+        template.setName("Some template");
+        template.setCategoryID(categories.get(2).getCategoryID());
+
+        DataSource.Factory<Integer, CategoryStatisticsItem> factory =
+                mSubjectDao.findAllWithStatistics();
+        PagedList<CategoryStatisticsItem> foundList = TestUtils.getPagedListSync(factory);
+
+        List<CategoryStatisticsItem> expectedList = new ArrayList<>();
+        expectedList.add(new CategoryStatisticsItem(categories.get(0), false));
+        expectedList.add(new CategoryStatisticsItem(categories.get(1), false));
+        expectedList.add(new CategoryStatisticsItem(categories.get(2), false));
+
+        TestUtils.assertEquals(foundList, expectedList);
+    }
+
     @After
     public void closeDB() {
         mAppDatabase.close();
     }
 
-    private Category createCategory() throws InterruptedException {
+    private Category createCategory(String name) throws InterruptedException {
         Category category = new Category();
-        category.setName("New name");
+        category.setName(name);
 
-        long categoryID = mSubjectDao.insert(category);
-        LiveData<Category> categoryLiveData = mSubjectDao.findByID((int) categoryID);
+        int categoryID = (int) mSubjectDao.insert(category);
+        category.setCategoryID(categoryID);
 
-        return TestUtils.getLiveDataValueSync(categoryLiveData);
+        return category;
     }
 
     private List<Category> createCategories(int count) throws InterruptedException {
         List<Category> categories = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            categories.add(createCategory());
+            String name = "Category #" + i;
+            categories.add(createCategory(name));
         }
         return categories;
     }

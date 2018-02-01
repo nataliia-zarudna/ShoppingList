@@ -16,6 +16,11 @@ public class CategoryStatisticsItem {
     @ColumnInfo(name = "is_used")
     boolean isUsed;
 
+    public CategoryStatisticsItem(Category category, boolean isUsed) {
+        this.category = category;
+        this.isUsed = isUsed;
+    }
+
     public Category getCategory() {
         return category;
     }
