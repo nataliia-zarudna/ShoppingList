@@ -77,6 +77,7 @@ public class UserDaoTest {
         ProductList list = new ProductList("Some list", user.getUserID());
         list.setAssignedID(user.getUserID());
         list.setModifiedBy(user.getUserID());
+        mAppDatabase.productListDao().insert(list);
 
         mSubjectDao.delete(user);
 

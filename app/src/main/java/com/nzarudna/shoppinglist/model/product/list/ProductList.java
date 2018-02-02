@@ -23,13 +23,16 @@ import java.util.UUID;
         foreignKeys = {
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
-                        childColumns = "created_by"),
+                        childColumns = "created_by",
+                        onDelete = ForeignKey.SET_NULL),
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
-                        childColumns = "modified_by"),
+                        childColumns = "modified_by",
+                        onDelete = ForeignKey.SET_NULL),
                 @ForeignKey(entity = User.class,
                         parentColumns = "user_id",
-                        childColumns = "assigned_id")
+                        childColumns = "assigned_id",
+                        onDelete = ForeignKey.SET_NULL)
         },
         indices = {@Index(value = "status")})
 public class ProductList {
@@ -64,7 +67,6 @@ public class ProductList {
     private Date createdAt;
 
     @ColumnInfo(name = "created_by")
-    @NonNull
     private UUID createdBy;
 
     @ColumnInfo(name = "modified_at")
@@ -119,7 +121,6 @@ public class ProductList {
         this.createdAt = createdAt;
     }
 
-    @NonNull
     public UUID getCreatedBy() {
         return createdBy;
     }

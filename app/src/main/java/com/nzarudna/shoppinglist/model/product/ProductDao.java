@@ -103,7 +103,7 @@ public interface ProductDao {
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
     Product findByIDSync(UUID productID);
 
-    @Query(value = "SELECT * FROM products WHERE list_id = :listID")
+    @Query(value = "SELECT * FROM products WHERE list_id = :listID ORDER BY name ")
     List<Product> findByListIDSync(UUID listID);
 
     @Query(value = QUERY_PRODUCTS_BY_LIST_ID + " ORDER BY prod_name")

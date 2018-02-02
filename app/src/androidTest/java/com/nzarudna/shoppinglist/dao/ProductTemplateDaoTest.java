@@ -67,11 +67,6 @@ public class ProductTemplateDaoTest {
         mGreaterCategoryID = TestUtils.getGreaterUUIDByString(categoryID_1, categoryID_2);
     }
 
-    @After
-    public void closeDB() {
-        mDatabase.close();
-    }
-
     @Test
     public void create() throws InterruptedException {
 
@@ -134,12 +129,13 @@ public class ProductTemplateDaoTest {
     @Test
     public void remove_testOnDeleteCascade() throws InterruptedException {
 
-        ProductTemplate template = createTemplate();
+        ProductTemplate template = insertTemplate();
 
         UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
         Product product = new Product("Some name");
         product.setListID(listID);
         product.setTemplateID(template.getTemplateID());
+        mProductDao.insert(product);
 
         mSubjectDao.delete(template);
 
@@ -356,6 +352,11 @@ public class ProductTemplateDaoTest {
         expectedTemplates.add(templates.get(3));
 
         TestUtils.assertEquals(expectedTemplates, resultList);
+    }
+
+    @After
+    public void closeDB() {
+        mDatabase.close();
     }
 
     private ProductTemplate createTemplate() throws InterruptedException {

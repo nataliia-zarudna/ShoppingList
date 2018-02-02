@@ -562,7 +562,13 @@ public class ProductDaoTest {
         product4.setOrder(2 *  + PRODUCT_ORDER_STEP);
         product3.setOrder(3 *  + PRODUCT_ORDER_STEP);
 
-        TestUtils.assertEquals(actualList, products);
+        List<Product> expectedList = new ArrayList<>();
+        expectedList.add(product2);
+        expectedList.add(product1);
+        expectedList.add(product4);
+        expectedList.add(product3);
+
+        TestUtils.assertEquals(actualList, expectedList);
     }
 
     @Test
@@ -602,7 +608,13 @@ public class ProductDaoTest {
         product1.setOrder(2 *  + PRODUCT_ORDER_STEP);
         product4.setOrder(3 *  + PRODUCT_ORDER_STEP);
 
-        TestUtils.assertEquals(products, actualList);
+        List<Product> expectedList = new ArrayList<>();
+        expectedList.add(product2);
+        expectedList.add(product1);
+        expectedList.add(product4);
+        expectedList.add(product3);
+
+        TestUtils.assertEquals(expectedList, actualList);
     }
 
     @Test
@@ -642,7 +654,13 @@ public class ProductDaoTest {
         product4.setOrder(2 *  + PRODUCT_ORDER_STEP);
         product3.setOrder(3 *  + PRODUCT_ORDER_STEP); // 3 2 1 4
 
-        TestUtils.assertEquals(products, actualList);
+        List<Product> expectedList = new ArrayList<>();
+        expectedList.add(product2);
+        expectedList.add(product1);
+        expectedList.add(product4);
+        expectedList.add(product3);
+
+        TestUtils.assertEquals(expectedList, actualList);
     }
 
     @Test
@@ -667,7 +685,11 @@ public class ProductDaoTest {
     }
 
     private Product createProduct() throws InterruptedException {
-        Product product = new Product("Some name");
+        return createProduct("Some name");
+    }
+
+    private Product createProduct(String name) throws InterruptedException {
+        Product product = new Product(name);
         product.setListID(mProductsListID_1);
         return product;
     }
@@ -676,7 +698,7 @@ public class ProductDaoTest {
 
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            products.add(createProduct());
+            products.add(createProduct("Product List #" + i));
         }
         return products;
     }

@@ -92,12 +92,15 @@ public class CategoryDaoTest {
 
         UUID userID = TestUtils.insertUser(mAppDatabase.userDao());
         UUID listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
+
         Product product = new Product("Some name");
         product.setListID(listID);
         product.setCategoryID(category.getCategoryID());
+        mAppDatabase.productDao().insert(product);
 
         ProductTemplate template = new ProductTemplate("Some template");
         template.setCategoryID(category.getCategoryID());
+        mAppDatabase.productTemplateDao().insert(template);
 
         mSubjectDao.delete(category);
 

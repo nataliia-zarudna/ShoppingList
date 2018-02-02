@@ -19,10 +19,12 @@ import java.util.UUID;
         foreignKeys = {
                 @ForeignKey(entity = Category.class,
                         parentColumns = "category_id",
-                        childColumns = "category_id"),
+                        childColumns = "category_id",
+                        onDelete = ForeignKey.SET_NULL),
                 @ForeignKey(entity = Unit.class,
                         parentColumns = "unit_id",
-                        childColumns = "unit_id")
+                        childColumns = "unit_id",
+                        onUpdate = ForeignKey.SET_NULL)
         },
         indices = {@Index(value = "category_id")})
 public class ProductTemplate {

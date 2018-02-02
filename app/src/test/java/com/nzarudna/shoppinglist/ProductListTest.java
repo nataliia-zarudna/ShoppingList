@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,8 +78,10 @@ public class ProductListTest {
         Product expectedProduct = new Product(productName);
         expectedProduct.setListID(mSubject.getListID());
 
-        verify(mProductDao).insert(expectedProduct);
-        verify(mProductTemplateRepository).createTemplateFromProduct(expectedProduct);
+        verify(mProductDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
+        verify(mProductTemplateRepository).createTemplateFromProduct(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
     }
 
     @Test
@@ -99,8 +102,10 @@ public class ProductListTest {
         expectedProduct.setListID(mSubject.getListID());
         expectedProduct.setOrder(17.81);
 
-        verify(mProductDao).insert(expectedProduct);
-        verify(mProductTemplateRepository).createTemplateFromProduct(expectedProduct);
+        verify(mProductDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
+        verify(mProductTemplateRepository).createTemplateFromProduct(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
     }
 
     @Test
@@ -124,7 +129,8 @@ public class ProductListTest {
         expectedProduct.setCategoryID(mMockedCategoryID);
         expectedProduct.setTemplateID(mMockedTemplateID);
 
-        verify(mProductDao).insert(expectedProduct);
+        verify(mProductDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository, never()).createTemplateFromProduct(expectedProduct);
     }
 
@@ -152,7 +158,8 @@ public class ProductListTest {
         expectedProduct.setTemplateID(mMockedTemplateID);
         expectedProduct.setOrder(12);
 
-        verify(mProductDao).insert(expectedProduct);
+        verify(mProductDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository, never()).createTemplateFromProduct(expectedProduct);
     }
 

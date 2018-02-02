@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import static com.nzarudna.shoppinglist.SharedPreferencesConstants.*;
 import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -86,9 +87,7 @@ public class ProductListRepositoryTest {
     @Test
     public void createList() throws InterruptedException {
 
-        final long mockListID = 33;
-
-        ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
+        final ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -96,14 +95,15 @@ public class ProductListRepositoryTest {
             @Override
             public void onCreate(UUID productListID) {
 
-                assertEquals(productListID, mockListID);
+                assertNotNull(productListID);
                 countDownLatch.countDown();
             }
         });
 
         countDownLatch.await();
 
-        verify(mProductListDao).insert(expectedProductList);
+        verify(mProductListDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProductList)));
     }
 
     @Test
@@ -114,8 +114,6 @@ public class ProductListRepositoryTest {
         when(mSharedPreferences.getBoolean(DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW, false))
                 .thenReturn(true);
 
-        final long mockListID = 33;
-
         ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES, MOCKED_SELF_USER_ID);
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
         expectedProductList.setIsGroupedView(true);
@@ -125,14 +123,15 @@ public class ProductListRepositoryTest {
             @Override
             public void onCreate(UUID productListID) {
 
-                assertEquals(productListID, mockListID);
+                assertNotNull(productListID);
                 countDownLatch.countDown();
             }
         });
 
         countDownLatch.await();
 
-        verify(mProductListDao).insert(expectedProductList);
+        verify(mProductListDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProductList)));
     }
 
     @Test
@@ -158,13 +157,14 @@ public class ProductListRepositoryTest {
             @Override
             public void onCreate(UUID productListID) {
 
-                assertEquals(productListID, mockNewListID);
+                assertNotNull(productListID);
                 countDownLatch.countDown();
             }
         });
         countDownLatch.await();
 
-        verify(mProductListDao).insert(expectedList);
+        verify(mProductListDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedList)));
     }
 
     @Test
@@ -203,12 +203,8 @@ public class ProductListRepositoryTest {
         for (final Product expectedProduct : expectedProducts) {
             expectedProduct.setStatus(Product.TO_BUY);
 
-            verify(mProductDao).insert(argThat(new ArgumentMatcher<Product>() {
-                @Override
-                public boolean matches(Product argument) {
-                    return equalsWithoutPK(expectedProduct, argument);
-                }
-            }));
+            verify(mProductDao).insert(
+                    argThat(AssertUtils.getProductArgumentMatcheWithoutPKAndListID(expectedProduct)));
         }
     }
 
@@ -310,26 +306,5 @@ public class ProductListRepositoryTest {
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
-    }
-
-    public static boolean equalsWithoutPK(Product product1, Product product2) {
-        if (Double.compare(product2.getCount(), product1.getCount()) != 0) return false;
-        if (product1.getStatus() != product2.getStatus()) return false;
-        if (Double.compare(product2.getOrder(), product1.getOrder()) != 0) return false;
-        if (!product1.getName().equals(product2.getName())) return false;
-        if (product1.getCategoryID() != null
-                ? !product1.getCategoryID().equals(product2.getCategoryID()) : product2.getCategoryID() != null)
-            return false;
-        if (product1.getListID() != null
-                ? !product1.getListID().equals(product2.getListID()) : product2.getListID() != null)
-            return false;
-        if (product1.getUnitID() != null
-                ? !product1.getUnitID().equals(product2.getUnitID()) : product2.getUnitID() != null)
-            return false;
-        if (product1.getComment() != null
-                ? !product1.getComment().equals(product2.getComment()) : product2.getComment() != null)
-            return false;
-        return product1.getTemplateID() != null
-                ? product1.getTemplateID().equals(product2.getTemplateID()) : product2.getTemplateID() == null;
     }
 }
