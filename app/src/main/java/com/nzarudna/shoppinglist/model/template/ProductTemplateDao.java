@@ -99,6 +99,11 @@ public interface ProductTemplateDao {
     @Update
     void update(ProductTemplate template);
 
+    @Query(value = "UPDATE product_templates " +
+            "       SET category_id = 'ffffffff-ffff-ffff-ffff-ffffffffffff'" +
+            "       WHERE category_id = :categoryID")
+    void setDefaultCategoryID(UUID categoryID);
+
     @Delete
     void delete(ProductTemplate template);
 

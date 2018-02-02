@@ -3,6 +3,9 @@ package com.nzarudna.shoppinglist.model.category;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
 
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+
 import javax.inject.Inject;
 
 /**
@@ -12,10 +15,15 @@ import javax.inject.Inject;
 public class CategoryRepository {
 
     private CategoryDao mCategoryDao;
+    private ProductDao mProductDao;
+    private ProductTemplateDao mProductTemplateDao;
 
     @Inject
-    public CategoryRepository(CategoryDao categoryDao) {
+    public CategoryRepository(CategoryDao categoryDao, ProductDao productDao,
+                              ProductTemplateDao productTemplateDao) {
         mCategoryDao = categoryDao;
+        mProductDao = productDao;
+        mProductTemplateDao = productTemplateDao;
     }
 
     public void create(final Category category) {
@@ -42,6 +50,10 @@ public class CategoryRepository {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+
+                mProductDao.setDefaultCategoryID(category.getCategoryID());
+                mProductTemplateDao.setDefaultCategoryID(category.getCategoryID());
+
                 mCategoryDao.delete(category);
                 return null;
             }

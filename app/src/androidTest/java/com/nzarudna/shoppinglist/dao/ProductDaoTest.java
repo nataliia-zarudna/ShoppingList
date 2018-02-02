@@ -166,6 +166,28 @@ public class ProductDaoTest {
     }
 
     @Test
+    public void setDefaultCategoryID() {
+
+        Product product_1 = new Product("Some name");
+        product_1.setListID(mProductsListID_1);
+        product_1.setCategoryID(mLesserCategoryID);
+        mSubjectDao.insert(product_1);
+
+        Product product_2 = new Product("Some name");
+        product_2.setListID(mProductsListID_1);
+        product_2.setCategoryID(mGreaterCategoryID);
+        mSubjectDao.insert(product_2);
+
+        mSubjectDao.setDefaultCategoryID(mLesserCategoryID);
+
+        Product foundProduct_1 = mSubjectDao.findByIDSync(product_1.getProductID());
+        assertEquals(foundProduct_1.getCategoryID(), Category.DEFAULT_CATEGORY_ID);
+
+        Product foundProduct_2 = mSubjectDao.findByIDSync(product_2.getProductID());
+        assertEquals(foundProduct_2.getCategoryID(), product_2.getCategoryID());
+    }
+
+    @Test
     public void deleteByTemplateIDAndListID() {
 
         UUID templateID = TestUtils.insertProductTemplate(mProductTemplateDao);

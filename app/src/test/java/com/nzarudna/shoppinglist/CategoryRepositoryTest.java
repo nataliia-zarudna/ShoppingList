@@ -3,6 +3,8 @@ package com.nzarudna.shoppinglist;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +24,15 @@ public class CategoryRepositoryTest {
 
     @Mock
     private CategoryDao mCategoryDao;
+    @Mock
+    private ProductDao mProductDao;
+    @Mock
+    private ProductTemplateDao mProductTemplateDao;
 
     @Before
     public void setUp() {
 
-        mSubject = new CategoryRepository(mCategoryDao);
+        mSubject = new CategoryRepository(mCategoryDao, mProductDao, mProductTemplateDao);
 
     }
 
@@ -52,6 +58,16 @@ public class CategoryRepositoryTest {
         mSubject.remove(category);
 
         verify(mCategoryDao).delete(category);
+    }
+
+    @Test
+    public void remove_setDefaultCategoryToFKs() {
+
+        Category category = new Category("Some name");
+        mSubject.remove(category);
+
+        verify(mProductDao).setDefaultCategoryID(category.getCategoryID());
+        verify(mProductTemplateDao).setDefaultCategoryID(category.getCategoryID());
     }
 
     @Test

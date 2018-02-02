@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -108,6 +109,26 @@ public class ProductTemplateDaoTest {
         template.setName(null);
 
         mSubjectDao.insert(template);
+    }
+
+    @Test
+    public void setDefaultCategoryID() {
+
+        ProductTemplate template_1 = new ProductTemplate("Some name");
+        template_1.setCategoryID(mLesserCategoryID);
+        mSubjectDao.insert(template_1);
+
+        ProductTemplate template_2 = new ProductTemplate("Some name");
+        template_2.setCategoryID(mGreaterCategoryID);
+        mSubjectDao.insert(template_2);
+
+        mSubjectDao.setDefaultCategoryID(mLesserCategoryID);
+
+        ProductTemplate foundTemplate_1 = mSubjectDao.findByIDSync(template_1.getTemplateID());
+        assertEquals(foundTemplate_1.getCategoryID(), Category.DEFAULT_CATEGORY_ID);
+
+        ProductTemplate foundTemplate_2 = mSubjectDao.findByIDSync(template_2.getTemplateID());
+        assertEquals(foundTemplate_2.getCategoryID(), template_2.getCategoryID());
     }
 
     @Test

@@ -81,6 +81,16 @@ public interface ProductDao {
     @Update
     void update(Product product);
 
+    @Query(value = "UPDATE products" +
+            "       SET template_id = null" +
+            "       WHERE template_id = :templateID")
+    void clearTemplateIDs(UUID templateID);
+
+    @Query(value = "UPDATE products " +
+            "       SET category_id = 'ffffffff-ffff-ffff-ffff-ffffffffffff'" +
+            "       WHERE category_id = :categoryID")
+    void setDefaultCategoryID(UUID categoryID);
+
     @Delete
     void delete(Product product);
 
@@ -144,9 +154,4 @@ public interface ProductDao {
             "               AND list_id = :listID" +
             "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP)
     void updateProductOrdersByListIDSortByStatusAndName(UUID listID);
-
-    @Query(value = "UPDATE products" +
-            "       SET template_id = null" +
-            "       WHERE template_id = :templateID")
-    void clearTemplateIDs(UUID templateID);
 }
