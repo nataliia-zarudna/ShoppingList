@@ -19,6 +19,7 @@ import com.nzarudna.shoppinglist.model.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -35,6 +36,7 @@ import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -198,10 +200,15 @@ public class ProductListRepositoryTest {
         countDownLatch.await(3000, TimeUnit.MILLISECONDS);
 
         List<Product> expectedProducts = etalonProducts;
-        for (Product expectedProduct : expectedProducts) {
+        for (final Product expectedProduct : expectedProducts) {
             expectedProduct.setStatus(Product.TO_BUY);
 
-            verify(mProductDao).insert(expectedProduct);
+            verify(mProductDao).insert(argThat(new ArgumentMatcher<Product>() {
+                @Override
+                public boolean matches(Product argument) {
+                    return equalsWithoutPK(expectedProduct, argument);
+                }
+            }));
         }
     }
 
@@ -303,5 +310,26 @@ public class ProductListRepositoryTest {
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
 
         verify(mProductListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
+    }
+
+    public static boolean equalsWithoutPK(Product product1, Product product2) {
+        if (Double.compare(product2.getCount(), product1.getCount()) != 0) return false;
+        if (product1.getStatus() != product2.getStatus()) return false;
+        if (Double.compare(product2.getOrder(), product1.getOrder()) != 0) return false;
+        if (!product1.getName().equals(product2.getName())) return false;
+        if (product1.getCategoryID() != null
+                ? !product1.getCategoryID().equals(product2.getCategoryID()) : product2.getCategoryID() != null)
+            return false;
+        if (product1.getListID() != null
+                ? !product1.getListID().equals(product2.getListID()) : product2.getListID() != null)
+            return false;
+        if (product1.getUnitID() != null
+                ? !product1.getUnitID().equals(product2.getUnitID()) : product2.getUnitID() != null)
+            return false;
+        if (product1.getComment() != null
+                ? !product1.getComment().equals(product2.getComment()) : product2.getComment() != null)
+            return false;
+        return product1.getTemplateID() != null
+                ? product1.getTemplateID().equals(product2.getTemplateID()) : product2.getTemplateID() == null;
     }
 }

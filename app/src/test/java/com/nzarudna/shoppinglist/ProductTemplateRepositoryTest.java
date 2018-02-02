@@ -9,11 +9,13 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,11 +61,16 @@ public class ProductTemplateRepositoryTest {
 
         mSubject.createTemplateFromProduct(product);
 
-        ProductTemplate expectedTemplate = new ProductTemplate(name);
+        final ProductTemplate expectedTemplate = new ProductTemplate(name);
         expectedTemplate.setCategoryID(categoryID);
         expectedTemplate.setUnitID(unitID);
 
-        verify(mProductTemplateDao).insert(expectedTemplate);
+        verify(mProductTemplateDao).insert(argThat(new ArgumentMatcher<ProductTemplate>() {
+            @Override
+            public boolean matches(ProductTemplate argument) {
+                return equalsWithoutPK(expectedTemplate, argument);
+            }
+        }));
     }
 
     @Test
@@ -74,10 +81,15 @@ public class ProductTemplateRepositoryTest {
 
         mSubject.createTemplateFromProduct(product);
 
-        ProductTemplate expectedTemplate = new ProductTemplate(name);
+        final ProductTemplate expectedTemplate = new ProductTemplate(name);
         expectedTemplate.setUnitID(null);
 
-        verify(mProductTemplateDao).insert(expectedTemplate);
+        verify(mProductTemplateDao).insert(argThat(new ArgumentMatcher<ProductTemplate>() {
+            @Override
+            public boolean matches(ProductTemplate argument) {
+                return equalsWithoutPK(expectedTemplate, argument);
+            }
+        }));
     }
 
     @Test
@@ -140,5 +152,20 @@ public class ProductTemplateRepositoryTest {
         mSubject.getTemplatesByNameLike(name, listID);
 
         verify(mProductTemplateDao).findAllByNameLike(name, listID);
+    }
+
+    private boolean equalsWithoutPK(ProductTemplate template1, ProductTemplate template2) {
+        if (!template1.getName().equals(template2.getName())) {
+            return false;
+        }
+        if (!template1.getCategoryID().equals(template2.getCategoryID())) {
+            return false;
+        }
+        if (template1.getTemplateID() != null
+                ? template1.getTemplateID().equals(template2.getTemplateID()) : template2.getTemplateID() == null) {
+            return false;
+        }
+
+        return true;
     }
 }
