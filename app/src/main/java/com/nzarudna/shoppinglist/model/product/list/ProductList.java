@@ -31,7 +31,7 @@ import java.util.UUID;
                         parentColumns = "user_id",
                         childColumns = "assigned_id")
         },
-        indices = @Index("created_by"))
+        indices = {@Index(value = "status")})
 public class ProductList {
 
     @Retention(RetentionPolicy.SOURCE)

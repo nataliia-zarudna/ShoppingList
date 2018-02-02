@@ -3,6 +3,7 @@ package com.nzarudna.shoppinglist.model.product;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -33,7 +34,13 @@ import java.util.UUID;
                         childColumns = "template_id"),
                 @ForeignKey(entity = Unit.class,
                         parentColumns = "unit_id",
-                        childColumns = "unit_id")})
+                        childColumns = "unit_id")},
+        indices = {
+                @Index(value = {"list_id", "name"}),
+                @Index(value = {"list_id", "product_id"}),
+                @Index(value = "category_id"),
+                @Index(value = {"template_id", "list_id"})
+        })
 public class Product implements Cloneable {
 
     @Retention(RetentionPolicy.SOURCE)
