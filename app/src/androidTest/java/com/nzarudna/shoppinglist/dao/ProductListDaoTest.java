@@ -4,22 +4,18 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
-import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.Nullable;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
-import com.nzarudna.shoppinglist.model.product.ProductDao;
-import com.nzarudna.shoppinglist.model.product.Product;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
-import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
-import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
-import com.nzarudna.shoppinglist.model.user.User;
-import com.nzarudna.shoppinglist.model.user.UserDao;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
+import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.model.user.UserDao;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,11 +32,9 @@ import java.util.concurrent.TimeUnit;
 import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_CREATED_AT;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -210,6 +204,18 @@ public class ProductListDaoTest {
         ProductList foundList = mSubjectDao.findByIDSync(list.getListID());
 
         assertEquals(foundList, null);
+    }
+
+    @Test
+    public void remove_testOnDeleteCascade() {
+
+        ProductList list = insertList();
+        UUID productID = TestUtils.insertProduct(mProductDao, list.getListID());
+
+        mSubjectDao.delete(list);
+
+        Product foundProduct = mProductDao.findByIDSync(productID);
+        assertNull(foundProduct);
     }
 
     @Test

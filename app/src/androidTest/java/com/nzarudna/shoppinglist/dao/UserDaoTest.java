@@ -3,16 +3,14 @@ package com.nzarudna.shoppinglist.dao;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
-import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserDao;
-import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,8 +22,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.core.IsNot.not;
 
 /**
  * Test for User Dao methods
@@ -69,6 +68,23 @@ public class UserDaoTest {
         User insertedUser = TestUtils.getLiveDataValueSync(userLiveData);
 
         assertThat(user, is(insertedUser));
+    }
+
+    @Test
+    public void remove_testOnDeleteCascade() throws InterruptedException {
+
+        User user = createUser();
+        ProductList list = new ProductList("Some list", user.getUserID());
+        list.setAssignedID(user.getUserID());
+        list.setModifiedBy(user.getUserID());
+
+        mSubjectDao.delete(user);
+
+        ProductList foundList = mAppDatabase.productListDao().findByIDSync(list.getListID());
+        assertNotNull(foundList);
+        assertNull(foundList.getCreatedBy());
+        assertNull(foundList.getAssignedID());
+        assertNull(foundList.getModifiedBy());
     }
 
     @Test

@@ -19,7 +19,7 @@ import java.util.UUID;
  * Created by nsirobaba on 1/31/18.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class UtilDaoTest {
+public class UnitDaoTest {
 
     private AppDatabase mDatabase;
     private UnitDao mSubject;

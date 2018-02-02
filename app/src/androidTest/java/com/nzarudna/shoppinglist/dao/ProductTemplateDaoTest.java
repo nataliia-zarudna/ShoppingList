@@ -3,24 +3,20 @@ package com.nzarudna.shoppinglist.dao;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
-import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.category.CategoryDao;
+import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
-import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
-import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
-import com.nzarudna.shoppinglist.model.user.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,8 +28,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -112,6 +108,23 @@ public class ProductTemplateDaoTest {
         template.setName(null);
 
         mSubjectDao.insert(template);
+    }
+
+    @Test
+    public void remove_testOnDeleteCascade() throws InterruptedException {
+
+        ProductTemplate template = createTemplate();
+
+        UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
+        Product product = new Product("Some name");
+        product.setListID(listID);
+        product.setTemplateID(template.getTemplateID());
+
+        mSubjectDao.delete(template);
+
+        Product foundProduct = mProductDao.findByIDSync(product.getProductID());
+        assertNotNull(foundProduct);
+        assertNull(foundProduct.getTemplateID());
     }
 
     @Test

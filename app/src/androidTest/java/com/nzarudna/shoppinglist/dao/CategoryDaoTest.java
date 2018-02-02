@@ -3,10 +3,7 @@ package com.nzarudna.shoppinglist.dao;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
-import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.database.sqlite.SQLiteConstraintException;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
@@ -26,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests for Category Dao
@@ -77,6 +74,43 @@ public class CategoryDaoTest {
     }
 
     @Test
+    public void remove() throws InterruptedException {
+
+        Category category = createCategory();
+
+        mSubjectDao.delete(category);
+
+        Category foundCategory = mSubjectDao.findByIDSync(category.getCategoryID());
+
+        assertNull(foundCategory);
+    }
+
+    @Test
+    public void remove_testOnDeleteCascade() throws InterruptedException {
+
+        Category category = createCategory();
+
+        UUID userID = TestUtils.insertUser(mAppDatabase.userDao());
+        UUID listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
+        Product product = new Product("Some name");
+        product.setListID(listID);
+        product.setCategoryID(category.getCategoryID());
+
+        ProductTemplate template = new ProductTemplate("Some template");
+        template.setCategoryID(category.getCategoryID());
+
+        mSubjectDao.delete(category);
+
+        Product foundProduct = mAppDatabase.productDao().findByIDSync(product.getProductID());
+        assertNotNull(foundProduct);
+        assertNull(foundProduct.getCategoryID());
+
+        ProductTemplate foundTemplate = mAppDatabase.productTemplateDao().findByIDSync(template.getTemplateID());
+        assertNotNull(foundTemplate);
+        assertNull(foundTemplate.getCategoryID());
+    }
+
+    @Test
     public void findAll() throws InterruptedException {
 
         List<Category> createdCategories = createCategories(3);
@@ -119,6 +153,10 @@ public class CategoryDaoTest {
     @After
     public void closeDB() {
         mAppDatabase.close();
+    }
+
+    private Category createCategory() throws InterruptedException {
+        return createCategory("Some name");
     }
 
     private Category createCategory(String name) throws InterruptedException {
