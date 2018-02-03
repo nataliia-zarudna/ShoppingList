@@ -31,6 +31,13 @@ public class ProductListItemViewModel extends BaseObservable {
         return mProductList != null ? mProductList.getName() : "";
     }
 
+    public String getBoughtToAllText() {
+        int allProductsCount = mProductList.getToBuyProductsCount() +
+                mProductList.getAbsentProductsCount() +
+                mProductList.getBoughtProductsCount();
+        return mProductList.getBoughtProductsCount() + "/" + allProductsCount;
+    }
+
     public void setProductList(ProductListWithStatistics productList) {
         Log.d(TAG, "setProductList => " + (productList != null ? productList.getName() : ""));
 
