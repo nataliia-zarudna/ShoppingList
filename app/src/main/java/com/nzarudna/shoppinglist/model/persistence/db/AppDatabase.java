@@ -28,6 +28,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Room application database
@@ -74,13 +75,15 @@ public abstract class AppDatabase extends RoomDatabase {
 
         // For testing
 
-        int selfUserID = insertSelfUser(db);
+        String selfUserID = insertSelfUser(db);
         Log.d(LOG, "selfUserID " + selfUserID);
 
         int defaultCategoryID = insertDefaultCatefory(db, context);
 
+        String firstListID = UUID.randomUUID().toString();
         for (int i = 10; i < 40; i++) {
             ContentValues values = new ContentValues();
+            values.put("list_id", (i == 10) ? firstListID : UUID.randomUUID().toString());
             values.put("name", "Shopping list #" + i);
             values.put("created_by", selfUserID);
             values.put("created_at", new Date().getTime());
@@ -92,8 +95,11 @@ public abstract class AppDatabase extends RoomDatabase {
             Log.d(LOG, "Shopping list #" + i + " id " + productListsID);
         }
 
+        String[] categoryIDs = {UUID.randomUUID().toString()
+                , UUID.randomUUID().toString(), UUID.randomUUID().toString()};
         for (int i = 0; i < 3; i++) {
             ContentValues values = new ContentValues();
+            values.put("category_id", categoryIDs[i]);
             values.put("name", "Category #" + i);
 
             db.insert("categories", OnConflictStrategy.IGNORE, values);
@@ -102,11 +108,11 @@ public abstract class AppDatabase extends RoomDatabase {
         for (int i = 0; i < 10; i++) {
             int categoryID = (i < 8) ? (i % 2 + 1) : defaultCategoryID;
             ContentValues values = new ContentValues();
+            values.put("product_id", UUID.randomUUID().toString());
             values.put("name", "Product #" + i + " cat " + categoryID);
-            values.put("category_id", categoryID);
-            values.put("list_id", 1);
+            values.put("category_id", categoryIDs[i % 2]);
+            values.put("list_id", firstListID);
             values.put("count", 0);
-            values.put("unit_id", 0);
             values.put("status", Product.TO_BUY);
             values.put("`order`", 0);
 
@@ -114,14 +120,17 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     }
 
-    private static int insertSelfUser(SupportSQLiteDatabase db) {
+    private static String insertSelfUser(SupportSQLiteDatabase db) {
+        String selfUserID = UUID.randomUUID().toString();
+
         ContentValues contentValues = new ContentValues();
+        contentValues.put("user_id", selfUserID.toString());
         contentValues.put("name", "");
-        int selfUserID = (int) db.insert("users", OnConflictStrategy.IGNORE, contentValues);
+        db.insert("users", OnConflictStrategy.IGNORE, contentValues);
 
         ShoppingListApplication.getAppComponent().getSharedPreferences()
                 .edit()
-                .putInt("selfUserID", selfUserID)
+                .putString("selfUserID", selfUserID)
                 .commit();
 
         return selfUserID;

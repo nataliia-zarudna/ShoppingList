@@ -38,9 +38,9 @@ public class ProductListFragment extends Fragment {
 
     private ProductListViewModel mViewModel;
 
-    public static ProductListFragment getInstance(int productListID) {
+    public static ProductListFragment getInstance(UUID productListID) {
         Bundle bundle = new Bundle();
-        bundle.putInt(ARG_PRODUCT_LIST_ID, productListID);
+        bundle.putSerializable(ARG_PRODUCT_LIST_ID, productListID);
 
         ProductListFragment instance = new ProductListFragment();
         instance.setArguments(bundle);

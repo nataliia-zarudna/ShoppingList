@@ -25,7 +25,7 @@ public class ProductListActivity extends SingleFragmentActivity {
     @Override
     protected Fragment getFragment() {
 
-        int productListID = getIntent().getIntExtra(EXTRA_PRODUCTS_LIST_ID, 0);
+        UUID productListID = (UUID) getIntent().getSerializableExtra(EXTRA_PRODUCTS_LIST_ID);
         return ProductListFragment.getInstance(productListID);
     }
 }
