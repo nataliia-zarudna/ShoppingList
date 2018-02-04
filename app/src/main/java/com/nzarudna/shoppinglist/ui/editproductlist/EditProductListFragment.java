@@ -32,9 +32,9 @@ public class EditProductListFragment extends Fragment {
     private View mToolbarView;
     private View mFragmentView;
 
-    public static EditProductListFragment getInstance(int productListID) {
+    public static EditProductListFragment getInstance(UUID productListID) {
         Bundle bundle = new Bundle();
-        bundle.putInt(ARG_PRODUCTS_LIST_ID, productListID);
+        bundle.putSerializable(ARG_PRODUCTS_LIST_ID, productListID);
 
         EditProductListFragment instance = new EditProductListFragment();
         instance.setArguments(bundle);

@@ -11,6 +11,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -21,7 +22,7 @@ import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository
  * Created by Nataliia on 19.01.2018.
  */
 
-public class ProductListsViewModel extends ViewModel {
+public class ProductListsViewModel extends ViewModel implements ProductListRepository.OnProductListCreateListener {
 
     @Inject
     ProductListRepository mProductListRepository;
@@ -51,16 +52,22 @@ public class ProductListsViewModel extends ViewModel {
     }
 
     public void createList() {
+        mProductListRepository.createList(this);
+    }
 
-        mProductListRepository.createList(new ProductListRepository.OnProductListCreateListener() {
-            @Override
-            public void onCreate(UUID productListID) {
+    public void copyList(UUID etalonListID) {
+        mProductListRepository.copyList(etalonListID, this);
+    }
 
-                if (mObserver != null) {
-                    mObserver.startEditProductListActivity(productListID);
-                }
-            }
-        });
+    @Override
+    public void onCreate(UUID productListID) {
+        if (mObserver != null) {
+            mObserver.startEditProductListActivity(productListID);
+        }
+    }
+
+    public LiveData<List<ProductList>> getAllLists() {
+        return mProductListRepository.getAllLists();
     }
 
     public interface ProductListViewModelObserver {

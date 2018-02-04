@@ -10,6 +10,7 @@ import android.arch.persistence.room.Update;
 
 import com.nzarudna.shoppinglist.model.product.Product;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -75,8 +76,9 @@ public interface ProductListDao {
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByAssignedAndName(
             @ProductList.ProductListStatus int status);
 
+    //TODO: fix test
     @Query(value = "SELECT * FROM product_lists ORDER BY modified_at DESC")
-    DataSource.Factory<Integer, ProductList> findAllSortByModifiedAtDesc();
+    LiveData<List<ProductList>> findAllSortByModifiedAtDesc();
 
     @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findByStatusSortByModifiedAtDesc(@ProductList.ProductListStatus int status);

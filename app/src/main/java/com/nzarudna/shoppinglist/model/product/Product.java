@@ -177,7 +177,7 @@ public class Product implements Cloneable {
     @Override
     public Product clone() throws CloneNotSupportedException {
         Product clone = (Product) super.clone();
-        clone.setProductID(null);
+        clone.setProductID(UUID.randomUUID());
 
         return clone;
     }

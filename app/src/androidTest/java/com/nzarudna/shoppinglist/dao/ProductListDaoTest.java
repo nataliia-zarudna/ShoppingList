@@ -486,9 +486,9 @@ public class ProductListDaoTest {
         activeLists.add(lists.get(3));
         activeLists.add(lists.get(1));
 
-        DataSource.Factory<Integer, ProductList> foundLists =
+        LiveData<List<ProductList>> foundLists =
                 mSubjectDao.findAllSortByModifiedAtDesc();
-        PagedList<ProductList> foundProductList = TestUtils.getPagedListSync(foundLists);
+        List<ProductList> foundProductList = TestUtils.getLiveDataValueSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductList);
     }

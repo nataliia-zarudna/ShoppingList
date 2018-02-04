@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlists;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
@@ -37,6 +39,8 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
 
     private static final String TAG = "ProductListsFragment";
 
+    private static final int REQUEST_CODE_LIST_TO_COPY = 1;
+
     public static Fragment getInstance() {
         return new ProductListsFragment();
     }
@@ -45,6 +49,10 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
     private ProductListsViewModel mViewModel;
     private RecyclerView mListRecyclerView;
     private ProductListAdapter mListAdapter;
+
+    private FloatingActionButton mShowCreationMenuBtn;
+    private FloatingActionButton mCreateNewSubItem;
+    private FloatingActionButton mCopySubItem;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,14 +104,54 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
             }
         });
 
-        mFragmentView.findViewById(R.id.btn_add_list).setOnClickListener(new View.OnClickListener() {
+        mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_list_menu);
+        mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_add_list);
+        mCopySubItem = mFragmentView.findViewById(R.id.btn_copy_list);
+        configCreationMenu();
+
+        return mFragmentView;
+    }
+
+    private void configCreationMenu() {
+
+        mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int subItemsVisibility = (mCreateNewSubItem.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
+
+                mCreateNewSubItem.setVisibility(subItemsVisibility);
+                mCopySubItem.setVisibility(subItemsVisibility);
+            }
+        });
+
+        mCreateNewSubItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mViewModel.createList();
             }
         });
 
-        return mFragmentView;
+        mCopySubItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
+                copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
+                copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == REQUEST_CODE_LIST_TO_COPY) {
+            UUID listID = CopyListDialogFragment.getListID(data);
+            mViewModel.copyList(listID);
+        }
     }
 
     private void removeListItem(final ProductListItemViewModel itemViewModel, final int position) {

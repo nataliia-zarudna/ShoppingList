@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.model.product.list;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -89,22 +90,18 @@ public class ProductListRepository {
     }
 
 
-    public void copyList(final UUID etalonListID, @Nullable final OnProductListCreateListener onProductListCreateListener)
-            throws ShoppingListException {
-
-        ProductList etalonList = mProductListDao.findByIDSync(etalonListID);
-        if (etalonList == null) {
-            throw new ShoppingListException("List with id " + etalonListID + " does not exist");
-        }
-
-        final ProductList newProductList = createProductList();
-        newProductList.setName(etalonList.getName());
-        newProductList.setSorting(etalonList.getSorting());
-        newProductList.setIsGroupedView(etalonList.isGroupedView());
+    public void copyList(final UUID etalonListID, @Nullable final OnProductListCreateListener onProductListCreateListener) {
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+
+                ProductList etalonList = mProductListDao.findByIDSync(etalonListID);
+
+                final ProductList newProductList = createProductList();
+                newProductList.setName(etalonList.getName());
+                newProductList.setSorting(etalonList.getSorting());
+                newProductList.setIsGroupedView(etalonList.isGroupedView());
 
                 mProductListDao.insert(newProductList);
                 copyProductsFromList(etalonListID, newProductList.getListID());
@@ -173,6 +170,11 @@ public class ProductListRepository {
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);
         }
+    }
+
+    public LiveData<List<ProductList>> getAllLists() {
+        //TODO: add test
+        return mProductListDao.findAllSortByModifiedAtDesc();
     }
 
     @Retention(RetentionPolicy.SOURCE)

@@ -307,4 +307,12 @@ public class ProductListRepositoryTest {
 
         verify(mProductListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
     }
+
+    @Test
+    public void findAllLists() throws InterruptedException, ShoppingListException {
+
+        mSubject.getAllLists();
+
+        verify(mProductListDao).findAllSortByModifiedAtDesc();
+    }
 }
