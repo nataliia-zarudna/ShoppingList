@@ -51,11 +51,11 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
         mProductListRepository.removeList(productList.getListID());
     }
 
-    public void createList() {
+    public void onClickCreateListBtn() {
         mProductListRepository.createList(this);
     }
 
-    public void copyList(UUID etalonListID) {
+    public void onClickCopyListBtn(UUID etalonListID) {
         mProductListRepository.copyList(etalonListID, this);
     }
 

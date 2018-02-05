@@ -7,4 +7,12 @@
     <string name="undo_removal">Undo</string>
     <string name="hint_shopping_list_name">Shopping List Name</string>
     <string name="default_category_name">Uncategorized</string>
+    <string name="copy_list_title">Copy Existing</string>
+    <string name="new_list_title">New List</string>
+    <string name="sort_list_title">Sort</string>
+
+    <string-array name="sort_product_lists_values">
+        <item name="sort_by_name">Alphabetically</item>
+        <item name="sort_by_created_at">By creation date</item>
+    </string-array>
 </resources>
