@@ -5,5 +5,38 @@
         android:id="@+id/menu_item_sort"
         android:icon="@drawable/ic_sort_black_24dp"
         android:title="@string/sort_list_title"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item
+                android:id="@+id/sort_by_name"
+                android:title="@string/sort_by_name" />
+            <item
+                android:id="@+id/sort_by_created_at"
+                android:title="@string/sort_by_created_at" />
+        </menu>
+
+    </item>
+    <!--item
+        android:id="@+id/menu_item_view"
+        android:icon="@drawable/ic_view_black_24dp"
+        android:title="@string/sort_list_title"
+        app:showAsAction="ifRoom" >
+
+        <menu>
+            <item android:title="@string/view_group_by_categories" />
+            <item android:title="@string/view_separate_items" />
+        </menu>
+
+    </item>
+    <item
+        android:title="settings"
+        app:showAsAction="never" >
+
+    </item>
+    <item
+        android:title="rate"
+        app:showAsAction="never" >
+
+    </item-->
 </menu>

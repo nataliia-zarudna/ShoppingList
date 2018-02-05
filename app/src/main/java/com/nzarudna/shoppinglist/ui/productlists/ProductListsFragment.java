@@ -173,9 +173,9 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_sort:
-                new SortListDialogFragment().show(getFragmentManager(), "sortProductsList");
-                return true;
+            case R.id.sort_by_name:
+                //new SortListDialogFragment().show(getFragmentManager(), "sortProductsList");
+                //return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

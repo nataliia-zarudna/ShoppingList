@@ -10,6 +10,10 @@
     <string name="copy_list_title">Copy Existing</string>
     <string name="new_list_title">New List</string>
     <string name="sort_list_title">Sort</string>
+    <string name="sort_by_name">Alphabetically</string>
+    <string name="sort_by_created_at">By creation date</string>
+    <string name="view_group_by_categories">Group by categories</string>
+    <string name="view_separate_items">Do not group</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>
