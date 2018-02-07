@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlists;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemProductListBinding;
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListActivity;
@@ -39,11 +41,15 @@ import java.util.UUID;
 /**
  * Fragment with set of shopping lists
  */
-public class ProductListsFragment extends Fragment implements ProductListItemViewModel.ProductListItemViewModelObserver, ProductListsViewModel.ProductListViewModelObserver {
+public class ProductListsFragment extends Fragment implements
+        ProductListItemViewModel.ProductListItemViewModelObserver,
+        ProductListsViewModel.ProductListViewModelObserver,
+        Observer<PagedList<ProductListWithStatistics>> {
 
     private static final String TAG = "ProductListsFragment";
 
     private static final int REQUEST_CODE_LIST_TO_COPY = 1;
+    private static final int PAGE_SIZE = 20;
 
     public static Fragment getInstance() {
         return new ProductListsFragment();
@@ -53,6 +59,7 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
     private ProductListsViewModel mViewModel;
     private RecyclerView mListRecyclerView;
     private ProductListAdapter mListAdapter;
+    private LiveData<PagedList<ProductListWithStatistics>> mCurrentList;
 
     private FloatingActionButton mShowCreationMenuBtn;
     private FloatingActionButton mCreateNewSubItem;
@@ -104,12 +111,7 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
         mListAdapter.mItemObserver = this;
         mListRecyclerView.setAdapter(mListAdapter);
 
-        mViewModel.getList(20).observe(this, new Observer<PagedList<ProductListWithStatistics>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<ProductListWithStatistics> productLists) {
-                mListAdapter.setList(productLists);
-            }
-        });
+        loadList(0);
 
         mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_list_menu);
         mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_new_list);
@@ -119,6 +121,20 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
         configCreationMenu();
 
         return mFragmentView;
+    }
+
+    private void loadList(int sorting) {
+        if (mCurrentList != null) {
+            mCurrentList.removeObserver(this);
+        }
+
+        LiveData<PagedList<ProductListWithStatistics>> mCurrentList = mViewModel.getList(sorting, PAGE_SIZE);
+        mCurrentList.observe(this, this);
+    }
+
+    @Override
+    public void onChanged(@Nullable PagedList<ProductListWithStatistics> productLists) {
+        mListAdapter.setList(productLists);
     }
 
     private void configCreationMenu() {
@@ -172,10 +188,23 @@ public class ProductListsFragment extends Fragment implements ProductListItemVie
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.sort_by_name:
-                //new SortListDialogFragment().show(getFragmentManager(), "sortProductsList");
-                //return true;
+                loadList(ProductListRepository.SORT_LISTS_BY_NAME);
+                return true;
+            case R.id.sort_by_created_by:
+                loadList(ProductListRepository.SORT_LISTS_BY_CREATED_BY);
+                return true;
+            case R.id.sort_by_created_at:
+                loadList(ProductListRepository.SORT_LISTS_BY_CREATED_AT);
+                return true;
+            case R.id.sort_by_modified_at:
+                loadList(ProductListRepository.SORT_LISTS_BY_MODIFIED_AT);
+                return true;
+            case R.id.sort_by_assigned:
+                loadList(ProductListRepository.SORT_LISTS_BY_ASSIGNED);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

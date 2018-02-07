@@ -14,6 +14,9 @@
     <string name="sort_by_created_at">By creation date</string>
     <string name="view_group_by_categories">Group by categories</string>
     <string name="view_separate_items">Do not group</string>
+    <string name="sort_created_by_me_first">Created by me first</string>
+    <string name="sort_by_modified_at">By modified date</string>
+    <string name="sort_assigned_to_me_first">Assigned to me first</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
@@ -27,16 +29,30 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
     @Inject
     ProductListRepository mProductListRepository;
 
+    @Inject
+    SharedPreferences mSharedPreferences;
+
     private ProductListViewModelObserver mObserver;
 
     public void setObserver(ProductListViewModelObserver observer) {
         this.mObserver = observer;
     }
 
-    public LiveData<PagedList<ProductListWithStatistics>> getList(int pageSize) {
+    public LiveData<PagedList<ProductListWithStatistics>> getList
+            (@ProductListRepository.ProductListSorting int sorting, int pageSize) {
+
+        if (sorting == 0) {
+            sorting = mSharedPreferences.getInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING,
+                    ProductListRepository.SORT_LISTS_BY_NAME);
+        } else {
+            mSharedPreferences.edit()
+                    .putInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING, sorting)
+                    .apply();
+        }
+
         try {
             DataSource.Factory<Integer, ProductListWithStatistics> listFactory
-                    = mProductListRepository.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
+                    = mProductListRepository.getLists(ProductList.STATUS_ACTIVE, sorting);
 
             return new LivePagedListBuilder<>(listFactory, pageSize).build();
 
