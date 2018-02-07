@@ -17,6 +17,8 @@
     <string name="sort_created_by_me_first">Created by me first</string>
     <string name="sort_by_modified_at">By modified date</string>
     <string name="sort_assigned_to_me_first">Assigned to me first</string>
+    <string name="delete_item">Delete</string>
+    <string name="archive_item">Archive</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

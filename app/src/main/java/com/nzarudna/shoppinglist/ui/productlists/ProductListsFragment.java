@@ -20,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,6 +51,7 @@ public class ProductListsFragment extends Fragment implements
 
     private static final int REQUEST_CODE_LIST_TO_COPY = 1;
     private static final int PAGE_SIZE = 20;
+    private static final int TAG_LIST_ID = R.id.tag_product_list_id;
 
     public static Fragment getInstance() {
         return new ProductListsFragment();
@@ -130,6 +132,17 @@ public class ProductListsFragment extends Fragment implements
 
         LiveData<PagedList<ProductListWithStatistics>> mCurrentList = mViewModel.getList(sorting, PAGE_SIZE);
         mCurrentList.observe(this, this);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        Object listID = v.getTag(TAG_LIST_ID);
+        if (listID != null && listID instanceof UUID) {
+            MenuInflater menuInflater = getActivity().getMenuInflater();
+            menuInflater.inflate(R.menu.product_list_item_menu, menu);
+        }
     }
 
     @Override
@@ -264,12 +277,7 @@ public class ProductListsFragment extends Fragment implements
             itemViewModel.setObserver(itemObserver);
             mBinding.setViewModel(itemViewModel);
 
-            /*binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ShoppingListActivity.newIntent(getActivity(), )
-                }
-            });*/
+            registerForContextMenu(binding.getRoot());
         }
 
         public void bind(ProductListWithStatistics productList) {
@@ -277,6 +285,8 @@ public class ProductListsFragment extends Fragment implements
 
             mBinding.getViewModel().setProductList(productList);
             mBinding.executePendingBindings();
+
+            mBinding.getRoot().setTag(TAG_LIST_ID, productList.getListID());
         }
     }
 
