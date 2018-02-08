@@ -36,6 +36,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 
 import java.util.UUID;
 
@@ -62,6 +63,7 @@ public class ProductListsFragment extends Fragment implements
     private RecyclerView mListRecyclerView;
     private ProductListAdapter mListAdapter;
     private LiveData<PagedList<ProductListWithStatistics>> mCurrentList;
+    private ProductListViewModel mProductWithContextMenu;
 
     private FloatingActionButton mShowCreationMenuBtn;
     private FloatingActionButton mCreateNewSubItem;
@@ -139,9 +141,27 @@ public class ProductListsFragment extends Fragment implements
         super.onCreateContextMenu(menu, v, menuInfo);
 
         Object listID = v.getTag(TAG_LIST_ID);
-        if (listID != null && listID instanceof UUID) {
+        if (listID != null && listID instanceof ProductListViewModel) {
+            mProductWithContextMenu = (ProductListViewModel) listID;
             MenuInflater menuInflater = getActivity().getMenuInflater();
             menuInflater.inflate(R.menu.product_list_item_menu, menu);
+        } else {
+            mProductWithContextMenu = null;
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.delete_list_item:
+                mViewModel.removeList(mProductWithContextMenu);
+                return true;
+            case R.id.archive_list_item:
+                mViewModel.archiveList(mProductWithContextMenu);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 
@@ -245,7 +265,7 @@ public class ProductListsFragment extends Fragment implements
 
                         if (event != DISMISS_EVENT_ACTION) {
                             Log.d(TAG, "removed list " + listToRemove.getName());
-                            mViewModel.removeList(listToRemove);
+                            mViewModel.removeList(listToRemove.getListID());
                         }
                     }
                 }).show();
@@ -286,7 +306,7 @@ public class ProductListsFragment extends Fragment implements
             mBinding.getViewModel().setProductList(productList);
             mBinding.executePendingBindings();
 
-            mBinding.getRoot().setTag(TAG_LIST_ID, productList.getListID());
+            mBinding.getRoot().setTag(TAG_LIST_ID, mBinding.getViewModel());
         }
     }
 
