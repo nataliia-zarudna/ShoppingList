@@ -44,4 +44,13 @@ public class ProductListViewModel extends ViewModel {
         }
         return new LivePagedListBuilder<>(productsFactory, pageSize).build();
     }
+
+
+    public void onDeleteMenuItemSelected() {
+        mProductListRepository.archiveList(mProductListID);
+    }
+
+    public void onArchiveMenuItemSelected() {
+        mProductListRepository.removeList(mProductListID);
+    }
 }

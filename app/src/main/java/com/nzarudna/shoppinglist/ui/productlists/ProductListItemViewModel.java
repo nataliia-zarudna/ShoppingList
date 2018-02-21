@@ -4,9 +4,12 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.util.Log;
 
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 /**
  * View Model for item of product lists
@@ -15,6 +18,9 @@ import java.util.UUID;
 public class ProductListItemViewModel extends BaseObservable {
 
     private static final String TAG = "ProductListItemVM";
+
+    @Inject
+    ProductListRepository mProductListRepository;
 
     @Bindable
     private ProductListWithStatistics mProductList;
@@ -55,6 +61,10 @@ public class ProductListItemViewModel extends BaseObservable {
         if (mObserver != null) {
             mObserver.startProductListActivity(mProductList.getListID());
         }
+    }
+
+    public void onSwipeProductListItem() {
+        mProductListRepository.archiveList(mProductList.getListID());
     }
 
     public interface ProductListItemViewModelObserver {

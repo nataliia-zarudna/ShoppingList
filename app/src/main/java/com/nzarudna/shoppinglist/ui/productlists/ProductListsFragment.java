@@ -52,7 +52,7 @@ public class ProductListsFragment extends Fragment implements
 
     private static final int REQUEST_CODE_LIST_TO_COPY = 1;
     private static final int PAGE_SIZE = 20;
-    private static final int TAG_LIST_ID = R.id.tag_product_list_id;
+    private static final int TAG_LIST_MODEL_VIEW = R.id.tag_product_list_id;
 
     public static Fragment getInstance() {
         return new ProductListsFragment();
@@ -63,7 +63,7 @@ public class ProductListsFragment extends Fragment implements
     private RecyclerView mListRecyclerView;
     private ProductListAdapter mListAdapter;
     private LiveData<PagedList<ProductListWithStatistics>> mCurrentList;
-    private ProductListViewModel mProductWithContextMenu;
+    private ProductListViewModel mProductVMWithContextMenu;
 
     private FloatingActionButton mShowCreationMenuBtn;
     private FloatingActionButton mCreateNewSubItem;
@@ -140,13 +140,13 @@ public class ProductListsFragment extends Fragment implements
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        Object listID = v.getTag(TAG_LIST_ID);
-        if (listID != null && listID instanceof ProductListViewModel) {
-            mProductWithContextMenu = (ProductListViewModel) listID;
+        Object listModelView = v.getTag(TAG_LIST_MODEL_VIEW);
+        if (listModelView != null && listModelView instanceof ProductListViewModel) {
+            mProductVMWithContextMenu = (ProductListViewModel) listModelView;
             MenuInflater menuInflater = getActivity().getMenuInflater();
             menuInflater.inflate(R.menu.product_list_item_menu, menu);
         } else {
-            mProductWithContextMenu = null;
+            mProductVMWithContextMenu = null;
         }
     }
 
@@ -155,10 +155,10 @@ public class ProductListsFragment extends Fragment implements
 
         switch (item.getItemId()) {
             case R.id.delete_list_item:
-                mViewModel.removeList(mProductWithContextMenu);
+                mProductVMWithContextMenu.onDeleteMenuItemSelected();
                 return true;
             case R.id.archive_list_item:
-                mViewModel.archiveList(mProductWithContextMenu);
+                mProductVMWithContextMenu.onArchiveMenuItemSelected();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -245,9 +245,9 @@ public class ProductListsFragment extends Fragment implements
 
     private void removeListItem(final ProductListItemViewModel itemViewModel, final int position) {
 
-        final ProductListWithStatistics listToRemove = itemViewModel.getProductList();
+        //final ProductListWithStatistics listToRemove = itemViewModel.getProductList();
 //        mProductLists.remove(position);
-        Log.d(TAG, "list to remove " + listToRemove.getName());
+        Log.d(TAG, "list to remove " + itemViewModel.getProductList().getName());
 
         mListAdapter.notifyItemRemoved(position);
 
@@ -264,8 +264,8 @@ public class ProductListsFragment extends Fragment implements
                         super.onDismissed(transientBottomBar, event);
 
                         if (event != DISMISS_EVENT_ACTION) {
-                            Log.d(TAG, "removed list " + listToRemove.getName());
-                            mViewModel.removeList(listToRemove.getListID());
+                            Log.d(TAG, "removed list " + itemViewModel.getProductList().getName());
+                            itemViewModel.onSwipeProductListItem();
                         }
                     }
                 }).show();
@@ -294,6 +294,7 @@ public class ProductListsFragment extends Fragment implements
             mBinding = binding;
 
             ProductListItemViewModel itemViewModel = new ProductListItemViewModel();
+            ShoppingListApplication.getAppComponent().inject(itemViewModel);
             itemViewModel.setObserver(itemObserver);
             mBinding.setViewModel(itemViewModel);
 
@@ -306,7 +307,7 @@ public class ProductListsFragment extends Fragment implements
             mBinding.getViewModel().setProductList(productList);
             mBinding.executePendingBindings();
 
-            mBinding.getRoot().setTag(TAG_LIST_ID, mBinding.getViewModel());
+            mBinding.getRoot().setTag(TAG_LIST_MODEL_VIEW, mBinding.getViewModel());
         }
     }
 

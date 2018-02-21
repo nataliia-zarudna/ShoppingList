@@ -177,6 +177,20 @@ public class ProductListRepository {
         return mProductListDao.findAllSortByModifiedAtDesc();
     }
 
+    public void archiveList(final UUID productListID) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                ProductList productList = mProductListDao.findByIDSync(productListID);
+                productList.setStatus(ProductList.STATUS_ARCHIVED);
+                mProductListDao.update(productList);
+
+                return null;
+            }
+        }.execute();
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SORT_LISTS_BY_NAME, SORT_LISTS_BY_CREATED_BY, SORT_LISTS_BY_CREATED_AT,
             SORT_LISTS_BY_MODIFIED_AT, SORT_LISTS_BY_ASSIGNED, SORT_LISTS_BY_PRODUCT_ORDER})

@@ -9,6 +9,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
 import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
+import com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsViewModel;
 
 import javax.inject.Singleton;
@@ -37,4 +38,6 @@ public interface AppComponent {
     void inject(ShoppingList shoppingList);
 
     void inject(ProductListViewModel viewModel);
+
+    void inject(ProductListItemViewModel viewModel);
 }

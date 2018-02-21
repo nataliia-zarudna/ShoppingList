@@ -63,12 +63,8 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
         }
     }
 
-    public void removeList(UUID productListID) {
-        mProductListRepository.removeList(productListID);
-    }
-
-    public void archiveList(UUID mProductWithContextMenu) {
-        mProductListRepository.
+    public void onSwipeProductListItem(UUID productListID) {
+        mProductListRepository.archiveList(productListID);
     }
 
     public void onClickCreateListBtn() {
