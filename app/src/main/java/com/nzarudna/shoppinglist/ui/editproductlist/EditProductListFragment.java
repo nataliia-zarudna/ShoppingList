@@ -58,13 +58,6 @@ public class EditProductListFragment extends Fragment {
             viewDataBinding.setEditListViewModel(mViewModel);
         }
 
-        mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
-            @Override
-            public void onChanged(@Nullable ProductList productList) {
-                mViewModel.setProductListData(productList);
-            }
-        });
-
         return mFragmentView;
     }
 

@@ -180,6 +180,8 @@ public class ShoppingList {
 
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
 
+        saveSortingAndView(sorting, isGroupedView);
+
         if (isGroupedView) {
             switch (sorting) {
                 case ProductList.SORT_PRODUCTS_BY_NAME:
@@ -203,6 +205,21 @@ public class ShoppingList {
                     throw new ShoppingListException("Unknown products sorting " + sorting);
             }
         }
+    }
 
+    private void saveSortingAndView(final int sorting, final boolean isGroupedView) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                ProductList productList = mProductListDao.findByIDSync(mListID);
+                if (productList.getSorting() != sorting || productList.isGroupedView() != isGroupedView) {
+                    productList.setSorting(sorting);
+                    productList.setIsGroupedView(isGroupedView);
+                    mProductListDao.update(productList);
+                }
+                return null;
+            }
+        }.execute();
     }
 }

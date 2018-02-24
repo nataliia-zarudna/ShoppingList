@@ -15,6 +15,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,13 +33,15 @@ import java.util.UUID;
  * Created by Nataliia on 21.01.2018.
  */
 
-public class ProductListFragment extends Fragment {
+public class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>> {
 
     private static final String TAG = "ProductListFragment";
 
     private static final String ARG_PRODUCT_LIST_ID = "products_list_id";
+    private static final int DEFAULT_LOAD_LIST_SIZE = 20;
 
     private ProductListViewModel mViewModel;
+    private CategoryProductAdapter mAdapter;
 
     public static ProductListFragment getInstance(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -58,6 +63,8 @@ public class ProductListFragment extends Fragment {
         ShoppingListApplication.getAppComponent().inject(mViewModel);
         mViewModel.setProductListID(productListID);
 
+        setHasOptionsMenu(true);
+
         Log.d(TAG, "list id " + productListID);
     }
 
@@ -70,18 +77,50 @@ public class ProductListFragment extends Fragment {
         RecyclerView productsRecyclerView = fragmentView.findViewById(R.id.products_recycle_view);
         productsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        final CategoryProductAdapter adapter = new CategoryProductAdapter();
-        productsRecyclerView.setAdapter(adapter);
+        mAdapter = new CategoryProductAdapter();
+        productsRecyclerView.setAdapter(mAdapter);
 
-        mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, 20)
-                .observe(this, new Observer<PagedList<CategoryProductItem>>() {
-                    @Override
-                    public void onChanged(@Nullable PagedList<CategoryProductItem> categoryProductItems) {
-                        adapter.setList(categoryProductItems);
-                    }
-                });
+        mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
+            @Override
+            public void onChanged(@Nullable ProductList productList) {
+                mViewModel.setProductListData(productList);
+
+                mViewModel.getProducts(DEFAULT_LOAD_LIST_SIZE)
+                        .observe(ProductListFragment.this, ProductListFragment.this);
+            }
+        });
 
         return fragmentView;
+    }
+
+    @Override
+    public void onChanged(@Nullable PagedList<CategoryProductItem> categoryProductItems) {
+        mAdapter.setList(categoryProductItems);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.product_list_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort_by_name:
+                mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, DEFAULT_LOAD_LIST_SIZE)
+                        .observe(this, this);
+            case R.id.sort_by_status:
+                mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, DEFAULT_LOAD_LIST_SIZE)
+                        .observe(this, this);
+            case R.id.view_by_categories:
+                mViewModel.getProducts(true, DEFAULT_LOAD_LIST_SIZE)
+                        .observe(this, this);
+            case R.id.view_separately:
+                mViewModel.getProducts(false, DEFAULT_LOAD_LIST_SIZE)
+                        .observe(this, this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class CategoryProductViewHolder extends RecyclerView.ViewHolder {

@@ -19,6 +19,8 @@
     <string name="sort_assigned_to_me_first">Assigned to me first</string>
     <string name="delete_item">Delete</string>
     <string name="archive_item">Archive</string>
+    <string name="sort_by_status">By status</string>
+    <string name="view_list_title">View</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>
