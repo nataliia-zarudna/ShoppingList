@@ -35,7 +35,7 @@ import java.util.UUID;
  * Created by Nataliia on 21.01.2018.
  */
 
-public class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>> {
+public abstract class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>> {
 
     private static final String TAG = "ProductListFragment";
 
@@ -46,14 +46,10 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
     private CategoryProductAdapter mAdapter;
     private LiveData<PagedList<CategoryProductItem>> mProducts;
 
-    public static ProductListFragment getInstance(UUID productListID) {
+    protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_PRODUCT_LIST_ID, productListID);
-
-        ProductListFragment instance = new ProductListFragment();
-        instance.setArguments(bundle);
-
-        return instance;
+        setArguments(bundle);
     }
 
     @Override
@@ -62,7 +58,7 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
 
         UUID productListID = (UUID) getArguments().getSerializable(ARG_PRODUCT_LIST_ID);
 
-        mViewModel = ViewModelProviders.of(this).get(ProductListViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(getViewModelClass());
         ShoppingListApplication.getAppComponent().inject(mViewModel);
         mViewModel.setProductListID(productListID);
 
@@ -70,6 +66,8 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
 
         Log.d(TAG, "list id " + productListID);
     }
+
+    protected abstract Class<? extends ProductListViewModel> getViewModelClass();
 
     @Nullable
     @Override

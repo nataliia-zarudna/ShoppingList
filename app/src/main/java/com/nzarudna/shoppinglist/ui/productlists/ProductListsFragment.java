@@ -34,8 +34,8 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ListItemProductListBinding;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
-import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.ProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 
 import java.util.UUID;
@@ -273,7 +273,7 @@ public class ProductListsFragment extends Fragment implements
 
     @Override
     public void startProductListActivity(UUID productListID) {
-        Intent intent = ProductListActivity.newIntent(getActivity(), productListID);
+        Intent intent = ReadProductListActivity.newIntent(getActivity(), productListID);
         startActivity(intent);
     }
 

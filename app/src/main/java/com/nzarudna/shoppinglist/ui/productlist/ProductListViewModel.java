@@ -25,7 +25,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public class ProductListViewModel extends ViewModel implements Observable {
+public abstract class ProductListViewModel extends ViewModel implements Observable {
 
     @Inject
     ProductListRepository mProductListRepository;

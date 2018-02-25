@@ -1,22 +1,9 @@
-package com.nzarudna.shoppinglist.ui.editproductlist;
+package com.nzarudna.shoppinglist.ui.productlist.edit;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Bindable;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
 import android.util.Log;
 
-import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
-import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
-import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
-
-import java.util.UUID;
-
-import javax.inject.Inject;
 
 /**
  * Created by nsirobaba on 1/22/18.

@@ -1,6 +1,5 @@
-package com.nzarudna.shoppinglist.ui.editproductlist;
+package com.nzarudna.shoppinglist.ui.productlist.edit;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -14,7 +13,8 @@ import android.view.ViewGroup;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
+import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ import java.util.UUID;
  * Created by Nataliia on 21.01.2018.
  */
 
-public class EditProductListFragment extends Fragment {
+public class EditProductListFragment extends ProductListFragment {
 
     private static final String TAG = "EditProductListFragment";
 
@@ -33,13 +33,14 @@ public class EditProductListFragment extends Fragment {
     private View mFragmentView;
 
     public static EditProductListFragment getInstance(UUID productListID) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_PRODUCTS_LIST_ID, productListID);
-
         EditProductListFragment instance = new EditProductListFragment();
-        instance.setArguments(bundle);
-
+        instance.setProductListID(productListID);
         return instance;
+    }
+
+    @Override
+    protected Class<? extends ProductListViewModel> getViewModelClass() {
+        return EditProductListViewModel.class;
     }
 
     @Nullable

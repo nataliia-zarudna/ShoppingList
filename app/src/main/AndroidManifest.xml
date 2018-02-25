@@ -17,8 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.productlist.ProductListActivity" />
-        <activity android:name=".ui.editproductlist.EditProductListActivity" />
+        <activity android:name=".ui.productlist.read.ReadProductListActivity" />
+        <activity android:name=".ui.productlist.edit.EditProductListActivity" />
     </application>
 
 </manifest>

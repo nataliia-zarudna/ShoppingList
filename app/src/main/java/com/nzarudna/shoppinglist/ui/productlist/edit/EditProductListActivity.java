@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.ui.editproductlist;
+package com.nzarudna.shoppinglist.ui.productlist.edit;
 
 import android.content.Context;
 import android.content.Intent;

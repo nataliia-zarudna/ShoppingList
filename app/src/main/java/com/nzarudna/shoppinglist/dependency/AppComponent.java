@@ -7,7 +7,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
-import com.nzarudna.shoppinglist.ui.editproductlist.EditProductListViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsViewModel;
