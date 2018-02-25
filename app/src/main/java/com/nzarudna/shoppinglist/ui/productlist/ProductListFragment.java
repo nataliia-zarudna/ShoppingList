@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
@@ -42,6 +43,7 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
 
     private ProductListViewModel mViewModel;
     private CategoryProductAdapter mAdapter;
+    private LiveData<PagedList<CategoryProductItem>> mProducts;
 
     public static ProductListFragment getInstance(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -85,8 +87,10 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
             public void onChanged(@Nullable ProductList productList) {
                 mViewModel.setProductListData(productList);
 
-                mViewModel.getProducts(DEFAULT_LOAD_LIST_SIZE)
-                        .observe(ProductListFragment.this, ProductListFragment.this);
+                if (mProducts == null) {
+                    mProducts = mViewModel.getProducts(DEFAULT_LOAD_LIST_SIZE);
+                    mProducts.observe(ProductListFragment.this, ProductListFragment.this);
+                }
             }
         });
 
@@ -108,19 +112,24 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sort_by_name:
-                mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, DEFAULT_LOAD_LIST_SIZE)
-                        .observe(this, this);
+                mProducts = mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, DEFAULT_LOAD_LIST_SIZE);
+                mProducts.observe(this, this);
+                return true;
             case R.id.sort_by_status:
-                mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, DEFAULT_LOAD_LIST_SIZE)
-                        .observe(this, this);
+                mProducts = mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, DEFAULT_LOAD_LIST_SIZE);
+                mProducts.observe(this, this);
+                return true;
             case R.id.view_by_categories:
-                mViewModel.getProducts(true, DEFAULT_LOAD_LIST_SIZE)
-                        .observe(this, this);
+                mProducts = mViewModel.getProducts(true, DEFAULT_LOAD_LIST_SIZE);
+                mProducts.observe(this, this);
+                return true;
             case R.id.view_separately:
-                mViewModel.getProducts(false, DEFAULT_LOAD_LIST_SIZE)
-                        .observe(this, this);
+                mProducts = mViewModel.getProducts(false, DEFAULT_LOAD_LIST_SIZE);
+                mProducts.observe(this, this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private class CategoryProductViewHolder extends RecyclerView.ViewHolder {
