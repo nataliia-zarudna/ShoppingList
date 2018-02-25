@@ -26,17 +26,6 @@ public class EditProductListViewModel extends ProductListViewModel {
 
     private static final String TAG = "EditProductListVM";
 
-
-    @Inject
-    ProductListRepository mProductListRepository;
-
-    private ShoppingList mShoppingList;
-
-    public void setProductListID(UUID productListID) {
-
-        mShoppingList = mProductListRepository.getShoppingList(productListID);
-    }
-
     public void onListNameChanged(String newName) {
         Log.d(TAG, "onListNameChanged " + newName);
         if (mProductList != null && !mProductList.getName().equals(newName)) {

@@ -215,6 +215,33 @@ public class ProductDaoTest {
     }
 
     @Test
+    public void deleteByStatusAndListID() {
+
+        int status = Product.BOUGHT;
+
+        UUID listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+
+        Product product_1 = new Product("Some name");
+        product_1.setListID(listID_1);
+        product_1.setStatus(Product.BOUGHT);
+        mSubjectDao.insert(product_1);
+
+        UUID productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
+
+        UUID listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
+        Product product_3 = new Product("Some name");
+        product_3.setListID(listID_2);
+        product_3.setStatus(Product.BOUGHT);
+        mSubjectDao.insert(product_3);
+
+        mSubjectDao.delete(status, listID_1);
+
+        assertNull(mSubjectDao.findByIDSync(product_1.getProductID()));
+        assertNotNull(mSubjectDao.findByIDSync(productID_2));
+        assertNotNull(mSubjectDao.findByIDSync(product_3.getProductID()));
+    }
+
+    @Test
     public void findByListIDSync() throws InterruptedException {
 
         List<Product> products = createProducts(4);
@@ -659,6 +686,51 @@ public class ProductDaoTest {
         expectedList.add(product1);
         expectedList.add(product4);
         expectedList.add(product3);
+
+        TestUtils.assertEquals(expectedList, actualList);
+    }
+
+    @Test
+    public void updateStatus_byListID() {
+        UUID listID = mProductsListID_1;
+
+        List<Product> products = new ArrayList<>();
+        Product product1 = new Product("Product 1");
+        product1.setListID(listID);
+        product1.setStatus(Product.TO_BUY);
+        products.add(product1);
+
+        Product product2 = new Product("Product 2");
+        product2.setListID(listID);
+        product2.setStatus(Product.BOUGHT);
+        products.add(product2);
+
+        Product product3 = new Product("Product 3");
+        product3.setListID(listID);
+        product3.setStatus(Product.ABSENT);
+        products.add(product3);
+
+        Product product4 = new Product("Product 4");
+        product4.setListID(listID);
+        product4.setStatus(Product.ABSENT);
+        products.add(product4);
+
+        insertProducts(products);
+
+        mSubjectDao.updateStatus(Product.BOUGHT, listID);
+
+        List<Product> actualList = mSubjectDao.findByListIDSync(listID);
+
+        product1.setStatus(Product.BOUGHT);
+        product2.setStatus(Product.BOUGHT);
+        product3.setStatus(Product.BOUGHT);
+        product4.setStatus(Product.BOUGHT);
+
+        List<Product> expectedList = new ArrayList<>();
+        expectedList.add(product1);
+        expectedList.add(product2);
+        expectedList.add(product3);
+        expectedList.add(product4);
 
         TestUtils.assertEquals(expectedList, actualList);
     }

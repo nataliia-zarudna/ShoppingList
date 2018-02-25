@@ -178,8 +178,20 @@ public class ShoppingList {
         }.execute();
     }
 
+    public void removeProductsByStatus(@Product.ProductStatus final int status) {
+        //TODO: add test
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductDao.delete(status, mListID);
+                return null;
+            }
+        }.execute();
+    }
+
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
 
+        //TODO: add test
         saveSortingAndView(sorting, isGroupedView);
 
         if (isGroupedView) {
@@ -218,6 +230,20 @@ public class ShoppingList {
                     productList.setIsGroupedView(isGroupedView);
                     mProductListDao.update(productList);
                 }
+                return null;
+            }
+        }.execute();
+    }
+
+    public void updateProductsStatus(final int status) {
+        //TODO: add test
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mProductDao.updateStatus(status, mListID);
+
                 return null;
             }
         }.execute();

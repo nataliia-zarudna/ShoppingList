@@ -11,6 +11,7 @@ import android.databinding.PropertyChangeRegistry;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
+import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
@@ -33,8 +34,8 @@ public class ProductListViewModel extends ViewModel implements Observable {
     @Bindable
     protected ProductList mProductList;
 
-    private UUID mProductListID;
-    private ShoppingList mShoppingList;
+    protected UUID mProductListID;
+    protected ShoppingList mShoppingList;
 
     public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
@@ -92,5 +93,13 @@ public class ProductListViewModel extends ViewModel implements Observable {
 
     public void onArchiveMenuItemSelected() {
         mProductListRepository.removeList(mProductListID);
+    }
+
+    public void removeBoughtProducts() {
+        mShoppingList.removeProductsByStatus(Product.BOUGHT);
+    }
+
+    public void markProductsAs(int status) {
+        mShoppingList.updateProductsStatus(status);
     }
 }

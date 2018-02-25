@@ -178,6 +178,7 @@ public class ProductListRepository {
     }
 
     public void archiveList(final UUID productListID) {
+        //TODO: add test
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {

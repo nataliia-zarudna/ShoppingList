@@ -82,6 +82,11 @@ public interface ProductDao {
     void update(Product product);
 
     @Query(value = "UPDATE products" +
+            "       SET status = :status" +
+            "       WHERE list_id = :listID")
+    void updateStatus(@Product.ProductStatus int status, UUID listID);
+
+    @Query(value = "UPDATE products" +
             "       SET template_id = null" +
             "       WHERE template_id = :templateID")
     void clearTemplateIDs(UUID templateID);
@@ -96,6 +101,9 @@ public interface ProductDao {
 
     @Query(value = "DELETE FROM products WHERE template_id = :templateID AND list_id = :listID")
     void delete(UUID templateID, UUID listID);
+
+    @Query(value = "DELETE FROM products WHERE status = :status AND list_id = :listID")
+    void delete(@Product.ProductStatus int status, UUID listID);
 
     @Query(value = "SELECT * FROM products WHERE product_id = :productID")
     LiveData<Product> findByID(UUID productID);

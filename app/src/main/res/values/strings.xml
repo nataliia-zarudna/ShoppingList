@@ -21,6 +21,10 @@
     <string name="archive_item">Archive</string>
     <string name="sort_by_status">By status</string>
     <string name="view_list_title">View</string>
+    <string name="menu_remove_bought">Remove bought</string>
+    <string name="menu_remove_absent">Remove absent</string>
+    <string name="menu_mark_all_as_bought">Mark all as active</string>
+    <string name="menu_mark_all_as_active">Mark all as active</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

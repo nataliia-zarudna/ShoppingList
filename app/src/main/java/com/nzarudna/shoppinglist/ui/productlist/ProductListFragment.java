@@ -26,6 +26,7 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
+import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 
 import java.util.UUID;
@@ -119,6 +120,7 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
                 mProducts = mViewModel.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, DEFAULT_LOAD_LIST_SIZE);
                 mProducts.observe(this, this);
                 return true;
+
             case R.id.view_by_categories:
                 mProducts = mViewModel.getProducts(true, DEFAULT_LOAD_LIST_SIZE);
                 mProducts.observe(this, this);
@@ -127,6 +129,17 @@ public class ProductListFragment extends Fragment implements Observer<PagedList<
                 mProducts = mViewModel.getProducts(false, DEFAULT_LOAD_LIST_SIZE);
                 mProducts.observe(this, this);
                 return true;
+
+            case R.id.menu_item_remove_bought:
+                mViewModel.removeBoughtProducts();
+                return true;
+            case R.id.menu_item_mark_all_as_bought:
+                mViewModel.markProductsAs(Product.BOUGHT);
+                return true;
+            case R.id.menu_item_mark_all_as_active:
+                mViewModel.markProductsAs(Product.TO_BUY);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
