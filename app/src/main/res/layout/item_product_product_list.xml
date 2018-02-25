@@ -10,12 +10,15 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.onProductClick()}"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@{viewModel.isGreyedProductName() ? @android:color/darker_gray : @android:color/black}"
             android:text="@{viewModel.name}" />
 
     </android.support.constraint.ConstraintLayout>

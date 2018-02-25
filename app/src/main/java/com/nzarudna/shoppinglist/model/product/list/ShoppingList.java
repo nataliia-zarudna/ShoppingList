@@ -92,23 +92,26 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void updateProduct(@NonNull final Product product) {
-
-        Product oldProduct = mProductDao.findByIDSync(product.getProductID());
-        if (!oldProduct.getName().equals(product.getName())
-                || oldProduct.getCategoryID() != product.getCategoryID()
-                || oldProduct.getUnitID() != product.getUnitID()) {
-            product.setTemplateID(null);
-        }
-
+    public void updateProduct(@NonNull final Product product, final onUpdateProductCallback onUpdateProductCallback) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+                Product oldProduct = mProductDao.findByIDSync(product.getProductID());
+                if (!oldProduct.getName().equals(product.getName())
+                        || oldProduct.getCategoryID() != product.getCategoryID()
+                        || oldProduct.getUnitID() != product.getUnitID()) {
+                    product.setTemplateID(null);
+                }
 
                 mProductDao.update(product);
+                onUpdateProductCallback.onUpdateProduct();
                 return null;
             }
         }.execute();
+    }
+
+    public interface onUpdateProductCallback {
+        void onUpdateProduct();
     }
 
     public void moveProduct(Product product, Product productAfter, Product productBefore) throws ShoppingListException {

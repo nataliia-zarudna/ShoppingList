@@ -153,6 +153,8 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             mBinding = binding;
 
             mItemViewModel = new CategoryProductItemViewModel();
+            ShoppingListApplication.getAppComponent().inject(mItemViewModel);
+            mItemViewModel.setShoppingList(mViewModel.mShoppingList);
             mBinding.setVariable(BR.viewModel, mItemViewModel);
         }
 
@@ -200,11 +202,11 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         public boolean areItemsTheSame(@NonNull CategoryProductItem oldItem, @NonNull CategoryProductItem newItem) {
             if (oldItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)
                     && newItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)) {
-                return oldItem.getProduct().getProductID() == newItem.getProduct().getProductID();
+                return oldItem.getProduct().getProductID().equals(newItem.getProduct().getProductID());
             }
             if (oldItem.getType().equals(CategoryProductItem.TYPE_CATEGORY)
                     && newItem.getType().equals(CategoryProductItem.TYPE_CATEGORY)) {
-                return oldItem.getCategory().getCategoryID() == newItem.getCategory().getCategoryID();
+                return oldItem.getCategory().getCategoryID().equals(newItem.getCategory().getCategoryID());
             }
             return false;
         }
