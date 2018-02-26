@@ -6,6 +6,7 @@ import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
@@ -78,6 +79,11 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
                 break;
             }
         }
+        updateProductStatus(newStatus);
+    }
+
+    private void updateProductStatus(int newStatus) {
+        Product product = mCategoryProductItem.getProduct();
         product.setStatus(newStatus);
         mShoppingList.updateProduct(product, new ShoppingList.onUpdateProductCallback() {
             @Override
@@ -85,6 +91,27 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
                 mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
             }
         });
+    }
+
+    public Product getProduct() throws ShoppingListException {
+        checkIsProductType();
+        return mCategoryProductItem.getProduct();
+    }
+
+    public void markProductAs(int status) throws ShoppingListException {
+        checkIsProductType();
+        updateProductStatus(status);
+    }
+
+    public void removeProduct() throws ShoppingListException {
+        checkIsProductType();
+        mShoppingList.removeProduct(mCategoryProductItem.getProduct());
+    }
+
+    private void checkIsProductType() throws ShoppingListException {
+        if (!CategoryProductItem.TYPE_PRODUCT.equals(mCategoryProductItem.getType())) {
+            throw new ShoppingListException("CategoryProductItem has category type");
+        }
     }
 
     @Override

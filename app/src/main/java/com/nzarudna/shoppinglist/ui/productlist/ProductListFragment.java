@@ -15,6 +15,7 @@ import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
@@ -45,6 +47,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     private ProductListViewModel mViewModel;
     private CategoryProductAdapter mAdapter;
     private LiveData<PagedList<CategoryProductItem>> mProducts;
+    private CategoryProductItemViewModel mCurrentContextMenuProduct;
 
     protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -143,6 +146,66 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         }
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        getActivity().getMenuInflater().inflate(R.menu.product_item_menu, menu);
+        mCurrentContextMenuProduct = (CategoryProductItemViewModel) v.getTag();
+
+        try {
+            Product product = mCurrentContextMenuProduct.getProduct();
+            switch (product.getStatus()) {
+                case Product.TO_BUY:
+                    menu.removeItem(R.id.mark_product_as_active_menu_item);
+                    break;
+                case Product.BOUGHT:
+                    menu.removeItem(R.id.mark_product_as_bought_menu_item);
+                    break;
+                case Product.ABSENT:
+                    menu.removeItem(R.id.mark_product_as_absent_menu_item);
+                    break;
+            }
+
+        } catch (ShoppingListException e) {
+            //TODO: handle exception
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        try {
+            switch (item.getItemId()) {
+                case R.id.edit_product_menu_item:
+                    openEditProductDialog(mCurrentContextMenuProduct.getProduct());
+                    return true;
+
+                case R.id.mark_product_as_active_menu_item:
+                    mCurrentContextMenuProduct.markProductAs(Product.TO_BUY);
+                    return true;
+                case R.id.mark_product_as_bought_menu_item:
+                    mCurrentContextMenuProduct.markProductAs(Product.BOUGHT);
+                    return true;
+                case R.id.mark_product_as_absent_menu_item:
+                    mCurrentContextMenuProduct.markProductAs(Product.ABSENT);
+                    return true;
+
+                case R.id.remove_product_menu_item:
+                    mCurrentContextMenuProduct.removeProduct();
+            }
+            return super.onContextItemSelected(item);
+        } catch (ShoppingListException e) {
+            //TODO: handle exception
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    protected void openEditProductDialog(Product product) {
+
+    }
+
     private class CategoryProductViewHolder extends RecyclerView.ViewHolder {
 
         ViewDataBinding mBinding;
@@ -160,6 +223,13 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
         public void bind(CategoryProductItem categoryProductItem) {
             mItemViewModel.setCategoryProductItem(categoryProductItem);
+
+            if (CategoryProductItem.TYPE_PRODUCT.equals(categoryProductItem.getType())) {
+                registerForContextMenu(mBinding.getRoot());
+                mBinding.getRoot().setTag(mItemViewModel);
+            } else {
+                unregisterForContextMenu(mBinding.getRoot());
+            }
 
             mBinding.executePendingBindings();
         }
