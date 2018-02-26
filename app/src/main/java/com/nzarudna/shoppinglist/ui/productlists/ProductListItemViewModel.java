@@ -26,9 +26,18 @@ public class ProductListItemViewModel extends BaseObservable {
     private ProductListWithStatistics mProductList;
 
     private ProductListItemViewModelObserver mObserver;
+    private int mCurrentPosition;
 
     public void setObserver(ProductListItemViewModelObserver observer) {
         this.mObserver = observer;
+    }
+
+    public void setCurrentPosition(int currentPosition) {
+        this.mCurrentPosition = currentPosition;
+    }
+
+    public int getCurrentPosition() {
+        return this.mCurrentPosition;
     }
 
     public String getListName() {
@@ -67,8 +76,32 @@ public class ProductListItemViewModel extends BaseObservable {
         mProductListRepository.archiveList(mProductList.getListID());
     }
 
+    public void onDeleteMenuItemSelected() {
+        mProductListRepository.archiveList(mProductList.getListID());
+    }
+
+    public void onArchiveMenuItemSelected() {
+        mProductListRepository.removeList(mProductList.getListID());
+    }
+
+    public void onEditMenuItemSelected() {
+        if (mObserver != null) {
+            mObserver.startEditProductListActivity(mProductList.getListID());
+        }
+    }
+
+    public void onMenuIconClick() {
+        if (mObserver != null) {
+            mObserver.showContextMenu(this);
+        }
+    }
+
     public interface ProductListItemViewModelObserver {
 
         void startProductListActivity(UUID productsListID);
+
+        void startEditProductListActivity(UUID productsListID);
+
+        void showContextMenu(ProductListItemViewModel itemViewModel);
     }
 }

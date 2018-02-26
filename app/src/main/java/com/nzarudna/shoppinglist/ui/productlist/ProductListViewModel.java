@@ -87,14 +87,6 @@ public abstract class ProductListViewModel extends ViewModel implements Observab
         mRegistry.remove(onPropertyChangedCallback);
     }
 
-    public void onDeleteMenuItemSelected() {
-        mProductListRepository.archiveList(mProductListID);
-    }
-
-    public void onArchiveMenuItemSelected() {
-        mProductListRepository.removeList(mProductListID);
-    }
-
     public void removeBoughtProducts() {
         mShoppingList.removeProductsByStatus(Product.BOUGHT);
     }

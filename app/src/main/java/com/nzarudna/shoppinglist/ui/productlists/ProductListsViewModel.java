@@ -76,7 +76,7 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
     }
 
     @Override
-    public void onCreate(UUID productListID) {
+    public void onCreateNewList(UUID productListID) {
         if (mObserver != null) {
             mObserver.startEditProductListActivity(productListID);
         }

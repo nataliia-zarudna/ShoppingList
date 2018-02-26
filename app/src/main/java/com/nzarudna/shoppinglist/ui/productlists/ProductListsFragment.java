@@ -63,7 +63,7 @@ public class ProductListsFragment extends Fragment implements
     private RecyclerView mListRecyclerView;
     private ProductListAdapter mListAdapter;
     private LiveData<PagedList<ProductListWithStatistics>> mCurrentList;
-    private ProductListViewModel mProductVMWithContextMenu;
+    private ProductListItemViewModel mContextMenuProductVM;
 
     private FloatingActionButton mShowCreationMenuBtn;
     private FloatingActionButton mCreateNewSubItem;
@@ -141,12 +141,12 @@ public class ProductListsFragment extends Fragment implements
         super.onCreateContextMenu(menu, v, menuInfo);
 
         Object listModelView = v.getTag(TAG_LIST_MODEL_VIEW);
-        if (listModelView != null && listModelView instanceof ProductListViewModel) {
-            mProductVMWithContextMenu = (ProductListViewModel) listModelView;
+        if (listModelView != null && listModelView instanceof ProductListItemViewModel) {
+            mContextMenuProductVM = (ProductListItemViewModel) listModelView;
             MenuInflater menuInflater = getActivity().getMenuInflater();
             menuInflater.inflate(R.menu.product_list_item_menu, menu);
         } else {
-            mProductVMWithContextMenu = null;
+            mContextMenuProductVM = null;
         }
     }
 
@@ -154,11 +154,13 @@ public class ProductListsFragment extends Fragment implements
     public boolean onContextItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.edit_list_item:
+                mContextMenuProductVM.onEditMenuItemSelected();
             case R.id.delete_list_item:
-                mProductVMWithContextMenu.onDeleteMenuItemSelected();
+                mContextMenuProductVM.onDeleteMenuItemSelected();
                 return true;
             case R.id.archive_list_item:
-                mProductVMWithContextMenu.onArchiveMenuItemSelected();
+                mContextMenuProductVM.onArchiveMenuItemSelected();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -283,6 +285,13 @@ public class ProductListsFragment extends Fragment implements
         startActivity(intent);
     }
 
+    @Override
+    public void showContextMenu(ProductListItemViewModel itemViewModel) {
+
+        View targetItemView = mListRecyclerView.getChildAt(itemViewModel.getCurrentPosition());
+        targetItemView.showContextMenu();
+    }
+
     public class ProductListViewHolder extends RecyclerView.ViewHolder {
 
         ListItemProductListBinding mBinding;
@@ -304,10 +313,12 @@ public class ProductListsFragment extends Fragment implements
         public void bind(ProductListWithStatistics productList) {
             Log.d(TAG, "bind productList " + productList.getName());
 
-            mBinding.getViewModel().setProductList(productList);
+            ProductListItemViewModel viewModel = mBinding.getViewModel();
+            viewModel.setProductList(productList);
             mBinding.executePendingBindings();
 
-            mBinding.getRoot().setTag(TAG_LIST_MODEL_VIEW, mBinding.getViewModel());
+            mBinding.getRoot().setTag(TAG_LIST_MODEL_VIEW, viewModel);
+            viewModel.setCurrentPosition(getAdapterPosition());
         }
     }
 

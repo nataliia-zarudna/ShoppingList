@@ -63,7 +63,7 @@ public class ProductListRepository {
                 mProductListDao.insert(productList);
 
                 if (onProductListCreateListener != null) {
-                    onProductListCreateListener.onCreate(productList.getListID());
+                    onProductListCreateListener.onCreateNewList(productList.getListID());
                 }
 
                 return null;
@@ -107,7 +107,7 @@ public class ProductListRepository {
                 copyProductsFromList(etalonListID, newProductList.getListID());
 
                 if (onProductListCreateListener != null) {
-                    onProductListCreateListener.onCreate(newProductList.getListID());
+                    onProductListCreateListener.onCreateNewList(newProductList.getListID());
                 }
 
                 return null;
@@ -206,6 +206,6 @@ public class ProductListRepository {
     public static final int SORT_LISTS_BY_PRODUCT_ORDER = 6;
 
     public interface OnProductListCreateListener {
-        void onCreate(UUID productListID);
+        void onCreateNewList(UUID productListID);
     }
 }
