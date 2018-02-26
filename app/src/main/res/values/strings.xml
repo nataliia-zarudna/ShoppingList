@@ -31,6 +31,8 @@
     <string name="mark_product_as_bought_menu_item">Mark as bought</string>
     <string name="mark_product_as_absent_menu_item">Mark as absent</string>
     <string name="edit_list_item">Edit</string>
+    <string name="product_name_hint">Name</string>
+    <string name="product_count_hint">Count</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>
