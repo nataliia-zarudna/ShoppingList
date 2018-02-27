@@ -121,6 +121,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
         for (int i = 0; i < 10; i++) {
             ContentValues values = new ContentValues();
+            values.put("template_id", UUID.randomUUID().toString());
             values.put("name", ((i % 2 > 0) ? ("Template #" + i) : ("Temp #" + i)));
             values.put("category_id", categoryIDs[i % 2]);
 

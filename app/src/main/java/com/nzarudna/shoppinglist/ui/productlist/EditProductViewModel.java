@@ -2,9 +2,6 @@ package com.nzarudna.shoppinglist.ui.productlist;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
 
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
@@ -28,7 +25,7 @@ public class EditProductViewModel extends ViewModel {
         return null;
     }
 
-    public LiveData<List<ProductTemplate>> getNameAutocompleteList() {
-        return mTemplateRepository.getTemplatesByNameLike("", null);
+    public LiveData<List<ProductTemplate>> getNameAutocompleteList(String filterValue) {
+        return mTemplateRepository.getTemplatesByNameLike(filterValue, null);
     }
 }
