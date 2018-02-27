@@ -132,7 +132,7 @@ public interface ProductTemplateDao {
             "           AND (SELECT COUNT(product_id) " +
             "                FROM products product " +
             "                WHERE product.template_id = template.template_id" +
-            "                   /*AND product.list_id = :listID*/) = 0 " +
+            "                   AND product.list_id = :listID) = 0 " +
             "       ORDER BY lower(template.name) ")
-    LiveData<List<ProductTemplate>> findAllByNameLike(String name/*, UUID listID*/);
+    LiveData<List<ProductTemplate>> findAllByNameLike(String name, UUID listID);
 }

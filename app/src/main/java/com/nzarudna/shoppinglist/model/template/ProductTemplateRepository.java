@@ -96,6 +96,6 @@ public class ProductTemplateRepository {
     }
 
     public LiveData<List<ProductTemplate>> getTemplatesByNameLike(String name, UUID listID) {
-        return mProductTemplateDao.findAllByNameLike(name/*, listID*/);
+        return mProductTemplateDao.findAllByNameLike(name, listID);
     }
 }

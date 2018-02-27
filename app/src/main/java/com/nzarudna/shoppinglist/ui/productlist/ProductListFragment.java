@@ -203,7 +203,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     }
 
     protected void openEditProductDialog(Product product) {
-        EditProductDialogFragment dialogFragment = EditProductDialogFragment.newInstance(product.getProductID());
+        EditProductDialogFragment dialogFragment = EditProductDialogFragment.newInstance(product);
         dialogFragment.show(getFragmentManager(), EditProductDialogFragment.class.getName());
     }
 

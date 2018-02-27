@@ -1,16 +1,18 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
+import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,6 +24,8 @@ import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.databinding.FragmentEditProductDialogBinding;
+import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 
 import java.util.List;
@@ -35,18 +39,27 @@ public class EditProductDialogFragment extends DialogFragment {
 
     private static final String TAG = "EditProductDF";
 
-    private static final String ARG_PRODUCT_ID = "productID";
+    private static final String ARG_PRODUCT = "productID";
+    private static final String ARG_LIST_ID = "listID";
 
     private EditProductViewModel mViewModel;
     private ProductNameAutocompleteAdapter mAdapter;
 
-    public static EditProductDialogFragment newInstance(UUID productID) {
-        EditProductDialogFragment instance = new EditProductDialogFragment();
-
+    public static EditProductDialogFragment newInstance(UUID listID) {
         Bundle args = new Bundle();
-        args.putSerializable(ARG_PRODUCT_ID, productID);
-        instance.setArguments(args);
+        args.putSerializable(ARG_LIST_ID, listID);
+        return newInstance(args);
+    }
 
+    public static EditProductDialogFragment newInstance(Product product) {
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_PRODUCT, product);
+        return newInstance(args);
+    }
+
+    private static EditProductDialogFragment newInstance(Bundle args) {
+        EditProductDialogFragment instance = new EditProductDialogFragment();
+        instance.setArguments(args);
         return instance;
     }
 
@@ -56,18 +69,54 @@ public class EditProductDialogFragment extends DialogFragment {
 
         mViewModel = ViewModelProviders.of(this).get(EditProductViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
+
+        Product product = null;
+        UUID listID = null;
+        if (getArguments() != null) {
+            product = getArguments().getParcelable(ARG_PRODUCT);
+            listID = (UUID) getArguments().getSerializable(ARG_LIST_ID);
+        }
+        if (product == null) {
+            product = new Product(null);
+            product.setListID(listID);
+        }
+        mViewModel.setProduct(product);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_product_dialog, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new AlertDialog.Builder(getActivity())
+                .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mViewModel.saveProduct();
+                    }
+                })
+                .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setView(getContainerView())
+                .setTitle(mViewModel.getDialogTitle())
+                .create();
+    }
 
-        AutoCompleteTextView nameView = rootView.findViewById(R.id.name);
+    private View getContainerView() {
+
+        FragmentEditProductDialogBinding binding = DataBindingUtil.inflate(getActivity().getLayoutInflater(),
+                R.layout.fragment_edit_product_dialog, null, false);
+        binding.setViewModel(mViewModel);
+
+        View dialogView = binding.getRoot();
+
+        AutoCompleteTextView nameView = dialogView.findViewById(R.id.name);
         mAdapter = new ProductNameAutocompleteAdapter();
         nameView.setAdapter(mAdapter);
 
-        loadList("");
+        loadNameAutocompleteValues("");
 
         nameView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -76,7 +125,7 @@ public class EditProductDialogFragment extends DialogFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                loadList(charSequence.toString());
+                loadNameAutocompleteValues(charSequence.toString());
             }
 
             @Override
@@ -103,10 +152,10 @@ public class EditProductDialogFragment extends DialogFragment {
             }
         });
 
-        return rootView;
+        return dialogView;
     }
 
-    private void loadList(String filterValue) {
+    private void loadNameAutocompleteValues(String filterValue) {
         mViewModel.getNameAutocompleteList(filterValue).observe(this, new Observer<List<ProductTemplate>>() {
             @Override
             public void onChanged(@Nullable List<ProductTemplate> productTemplates) {

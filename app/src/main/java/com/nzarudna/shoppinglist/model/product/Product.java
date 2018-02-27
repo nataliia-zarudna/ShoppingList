@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -44,7 +46,7 @@ import java.util.UUID;
                 @Index(value = "category_id"),
                 @Index(value = {"template_id", "list_id"})
         })
-public class Product implements Cloneable {
+public class Product implements Cloneable, Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TO_BUY, ABSENT, BOUGHT})
@@ -236,5 +238,49 @@ public class Product implements Cloneable {
                 ", comment='" + comment + '\'' +
                 ", order=" + order +
                 '}';
+    }
+
+    protected Product(Parcel in) {
+        productID = (UUID) in.readSerializable();
+        name = in.readString();
+        categoryID = (UUID) in.readSerializable();
+        listID = (UUID) in.readSerializable();
+        unitID = (UUID) in.readSerializable();
+        templateID = (UUID) in.readSerializable();
+        count = in.readDouble();
+        status = in.readInt();
+        comment = in.readString();
+        order = in.readDouble();
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeSerializable(productID);
+        parcel.writeString(name);
+        parcel.writeSerializable(categoryID);
+        parcel.writeSerializable(listID);
+        parcel.writeSerializable(unitID);
+        parcel.writeSerializable(templateID);
+        parcel.writeDouble(count);
+        parcel.writeInt(status);
+        parcel.writeString(comment);
+        parcel.writeDouble(order);
     }
 }
