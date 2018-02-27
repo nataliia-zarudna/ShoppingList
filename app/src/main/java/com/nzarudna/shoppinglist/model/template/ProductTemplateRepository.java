@@ -1,11 +1,13 @@
 package com.nzarudna.shoppinglist.model.template;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
 
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -93,7 +95,7 @@ public class ProductTemplateRepository {
         }
     }
 
-    public DataSource.Factory<Integer, ProductTemplate> getTemplatesByNameLike(String name, UUID listID) {
-        return mProductTemplateDao.findAllByNameLike(name, listID);
+    public LiveData<List<ProductTemplate>> getTemplatesByNameLike(String name, UUID listID) {
+        return mProductTemplateDao.findAllByNameLike(name/*, listID*/);
     }
 }

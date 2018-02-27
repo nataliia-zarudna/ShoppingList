@@ -118,6 +118,14 @@ public abstract class AppDatabase extends RoomDatabase {
 
             db.insert("products", OnConflictStrategy.IGNORE, values);
         }
+
+        for (int i = 0; i < 10; i++) {
+            ContentValues values = new ContentValues();
+            values.put("name", ((i % 2 > 0) ? ("Template #" + i) : ("Temp #" + i)));
+            values.put("category_id", categoryIDs[i % 2]);
+
+            db.insert("product_templates", OnConflictStrategy.IGNORE, values);
+        }
     }
 
     private static String insertSelfUser(SupportSQLiteDatabase db) {

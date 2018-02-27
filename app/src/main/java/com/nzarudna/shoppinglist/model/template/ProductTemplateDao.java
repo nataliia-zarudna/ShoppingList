@@ -8,6 +8,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -131,7 +132,7 @@ public interface ProductTemplateDao {
             "           AND (SELECT COUNT(product_id) " +
             "                FROM products product " +
             "                WHERE product.template_id = template.template_id" +
-            "                   AND product.list_id = :listID) = 0 " +
+            "                   /*AND product.list_id = :listID*/) = 0 " +
             "       ORDER BY lower(template.name) ")
-    DataSource.Factory<Integer, ProductTemplate> findAllByNameLike(String name, UUID listID);
+    LiveData<List<ProductTemplate>> findAllByNameLike(String name/*, UUID listID*/);
 }
