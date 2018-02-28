@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.model.unit;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
 
@@ -12,6 +13,6 @@ import java.util.List;
 public interface UnitDao {
 
     @Query(value = "SELECT * FROM units")
-    List<Unit> findAll();
+    LiveData<List<Unit>> findAll();
 
 }

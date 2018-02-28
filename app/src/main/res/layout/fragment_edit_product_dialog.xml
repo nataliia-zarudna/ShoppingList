@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="com.nzarudna.shoppinglist.ui.productlist.EditProductViewModel" />
+            type="com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <AutoCompleteTextView
+        <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

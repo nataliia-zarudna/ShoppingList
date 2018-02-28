@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.ui.productlist;
+package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -10,6 +10,8 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
+import com.nzarudna.shoppinglist.model.unit.Unit;
+import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,8 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     @Inject
     ProductTemplateRepository mTemplateRepository;
+    @Inject
+    UnitRepository mUnitRepository;
 
     @Bindable
     private Product mProduct;
@@ -64,5 +68,9 @@ public class EditProductViewModel extends ViewModel implements Observable {
     @Override
     public void removeOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
         mRegistry.remove(onPropertyChangedCallback);
+    }
+
+    public LiveData<List<Unit>> getUnitList() {
+        return mUnitRepository.getAvailableUnits();
     }
 }

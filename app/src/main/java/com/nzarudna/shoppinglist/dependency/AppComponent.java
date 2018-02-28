@@ -8,7 +8,7 @@ import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
-import com.nzarudna.shoppinglist.ui.productlist.EditProductViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsViewModel;

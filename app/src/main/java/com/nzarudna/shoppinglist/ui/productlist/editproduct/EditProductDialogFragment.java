@@ -1,32 +1,33 @@
-package com.nzarudna.shoppinglist.ui.productlist;
+package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.FragmentEditProductDialogBinding;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.unit.Unit;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +44,8 @@ public class EditProductDialogFragment extends DialogFragment {
     private static final String ARG_LIST_ID = "listID";
 
     private EditProductViewModel mViewModel;
-    private ProductNameAutocompleteAdapter mAdapter;
+    private ProductNameAutocompleteAdapter mNameAutocompleteAdapter;
+    private ArrayAdapter<Unit> mUnitSpinnerAdapter;
 
     public static EditProductDialogFragment newInstance(UUID listID) {
         Bundle args = new Bundle();
@@ -112,9 +114,17 @@ public class EditProductDialogFragment extends DialogFragment {
 
         View dialogView = binding.getRoot();
 
-        AutoCompleteTextView nameView = dialogView.findViewById(R.id.name);
-        mAdapter = new ProductNameAutocompleteAdapter();
-        nameView.setAdapter(mAdapter);
+        configNameEditView(dialogView);
+        configUnitSpinnerView(dialogView);
+
+        return dialogView;
+    }
+
+    private void configNameEditView(View dialogView) {
+
+        AppCompatAutoCompleteTextView nameView = dialogView.findViewById(R.id.name);
+        mNameAutocompleteAdapter = new ProductNameAutocompleteAdapter(getActivity());
+        nameView.setAdapter(mNameAutocompleteAdapter);
 
         loadNameAutocompleteValues("");
 
@@ -133,100 +143,36 @@ public class EditProductDialogFragment extends DialogFragment {
             }
         });
 
-        nameView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "Selected template " + mAdapter.templates.get(i).getName());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
         nameView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "onItemClick template " + mAdapter.templates.get(i).getName());
+                Log.d(TAG, "onItemClick template " + ((ProductTemplate) mNameAutocompleteAdapter.getItem(i)).getName());
             }
         });
+    }
 
-        return dialogView;
+    private void configSpinnerView(View dialogView, @IdRes int spinnerID) {
+
+        final AppCompatSpinner unitView = dialogView.findViewById(R.id.unit);
+
+        mViewModel.getUnitList().observe(this, new Observer<List<Unit>>() {
+            @Override
+            public void onChanged(@Nullable List<Unit> units) {
+                if (mUnitSpinnerAdapter == null && units != null) {
+                    mUnitSpinnerAdapter
+                            = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, units);
+                    unitView.setAdapter(mUnitSpinnerAdapter);
+                }
+            }
+        });
     }
 
     private void loadNameAutocompleteValues(String filterValue) {
         mViewModel.getNameAutocompleteList(filterValue).observe(this, new Observer<List<ProductTemplate>>() {
             @Override
             public void onChanged(@Nullable List<ProductTemplate> productTemplates) {
-                mAdapter.setTemplates(productTemplates);
+                mNameAutocompleteAdapter.setTemplates(productTemplates);
             }
         });
-    }
-
-    private class ProductNameAutocompleteAdapter extends BaseAdapter implements Filterable {
-
-        List<ProductTemplate> templates;
-
-        public void setTemplates(final List<ProductTemplate> templates) {
-            ProductNameAutocompleteAdapter.this.templates = templates;
-
-            mAdapter.notifyDataSetChanged();
-            mAdapter.notifyDataSetInvalidated();
-        }
-
-        @Override
-        public int getCount() {
-            return templates.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return templates.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-
-            if (view == null) {
-                view = getLayoutInflater().inflate(R.layout.autocomplete_view, viewGroup, false);
-            }
-
-            TextView nameView = (TextView) view;
-            ProductTemplate template = templates.get(i);
-            nameView.setText(template.getName());
-
-            return view;
-        }
-
-        @Override
-        public Filter getFilter() {
-            return new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence charSequence) {
-
-                    FilterResults filterResults = new FilterResults();
-                    filterResults.count = templates.size();
-                    filterResults.values = templates;
-
-                    return filterResults;
-                }
-
-                @Override
-                protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                }
-
-                @Override
-                public CharSequence convertResultToString(Object resultValue) {
-                    ProductTemplate template = (ProductTemplate) resultValue;
-                    return template.getName();
-                }
-            };
-        }
     }
 }
