@@ -7,6 +7,8 @@ import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
@@ -28,6 +30,8 @@ public class EditProductViewModel extends ViewModel implements Observable {
     ProductTemplateRepository mTemplateRepository;
     @Inject
     UnitRepository mUnitRepository;
+    @Inject
+    CategoryRepository mCategoryRepository;
 
     @Bindable
     private Product mProduct;
@@ -72,5 +76,9 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     public LiveData<List<Unit>> getUnitList() {
         return mUnitRepository.getAvailableUnits();
+    }
+
+    public LiveData<List<Category>> getCategoryList() {
+        return mCategoryRepository.getAvailableCategories();
     }
 }

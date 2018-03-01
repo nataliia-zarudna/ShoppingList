@@ -13,7 +13,8 @@ import java.util.UUID;
 @Entity(tableName = "categories")
 public class Category {
 
-    public static final UUID DEFAULT_CATEGORY_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    public static final String DEFAULT_CATEGORY_ID_STRING = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+    public static final UUID DEFAULT_CATEGORY_ID = UUID.fromString(DEFAULT_CATEGORY_ID_STRING);
 
     @PrimaryKey()
     @NonNull

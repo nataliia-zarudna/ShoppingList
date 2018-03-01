@@ -8,6 +8,8 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import com.nzarudna.shoppinglist.model.category.Category;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -92,7 +94,7 @@ public interface ProductDao {
     void clearTemplateIDs(UUID templateID);
 
     @Query(value = "UPDATE products " +
-            "       SET category_id = 'ffffffff-ffff-ffff-ffff-ffffffffffff'" +
+            "       SET category_id = '" + Category.DEFAULT_CATEGORY_ID_STRING + "'" +
             "       WHERE category_id = :categoryID")
     void setDefaultCategoryID(UUID categoryID);
 

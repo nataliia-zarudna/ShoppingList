@@ -1,10 +1,13 @@
 package com.nzarudna.shoppinglist.model.category;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
 
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -66,5 +69,9 @@ public class CategoryRepository {
 
     public DataSource.Factory<Integer, CategoryStatisticsItem> getCategoriesWithStatistics() {
         return mCategoryDao.findAllWithStatistics();
+    }
+
+    public LiveData<List<Category>> getAvailableCategories() {
+        return mCategoryDao.findAllLiveData();
     }
 }

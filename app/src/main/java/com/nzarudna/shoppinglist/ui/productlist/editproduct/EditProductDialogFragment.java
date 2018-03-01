@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.FragmentEditProductDialogBinding;
+import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -46,6 +47,7 @@ public class EditProductDialogFragment extends DialogFragment {
     private EditProductViewModel mViewModel;
     private ProductNameAutocompleteAdapter mNameAutocompleteAdapter;
     private ArrayAdapter<Unit> mUnitSpinnerAdapter;
+    private ArrayAdapter<Category> mCategorySpinnerAdapter;
 
     public static EditProductDialogFragment newInstance(UUID listID) {
         Bundle args = new Bundle();
@@ -116,6 +118,7 @@ public class EditProductDialogFragment extends DialogFragment {
 
         configNameEditView(dialogView);
         configUnitSpinnerView(dialogView);
+        configCategorySpinnerView(dialogView);
 
         return dialogView;
     }
@@ -151,7 +154,7 @@ public class EditProductDialogFragment extends DialogFragment {
         });
     }
 
-    private void configSpinnerView(View dialogView, @IdRes int spinnerID) {
+    private void configUnitSpinnerView(View dialogView) {
 
         final AppCompatSpinner unitView = dialogView.findViewById(R.id.unit);
 
@@ -159,9 +162,27 @@ public class EditProductDialogFragment extends DialogFragment {
             @Override
             public void onChanged(@Nullable List<Unit> units) {
                 if (mUnitSpinnerAdapter == null && units != null) {
+                    //TODO: add custom layout
                     mUnitSpinnerAdapter
-                            = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, units);
+                            = new UnitSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_item,
+                            android.R.id.text1, units);
                     unitView.setAdapter(mUnitSpinnerAdapter);
+                }
+            }
+        });
+    }
+
+    private void configCategorySpinnerView(View dialogView) {
+
+        final AppCompatSpinner categoryView = dialogView.findViewById(R.id.category);
+
+        mViewModel.getCategoryList().observe(this, new Observer<List<Category>>() {
+            @Override
+            public void onChanged(@Nullable List<Category> categories) {
+                if (mCategorySpinnerAdapter == null && categories != null) {
+                    mCategorySpinnerAdapter
+                            = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categories);
+                    categoryView.setAdapter(mCategorySpinnerAdapter);
                 }
             }
         });

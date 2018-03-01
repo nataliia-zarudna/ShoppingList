@@ -8,6 +8,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -31,7 +32,7 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE category_id = :categoryID")
     LiveData<Category> findByID(UUID categoryID);
 
-    @Query("SELECT * FROM categories WHERE category_id <> 'ffffffff-ffff-ffff-ffff-ffffffffffff'")
+    @Query("SELECT * FROM categories WHERE category_id <> '" + Category.DEFAULT_CATEGORY_ID_STRING + "'")
     DataSource.Factory<Integer, Category> findAll();
 
     @Query("SELECT category.*, " +
@@ -45,7 +46,10 @@ public interface CategoryDao {
             "    LIMIT 1 " +
             "    ) AS is_used " +
             "FROM categories category " +
-            "WHERE category_id <> 'ffffffff-ffff-ffff-ffff-ffffffffffff' " +
+            "WHERE category_id <> '" + Category.DEFAULT_CATEGORY_ID_STRING + "' " +
             "ORDER BY name ")
     DataSource.Factory<Integer, CategoryStatisticsItem> findAllWithStatistics();
+
+    @Query("SELECT * FROM categories WHERE category_id <> '" + Category.DEFAULT_CATEGORY_ID_STRING + "'")
+    LiveData<List<Category>> findAllLiveData();
 }
