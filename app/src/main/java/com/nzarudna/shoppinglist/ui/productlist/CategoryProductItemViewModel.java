@@ -22,12 +22,14 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
 
     @Inject
     ProductListRepository mProductListRepository;
+
     private ShoppingList mShoppingList;
+    private PropertyChangeRegistry mPropertyChangeRegistry = new PropertyChangeRegistry();
+    private CategoryProductItemViewModelObserver mObserver;
+    private int mCurrentPosition;
 
     @Bindable
     private CategoryProductItem mCategoryProductItem;
-
-    private PropertyChangeRegistry mPropertyChangeRegistry = new PropertyChangeRegistry();
 
     public void setShoppingList(ShoppingList shoppingList) {
         this.mShoppingList = shoppingList;
@@ -37,6 +39,14 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         this.mCategoryProductItem = categoryProductItem;
 
         mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public void setObserver(CategoryProductItemViewModelObserver observer) {
+        this.mObserver = observer;
+    }
+
+    public void setCurrentPosition(int currentPosition) {
+        this.mCurrentPosition = currentPosition;
     }
 
     public String getName() {
@@ -71,7 +81,7 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         }
 
         Product product = mCategoryProductItem.getProduct();
-        int[] productStatusChain = new int[] {Product.TO_BUY, Product.BOUGHT, Product.ABSENT};
+        int[] productStatusChain = new int[]{Product.TO_BUY, Product.BOUGHT, Product.ABSENT};
         int newStatus = Product.TO_BUY;
         for (int i = 0; i < productStatusChain.length; i++) {
             if (productStatusChain[i] == product.getStatus()) {
@@ -114,6 +124,12 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         }
     }
 
+    public void onMenuButtonClick() {
+        if (mObserver != null) {
+            mObserver.showContextMenu(mCurrentPosition);
+        }
+    }
+
     @Override
     public void addOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
         mPropertyChangeRegistry.add(onPropertyChangedCallback);
@@ -122,5 +138,9 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
     @Override
     public void removeOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
         mPropertyChangeRegistry.remove(onPropertyChangedCallback);
+    }
+
+    public interface CategoryProductItemViewModelObserver {
+        void showContextMenu(int productPosition);
     }
 }

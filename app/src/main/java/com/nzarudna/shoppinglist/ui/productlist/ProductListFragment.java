@@ -38,7 +38,7 @@ import java.util.UUID;
  * Created by Nataliia on 21.01.2018.
  */
 
-public abstract class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>> {
+public abstract class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>>,CategoryProductItemViewModel.CategoryProductItemViewModelObserver {
 
     private static final String TAG = "ProductListFragment";
 
@@ -48,7 +48,8 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     private ProductListViewModel mViewModel;
     private CategoryProductAdapter mAdapter;
     private LiveData<PagedList<CategoryProductItem>> mProducts;
-    private CategoryProductItemViewModel mCurrentContextMenuProduct;
+    private CategoryProductItemViewModel mCurrentContextMenuProductVM;
+    private RecyclerView mProductsRecyclerView;
 
     protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -79,11 +80,11 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
         View fragmentView = inflater.inflate(R.layout.fragment_product_list, container, false);
 
-        RecyclerView productsRecyclerView = fragmentView.findViewById(R.id.products_recycle_view);
-        productsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mProductsRecyclerView = fragmentView.findViewById(R.id.products_recycle_view);
+        mProductsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new CategoryProductAdapter();
-        productsRecyclerView.setAdapter(mAdapter);
+        mProductsRecyclerView.setAdapter(mAdapter);
 
         mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
             @Override
@@ -152,10 +153,10 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         super.onCreateContextMenu(menu, v, menuInfo);
 
         getActivity().getMenuInflater().inflate(R.menu.product_item_menu, menu);
-        mCurrentContextMenuProduct = (CategoryProductItemViewModel) v.getTag();
+        mCurrentContextMenuProductVM = (CategoryProductItemViewModel) v.getTag();
 
         try {
-            Product product = mCurrentContextMenuProduct.getProduct();
+            Product product = mCurrentContextMenuProductVM.getProduct();
             switch (product.getStatus()) {
                 case Product.TO_BUY:
                     menu.removeItem(R.id.mark_product_as_active_menu_item);
@@ -179,21 +180,21 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         try {
             switch (item.getItemId()) {
                 case R.id.edit_product_menu_item:
-                    openEditProductDialog(mCurrentContextMenuProduct.getProduct());
+                    openEditProductDialog(mCurrentContextMenuProductVM.getProduct());
                     return true;
 
                 case R.id.mark_product_as_active_menu_item:
-                    mCurrentContextMenuProduct.markProductAs(Product.TO_BUY);
+                    mCurrentContextMenuProductVM.markProductAs(Product.TO_BUY);
                     return true;
                 case R.id.mark_product_as_bought_menu_item:
-                    mCurrentContextMenuProduct.markProductAs(Product.BOUGHT);
+                    mCurrentContextMenuProductVM.markProductAs(Product.BOUGHT);
                     return true;
                 case R.id.mark_product_as_absent_menu_item:
-                    mCurrentContextMenuProduct.markProductAs(Product.ABSENT);
+                    mCurrentContextMenuProductVM.markProductAs(Product.ABSENT);
                     return true;
 
                 case R.id.remove_product_menu_item:
-                    mCurrentContextMenuProduct.removeProduct();
+                    mCurrentContextMenuProductVM.removeProduct();
             }
             return super.onContextItemSelected(item);
         } catch (ShoppingListException e) {
@@ -208,6 +209,14 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         dialogFragment.show(getFragmentManager(), EditProductDialogFragment.class.getName());
     }
 
+    @Override
+    public void showContextMenu(int productPosition) {
+        View productView = mProductsRecyclerView.getChildAt(productPosition);
+        productView.showContextMenu();
+
+        mCurrentContextMenuProductVM = (CategoryProductItemViewModel) productView.getTag();
+    }
+
     private class CategoryProductViewHolder extends RecyclerView.ViewHolder {
 
         ViewDataBinding mBinding;
@@ -220,15 +229,18 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             mItemViewModel = new CategoryProductItemViewModel();
             ShoppingListApplication.getAppComponent().inject(mItemViewModel);
             mItemViewModel.setShoppingList(mViewModel.mShoppingList);
+            mItemViewModel.setObserver(ProductListFragment.this);
+
             mBinding.setVariable(BR.viewModel, mItemViewModel);
         }
 
-        public void bind(CategoryProductItem categoryProductItem) {
+        public void bind(CategoryProductItem categoryProductItem, int position) {
             mItemViewModel.setCategoryProductItem(categoryProductItem);
 
             if (CategoryProductItem.TYPE_PRODUCT.equals(categoryProductItem.getType())) {
                 registerForContextMenu(mBinding.getRoot());
                 mBinding.getRoot().setTag(mItemViewModel);
+                mItemViewModel.setCurrentPosition(position);
             } else {
                 unregisterForContextMenu(mBinding.getRoot());
             }
@@ -264,7 +276,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
         @Override
         public void onBindViewHolder(CategoryProductViewHolder holder, int position) {
-            holder.bind(getItem(position));
+            holder.bind(getItem(position), position);
         }
     }
 

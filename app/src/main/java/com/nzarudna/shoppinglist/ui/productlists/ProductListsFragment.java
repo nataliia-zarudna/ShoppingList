@@ -31,12 +31,11 @@ import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.databinding.ListItemProductListBinding;
+import com.nzarudna.shoppinglist.databinding.ItemProductListBinding;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 
 import java.util.UUID;
 
@@ -290,13 +289,15 @@ public class ProductListsFragment extends Fragment implements
 
         View targetItemView = mListRecyclerView.getChildAt(itemViewModel.getCurrentPosition());
         targetItemView.showContextMenu();
+
+        mContextMenuProductVM = (ProductListItemViewModel) targetItemView.getTag(TAG_LIST_MODEL_VIEW);
     }
 
     public class ProductListViewHolder extends RecyclerView.ViewHolder {
 
-        ListItemProductListBinding mBinding;
+        ItemProductListBinding mBinding;
 
-        public ProductListViewHolder(ListItemProductListBinding binding,
+        public ProductListViewHolder(ItemProductListBinding binding,
                                      ProductListItemViewModel.ProductListItemViewModelObserver itemObserver) {
             super(binding.getRoot());
 
@@ -332,8 +333,8 @@ public class ProductListsFragment extends Fragment implements
 
         @Override
         public ProductListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ListItemProductListBinding binding = DataBindingUtil.inflate(
-                    getLayoutInflater(), R.layout.list_item_product_list, parent, false);
+            ItemProductListBinding binding = DataBindingUtil.inflate(
+                    getLayoutInflater(), R.layout.item_product_list, parent, false);
             return new ProductListViewHolder(binding, mItemObserver);
         }
 
