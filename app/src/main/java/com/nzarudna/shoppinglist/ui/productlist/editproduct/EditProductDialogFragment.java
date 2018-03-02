@@ -29,6 +29,7 @@ import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
+import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 
 import java.util.List;
 import java.util.UUID;
@@ -164,8 +165,8 @@ public class EditProductDialogFragment extends DialogFragment {
                 if (mUnitSpinnerAdapter == null && units != null) {
                     //TODO: add custom layout
                     mUnitSpinnerAdapter
-                            = new UnitSpinnerAdapter(getActivity(), android.R.layout.simple_spinner_item,
-                            android.R.id.text1, units);
+                            = new ViewModelArrayAdapter<Unit>(EditProductDialogFragment.this, R.layout.item_base_list,
+                            units, UnitItemViewModel.class);
                     unitView.setAdapter(mUnitSpinnerAdapter);
                 }
             }
