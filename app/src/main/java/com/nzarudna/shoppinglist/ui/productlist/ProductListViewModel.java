@@ -43,6 +43,10 @@ public abstract class ProductListViewModel extends ViewModel implements Observab
         mShoppingList = mProductListRepository.getShoppingList(productListID);
     }
 
+    public UUID getProductListID() {
+        return mProductListID;
+    }
+
     public LiveData<PagedList<CategoryProductItem>> getProducts(int pageSize) {
         return getProducts(mProductList.getSorting(), mProductList.isGroupedView(), pageSize);
     }

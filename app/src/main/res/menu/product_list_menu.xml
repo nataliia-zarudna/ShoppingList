@@ -35,8 +35,13 @@
     </item>
 
     <item
+        android:id="@+id/menu_item_edit_list"
+        android:title="@string/edit_product_menu_item"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/menu_item_remove_bought"
-        android:title="@string/menu_remove_bought"/>
+        android:title="@string/menu_remove_bought" />
     <!--item
         android:id="@+id/menu_item_remove_absent"
         android:title="@string/menu_remove_absent"/>
@@ -44,10 +49,10 @@
         android:id="@+id/menu_item_remove_all"/-->
     <item
         android:id="@+id/menu_item_mark_all_as_bought"
-        android:title="@string/menu_mark_all_as_bought"/>
+        android:title="@string/menu_mark_all_as_bought" />
     <item
         android:id="@+id/menu_item_mark_all_as_active"
-        android:title="@string/menu_mark_all_as_active"/>
+        android:title="@string/menu_mark_all_as_active" />
     <item
         android:id="@+id/menu_item_remove"
         android:title="@string/delete_item"

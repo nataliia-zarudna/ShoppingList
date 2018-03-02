@@ -49,7 +49,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     private static final int DEFAULT_LOAD_LIST_SIZE = 20;
     private static final int REQUEST_CODE_EDIT_RPODUCT = 1;
 
-    private ProductListViewModel mViewModel;
+    protected ProductListViewModel mViewModel;
     private CategoryProductAdapter mAdapter;
     private LiveData<PagedList<CategoryProductItem>> mProducts;
     private CategoryProductItemViewModel mCurrentContextMenuProductVM;
