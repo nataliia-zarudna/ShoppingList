@@ -29,7 +29,7 @@ public abstract class ProductListViewModel extends ViewModel implements Observab
 
     @Inject
     ProductListRepository mProductListRepository;
-    private PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
+    protected PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
 
     @Bindable
     protected ProductList mProductList;
@@ -45,6 +45,10 @@ public abstract class ProductListViewModel extends ViewModel implements Observab
 
     public UUID getProductListID() {
         return mProductListID;
+    }
+
+    public String getListName() {
+        return mProductList != null ? mProductList.getName() : "";
     }
 
     public LiveData<PagedList<CategoryProductItem>> getProducts(int pageSize) {

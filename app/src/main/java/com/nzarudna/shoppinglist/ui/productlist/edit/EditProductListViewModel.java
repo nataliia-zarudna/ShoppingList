@@ -2,7 +2,6 @@ package com.nzarudna.shoppinglist.ui.productlist.edit;
 
 import android.util.Log;
 
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 
 /**
@@ -19,13 +18,5 @@ public class EditProductListViewModel extends ProductListViewModel {
             mProductList.setName(newName);
             mShoppingList.updateProductList(mProductList);
         }
-    }
-
-    public String getListName() {
-        if (mShoppingList != null) {
-            ProductList productList = mShoppingList.getListData().getValue();
-            return productList != null ? productList.getName() : "";
-        }
-        return "";
     }
 }

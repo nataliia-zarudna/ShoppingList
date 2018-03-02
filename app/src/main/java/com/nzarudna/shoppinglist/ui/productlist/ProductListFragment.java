@@ -84,6 +84,12 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
         View fragmentView = inflater.inflate(R.layout.fragment_product_list, container, false);
 
+        initProductsRecyclerView(fragmentView);
+
+        return fragmentView;
+    }
+
+    protected void initProductsRecyclerView(View fragmentView) {
         mProductsRecyclerView = fragmentView.findViewById(R.id.products_recycle_view);
         mProductsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -99,10 +105,10 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
                     mProducts = mViewModel.getProducts(DEFAULT_LOAD_LIST_SIZE);
                     mProducts.observe(ProductListFragment.this, ProductListFragment.this);
                 }
+
+                getActivity().setTitle(mViewModel.getListName());
             }
         });
-
-        return fragmentView;
     }
 
     @Override
