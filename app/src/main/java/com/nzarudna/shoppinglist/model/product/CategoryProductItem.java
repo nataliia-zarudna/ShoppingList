@@ -4,6 +4,7 @@ import android.arch.persistence.room.Embedded;
 import android.support.annotation.StringDef;
 
 import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.unit.Unit;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,8 +26,9 @@ public class CategoryProductItem {
     public CategoryProductItem() {
     }
 
-    public CategoryProductItem(Product product) {
+    public CategoryProductItem(Product product, Unit unit) {
         this.product = product;
+        this.unit = unit;
         type = TYPE_PRODUCT;
     }
 
@@ -43,6 +45,9 @@ public class CategoryProductItem {
 
     @Embedded(prefix = "cat_")
     private Category category;
+
+    @Embedded(prefix = "unit_")
+    private Unit unit;
 
     @ItemType
     public String getType() {
@@ -69,6 +74,14 @@ public class CategoryProductItem {
         this.category = category;
     }
 
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,7 +91,9 @@ public class CategoryProductItem {
 
         if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (product != null ? !product.equals(that.product) : that.product != null) return false;
-        return category != null ? category.equals(that.category) : that.category == null;
+        if (category != null ? !category.equals(that.category) : that.category != null)
+            return false;
+        return unit != null ? unit.equals(that.unit) : that.unit == null;
     }
 
     @Override
@@ -86,6 +101,7 @@ public class CategoryProductItem {
         int result = type != null ? type.hashCode() : 0;
         result = 31 * result + (product != null ? product.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
         return result;
     }
 
@@ -95,6 +111,7 @@ public class CategoryProductItem {
                 "type='" + type + '\'' +
                 ", product=" + product +
                 ", category=" + category +
+                ", unit=" + unit +
                 '}';
     }
 }

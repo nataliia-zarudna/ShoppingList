@@ -23,20 +23,23 @@ public interface ProductDao {
 
     String QUERY_GROUPED_PRODUCTS_BY_LIST_ID = "" +
             "SELECT product_id AS prod_product_id, " +
-            "   name AS prod_name, " +
+            "   product.name AS prod_name, " +
             "   category_id AS prod_category_id, " +
             "   list_id AS prod_list_id, " +
-            "   unit_id AS prod_unit_id, " +
+            "   product.unit_id AS prod_unit_id, " +
             "   count AS prod_count, " +
             "   status AS prod_status, " +
             "   comment AS prod_comment, " +
             "   template_id AS prod_template_id, " +
             "   `order` AS prod_order, " +
+            "   unit.unit_id AS unit_unit_id, " +
+            "   unit.name AS unit_name, " +
             "   null AS cat_category_id, " +
             "   null AS cat_name, " +
             "   category_id AS category_id, " +
             "   '" + CategoryProductItem.TYPE_PRODUCT + "' AS type " +
-            "FROM products  " +
+            "FROM products product" +
+            "   LEFT JOIN units unit ON product.unit_id = unit.unit_id " +
             "WHERE list_id = :listID " +
             "UNION  " +
             "SELECT null AS prod_product_id, " +
@@ -49,6 +52,8 @@ public interface ProductDao {
             "   null AS prod_comment, " +
             "   null AS prod_template_id, " +
             "   null AS prod_order, " +
+            "   null AS unit_unit_id, " +
+            "   null AS unit_name, " +
             "   category_id AS cat_category_id, " +
             "   name AS cat_name, " +
             "   category_id AS category_id, " +
@@ -61,20 +66,23 @@ public interface ProductDao {
 
     String QUERY_PRODUCTS_BY_LIST_ID =
             "SELECT product_id AS prod_product_id, " +
-                    "   name AS prod_name, " +
+                    "   product.name AS prod_name, " +
                     "   category_id AS prod_category_id, " +
                     "   list_id AS prod_list_id, " +
-                    "   unit_id AS prod_unit_id, " +
+                    "   product.unit_id AS prod_unit_id, " +
                     "   count AS prod_count, " +
                     "   status AS prod_status, " +
                     "   comment AS prod_comment, " +
                     "   template_id AS prod_template_id, " +
                     "   `order` AS prod_order, " +
+                    "   unit.unit_id AS unit_unit_id, " +
+                    "   unit.name AS unit_name, " +
                     "   null AS cat_category_id, " +
                     "   null AS cat_name, " +
                     "   category_id AS category_id, " +
                     "   '" + CategoryProductItem.TYPE_PRODUCT + "' AS type " +
-                    "FROM products  " +
+                    "FROM products  product" +
+                    "   LEFT JOIN units unit ON product.unit_id = unit.unit_id " +
                     "WHERE list_id = :listID ";
 
     @Insert

@@ -14,6 +14,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
+import com.nzarudna.shoppinglist.ui.FormatUtils;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -67,8 +68,7 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     public String getProductCount() {
         if (mProduct != null && mProduct.getCount() > 0) {
-            DecimalFormat formatter = new DecimalFormat("#.###");
-            return formatter.format(mProduct.getCount());
+            return FormatUtils.format(mProduct.getCount());
         } else {
             return "";
         }

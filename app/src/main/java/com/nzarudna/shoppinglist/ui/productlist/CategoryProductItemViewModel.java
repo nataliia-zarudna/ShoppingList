@@ -11,6 +11,7 @@ import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
+import com.nzarudna.shoppinglist.ui.FormatUtils;
 
 import javax.inject.Inject;
 
@@ -49,26 +50,46 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         this.mCurrentPosition = currentPosition;
     }
 
-    public String getName() {
+    public String getProductName() {
         if (mCategoryProductItem != null) {
-            if (CategoryProductItem.TYPE_PRODUCT.equals(mCategoryProductItem.getType())) {
-                String name = mCategoryProductItem.getProduct().getName();
-                if (mCategoryProductItem.getProduct().getStatus() == Product.BOUGHT) {
-                    return "<u>" + name + "</u>";
-                }
-                return name;
-
-            } else {
-                return mCategoryProductItem.getCategory().getName();
+            String name = mCategoryProductItem.getProduct().getName();
+            if (mCategoryProductItem.getProduct().getStatus() == Product.BOUGHT) {
+                return "<u>" + name + "</u>";
             }
+            return name;
         } else {
             return "";
         }
     }
 
-    public int getProductNameColor() {
-        return mCategoryProductItem.getProduct().getStatus() == Product.ABSENT
-                ? android.R.color.darker_gray : android.R.color.black;
+    public String getCategoryName() {
+        return (mCategoryProductItem != null) ? mCategoryProductItem.getCategory().getName() : "";
+    }
+
+    public String getProductCount() {
+        if (mCategoryProductItem != null) {
+            double count = mCategoryProductItem.getProduct().getCount();
+            return FormatUtils.format(count);
+        } else {
+            return "";
+        }
+    }
+
+    public String getProductUnitInfo() {
+        StringBuilder info = new StringBuilder();
+        if (mCategoryProductItem != null) {
+
+            double count = mCategoryProductItem.getProduct().getCount();
+            if (count > 0) {
+                info.append(FormatUtils.format(count));
+                info.append(" ");
+            }
+
+            if (mCategoryProductItem.getUnit() != null) {
+                info.append(mCategoryProductItem.getUnit().getName());
+            }
+        }
+        return info.toString().trim();
     }
 
     public boolean isGreyedProductName() {
@@ -153,6 +174,7 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
 
     public interface CategoryProductItemViewModelObserver {
         void showContextMenu(int productPosition);
+
         void showSuccessSaveMessage();
     }
 }
