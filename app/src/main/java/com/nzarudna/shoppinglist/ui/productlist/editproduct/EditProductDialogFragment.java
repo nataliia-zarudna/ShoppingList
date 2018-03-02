@@ -163,9 +163,8 @@ public class EditProductDialogFragment extends DialogFragment {
             @Override
             public void onChanged(@Nullable List<Unit> units) {
                 if (mUnitSpinnerAdapter == null && units != null) {
-                    //TODO: add custom layout
                     mUnitSpinnerAdapter
-                            = new ViewModelArrayAdapter<Unit>(EditProductDialogFragment.this, R.layout.item_base_list,
+                            = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
                             units, UnitItemViewModel.class);
                     unitView.setAdapter(mUnitSpinnerAdapter);
                 }
@@ -182,7 +181,8 @@ public class EditProductDialogFragment extends DialogFragment {
             public void onChanged(@Nullable List<Category> categories) {
                 if (mCategorySpinnerAdapter == null && categories != null) {
                     mCategorySpinnerAdapter
-                            = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categories);
+                            = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
+                            categories, CategoryItemViewModel.class);
                     categoryView.setAdapter(mCategorySpinnerAdapter);
                 }
             }

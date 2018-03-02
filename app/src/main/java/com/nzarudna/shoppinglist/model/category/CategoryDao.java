@@ -50,6 +50,6 @@ public interface CategoryDao {
             "ORDER BY name ")
     DataSource.Factory<Integer, CategoryStatisticsItem> findAllWithStatistics();
 
-    @Query("SELECT * FROM categories WHERE category_id <> '" + Category.DEFAULT_CATEGORY_ID_STRING + "'")
+    @Query("SELECT * FROM categories")
     LiveData<List<Category>> findAllLiveData();
 }
