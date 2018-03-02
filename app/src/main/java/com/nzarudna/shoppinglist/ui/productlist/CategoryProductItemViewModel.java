@@ -140,7 +140,19 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         mPropertyChangeRegistry.remove(onPropertyChangedCallback);
     }
 
+    public void onUpdateProductDone(Product updatedProduct) {
+        mShoppingList.updateProduct(updatedProduct, new ShoppingList.onUpdateProductCallback() {
+            @Override
+            public void onUpdateProduct() {
+                if (mObserver != null) {
+                    mObserver.showSuccessSaveMessage();
+                }
+            }
+        });
+    }
+
     public interface CategoryProductItemViewModelObserver {
         void showContextMenu(int productPosition);
+        void showSuccessSaveMessage();
     }
 }

@@ -21,20 +21,24 @@
             android:text="@{viewModel.productName}"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/product_count_hint"
             android:inputType="numberDecimal"
+            android:text="@{viewModel.productCount}"
+            android:onTextChanged="@{viewModel.onCountChange}"
             app:layout_constraintTop_toBottomOf="@id/name" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/unit"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toRightOf="@id/count"
-            app:layout_constraintTop_toBottomOf="@id/name" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/count"
+            app:layout_constraintBottom_toBottomOf="@id/count"/>
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/category"

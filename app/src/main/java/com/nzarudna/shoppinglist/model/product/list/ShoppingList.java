@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -92,7 +93,7 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void updateProduct(@NonNull final Product product, final onUpdateProductCallback onUpdateProductCallback) {
+    public void updateProduct(@NonNull final Product product, @Nullable final onUpdateProductCallback onUpdateProductCallback) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -104,7 +105,10 @@ public class ShoppingList {
                 }
 
                 mProductDao.update(product);
-                onUpdateProductCallback.onUpdateProduct();
+
+                if (onUpdateProductCallback != null) {
+                    onUpdateProductCallback.onUpdateProduct();
+                }
                 return null;
             }
         }.execute();

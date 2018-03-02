@@ -15,6 +15,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,14 +39,18 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     private PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
 
-    public void setProduct(Product product) {
+    public void setProductInfo(Product product, UUID listID) {
+        if (product == null) {
+            product = new Product(null);
+            product.setListID(listID);
+        }
         this.mProduct = product;
 
         mRegistry.notifyChange(this, BR._all);
     }
 
-    public LiveData<Product> getProduct(UUID productID) {
-        return null;
+    public Product getProduct() {
+        return mProduct;
     }
 
     public LiveData<List<ProductTemplate>> getNameAutocompleteList(String filterValue) {
@@ -56,8 +61,30 @@ public class EditProductViewModel extends ViewModel implements Observable {
         return mProduct != null ? mProduct.getName() : "";
     }
 
-    public void saveProduct() {
+    public void setProductName(String productName) {
+        mProduct.setName(productName);
+    }
 
+    public String getProductCount() {
+        if (mProduct != null && mProduct.getCount() > 0) {
+            DecimalFormat formatter = new DecimalFormat("#.###");
+            return formatter.format(mProduct.getCount());
+        } else {
+            return "";
+        }
+    }
+
+    public void onCountChange(CharSequence countStr, int i, int i1, int i2) {
+        double count = Double.valueOf(countStr.toString());
+        mProduct.setCount(count);
+    }
+
+    public UUID getProductCategoryID() {
+        return mProduct != null ? mProduct.getCategoryID() : null;
+    }
+
+    public UUID getProductUnitID() {
+        return mProduct != null ? mProduct.getUnitID() : null;
     }
 
     public String getDialogTitle() {
@@ -80,5 +107,17 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     public LiveData<List<Category>> getCategoryList() {
         return mCategoryRepository.getAvailableCategories();
+    }
+
+    public void onUnitSelect(Unit unit) {
+        if (mProduct != null) {
+            mProduct.setUnitID(unit.getUnitID());
+        }
+    }
+
+    public void onCategorySelect(Category category) {
+        if (mProduct != null) {
+            mProduct.setCategoryID(category.getCategoryID());
+        }
     }
 }

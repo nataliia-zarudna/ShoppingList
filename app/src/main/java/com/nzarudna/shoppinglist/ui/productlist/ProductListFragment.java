@@ -1,10 +1,12 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
@@ -44,6 +47,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
     private static final String ARG_PRODUCT_LIST_ID = "products_list_id";
     private static final int DEFAULT_LOAD_LIST_SIZE = 20;
+    private static final int REQUEST_CODE_EDIT_RPODUCT = 1;
 
     private ProductListViewModel mViewModel;
     private CategoryProductAdapter mAdapter;
@@ -206,7 +210,17 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
 
     protected void openEditProductDialog(Product product) {
         EditProductDialogFragment dialogFragment = EditProductDialogFragment.newInstance(product);
+        dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_RPODUCT);
         dialogFragment.show(getFragmentManager(), EditProductDialogFragment.class.getName());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_RPODUCT) {
+            Product product = EditProductDialogFragment.getResultProduct(data);
+            mCurrentContextMenuProductVM.onUpdateProductDone(product);
+        }
     }
 
     @Override
@@ -215,6 +229,16 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         productView.showContextMenu();
 
         mCurrentContextMenuProductVM = (CategoryProductItemViewModel) productView.getTag();
+    }
+
+    @Override
+    public void showSuccessSaveMessage() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), R.string.save_product_success_msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private class CategoryProductViewHolder extends RecyclerView.ViewHolder {
