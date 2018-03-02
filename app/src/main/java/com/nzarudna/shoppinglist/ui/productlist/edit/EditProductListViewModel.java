@@ -19,4 +19,8 @@ public class EditProductListViewModel extends ProductListViewModel {
             mShoppingList.updateProductList(mProductList);
         }
     }
+
+    public void onClickCreateListBtn() {
+
+    }
 }

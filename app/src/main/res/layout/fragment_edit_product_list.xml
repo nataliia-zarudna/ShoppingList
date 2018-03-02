@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel" />
@@ -15,6 +18,61 @@
             android:id="@+id/products_recycle_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/show_create_product_menu"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_black"
+            app:layout_constraintBottom_toBottomOf="@id/products_recycle_view"
+            app:layout_constraintRight_toRightOf="@id/products_recycle_view" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_create_from_template"
+            android:layout_width="@dimen/fab_size_mini"
+            android:layout_height="@dimen/fab_size_mini"
+            android:layout_margin="@dimen/fab_margin_mini"
+            android:src="@drawable/ic_content_copy_black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/show_create_list_menu"
+            app:layout_constraintRight_toRightOf="@id/products_recycle_view"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/btn_create_from_template_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin_mini"
+            android:text="@string/copy_list_title"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/btn_create_from_template"
+            app:layout_constraintRight_toLeftOf="@id/btn_create_from_template"
+            app:layout_constraintTop_toTopOf="@id/btn_create_from_template"
+            tools:visibility="visible" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_new_product"
+            android:layout_width="@dimen/fab_size_mini"
+            android:layout_height="@dimen/fab_size_mini"
+            android:layout_margin="@dimen/fab_margin_mini"
+            android:src="@drawable/ic_add_black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/btn_create_from_template"
+            app:layout_constraintRight_toRightOf="@id/products_recycle_view"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/new_product_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin_mini"
+            android:text="@string/new_list_title"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/btn_new_product"
+            app:layout_constraintRight_toLeftOf="@id/btn_new_product"
+            app:layout_constraintTop_toTopOf="@id/btn_new_product"
+            tools:visibility="visible" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
