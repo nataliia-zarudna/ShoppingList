@@ -32,6 +32,11 @@ public class ReadProductListFragment extends ProductListFragment {
     }
 
     @Override
+    protected int getProductItemLayoutID() {
+        return R.layout.item_product_product_list;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.findItem(R.id.menu_item_edit_list).setVisible(true);

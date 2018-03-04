@@ -4,10 +4,12 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
@@ -15,7 +17,6 @@ import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.CopyListDialogFragment;
-import com.nzarudna.shoppinglist.ui.productlists.ProductListsFragment;
 
 import java.util.UUID;
 
@@ -28,12 +29,13 @@ public class EditProductListFragment extends ProductListFragment {
     private static final String TAG = "EditProductListFragment";
 
     private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
+    private static final int REQUEST_CODE_CREATE_FORM_TEMPLATE = 1;
 
     private View mToolbarView;
     private View mFragmentView;
-    private Button mShowCreationMenuBtn;
-    private Button mCreateNewSubItem;
-    private Button mCreateFromTemplateSubItem;
+    private ImageButton mShowCreationMenuBtn;
+    private ImageButton mCreateNewSubItem;
+    private ImageButton mCreateFromTemplateSubItem;
     private TextView mCreateNewSubItemTitle;
     private TextView mCreateFromTemplateSubItemTitle;
 
@@ -48,6 +50,11 @@ public class EditProductListFragment extends ProductListFragment {
         return EditProductListViewModel.class;
     }
 
+    @Override
+    protected int getProductItemLayoutID() {
+        return R.layout.item_edit_product_product_list;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,8 +67,9 @@ public class EditProductListFragment extends ProductListFragment {
         }
 
         initProductsRecyclerView(mFragmentView);
+        configProductsDragAndDrop();
 
-        mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_list_menu);
+        mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_product_menu);
         mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_new_product);
         mCreateFromTemplateSubItem = mFragmentView.findViewById(R.id.btn_create_from_template);
         mCreateNewSubItemTitle = mFragmentView.findViewById(R.id.new_product_title);
@@ -69,6 +77,23 @@ public class EditProductListFragment extends ProductListFragment {
         configCreationMenu();
 
         return mFragmentView;
+    }
+
+    private void configProductsDragAndDrop() {
+        ItemTouchHelper touchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(
+                        ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return true;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                    }
+                });
+        touchHelper.attachToRecyclerView(mProductsRecyclerView);
     }
 
     private void configCreationMenu() {
@@ -96,7 +121,7 @@ public class EditProductListFragment extends ProductListFragment {
             @Override
             public void onClick(View view) {
                 CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
-                copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
+                copyListFragment.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_CREATE_FORM_TEMPLATE);
                 copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
             }
         });

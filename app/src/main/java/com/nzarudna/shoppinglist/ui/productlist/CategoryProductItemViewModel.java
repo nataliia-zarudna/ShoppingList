@@ -113,6 +113,13 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         updateProductStatus(newStatus);
     }
 
+    public boolean onProductLongClick() {
+        if (mObserver != null) {
+            mObserver.showContextMenu(mCurrentPosition);
+        }
+        return true;
+    }
+
     private void updateProductStatus(int newStatus) {
         Product product = mCategoryProductItem.getProduct();
         product.setStatus(newStatus);

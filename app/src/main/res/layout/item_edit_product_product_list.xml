@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.onProductClick()}"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.productName}"
+            android:onLongClick="@{() -> viewModel.onProductLongClick()}"
+            android:textColor="@{viewModel.isGreyedProductName() ? @android:color/darker_gray : @android:color/black}"
+            tools:text="Chocolate" />
+
+        <TextView
+            android:id="@+id/product_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onLongClick="@{() -> viewModel.onProductLongClick()}"
+            android:text="@{viewModel.productUnitInfo}"
+            android:visibility="@{!viewModel.productUnitInfo.isEmpty() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/product_name"
+            tools:text="2 kg" />
+
+        <ImageView
+            android:id="@+id/product_menu_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reorder_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

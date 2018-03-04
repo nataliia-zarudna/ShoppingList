@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -53,7 +54,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     private CategoryProductAdapter mAdapter;
     private LiveData<PagedList<CategoryProductItem>> mProducts;
     private CategoryProductItemViewModel mCurrentContextMenuProductVM;
-    private RecyclerView mProductsRecyclerView;
+    protected RecyclerView mProductsRecyclerView;
 
     protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -77,6 +78,9 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     }
 
     protected abstract Class<? extends ProductListViewModel> getViewModelClass();
+
+    @LayoutRes
+    protected abstract int getProductItemLayoutID();
 
     @Nullable
     @Override
@@ -232,7 +236,9 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     @Override
     public void showContextMenu(int productPosition) {
         View productView = mProductsRecyclerView.getChildAt(productPosition);
+        registerForContextMenu(productView);
         productView.showContextMenu();
+        unregisterForContextMenu(productView);
 
         mCurrentContextMenuProductVM = (CategoryProductItemViewModel) productView.getTag();
     }
@@ -264,15 +270,21 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             mBinding.setVariable(BR.viewModel, mItemViewModel);
         }
 
-        public void bind(CategoryProductItem categoryProductItem, int position) {
+        public void bind(CategoryProductItem categoryProductItem, final int position) {
             mItemViewModel.setCategoryProductItem(categoryProductItem);
 
             if (CategoryProductItem.TYPE_PRODUCT.equals(categoryProductItem.getType())) {
-                registerForContextMenu(mBinding.getRoot());
                 mBinding.getRoot().setTag(mItemViewModel);
                 mItemViewModel.setCurrentPosition(position);
-            } else {
-                unregisterForContextMenu(mBinding.getRoot());
+
+                mBinding.getRoot().findViewById(R.id.product_name).setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        showContextMenu(position);
+                        return true;
+                    }
+                });
+
             }
 
             mBinding.executePendingBindings();
@@ -298,7 +310,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         public CategoryProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
             int layoutResID = (viewType == PRODUCT_VIEW_TYPE)
-                    ? R.layout.item_product_product_list : R.layout.item_category_product_list;
+                    ? getProductItemLayoutID() : R.layout.item_category_product_list;
             ViewDataBinding binding = DataBindingUtil.inflate(getLayoutInflater(), layoutResID, parent, false);
 
             return new CategoryProductViewHolder(binding);
