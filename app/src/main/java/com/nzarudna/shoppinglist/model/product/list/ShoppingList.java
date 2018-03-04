@@ -118,6 +118,7 @@ public class ShoppingList {
         void onUpdateProduct();
     }
 
+    //TODO: change product after and before arguments order
     public void moveProduct(Product product, Product productAfter, Product productBefore) throws ShoppingListException {
         if (productAfter == null && productBefore == null) {
             throw new ShoppingListException("Either productAfter or productBefore must not be null");
@@ -140,6 +141,10 @@ public class ShoppingList {
                         mProductDao.updateProductOrdersByListIDSortByStatusAndName(mListID);
                     }
                     productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+
+                    //TODO: fix list status 2
+                    productList.setStatus(ProductList.STATUS_ACTIVE);
+
                     mProductListDao.update(productList);
                 }
 
@@ -154,7 +159,7 @@ public class ShoppingList {
                         productBefore = mProductDao.findByIDSync(productBefore.getProductID());
                     }
 
-                    newProductOrder = (productAfter.getOrder() - productBefore.getOrder()) / 2;
+                    newProductOrder = (productAfter.getOrder() + productBefore.getOrder()) / 2;
                 }
                 product.setOrder(newProductOrder);
                 mProductDao.update(product);

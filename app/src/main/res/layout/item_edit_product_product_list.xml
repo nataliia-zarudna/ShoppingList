@@ -39,7 +39,7 @@
             tools:text="2 kg" />
 
         <ImageView
-            android:id="@+id/product_menu_btn"
+            android:id="@+id/drag_handler"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_reorder_black_24dp"

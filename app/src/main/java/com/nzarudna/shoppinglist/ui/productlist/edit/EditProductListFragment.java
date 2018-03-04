@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
@@ -67,7 +68,6 @@ public class EditProductListFragment extends ProductListFragment {
         }
 
         initProductsRecyclerView(mFragmentView);
-        configProductsDragAndDrop();
 
         mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_product_menu);
         mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_new_product);
@@ -79,21 +79,15 @@ public class EditProductListFragment extends ProductListFragment {
         return mFragmentView;
     }
 
-    private void configProductsDragAndDrop() {
-        ItemTouchHelper touchHelper = new ItemTouchHelper(
-                new ItemTouchHelper.SimpleCallback(
-                        ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        return true;
-                    }
+    @Override
+    protected boolean isDragAndDropEnabled() {
+        return true;
+    }
 
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-                    }
-                });
-        touchHelper.attachToRecyclerView(mProductsRecyclerView);
+    @Nullable
+    @Override
+    protected ImageView getDraggableItemViewHandler(View itemView) {
+        return itemView.findViewById(R.id.drag_handler);
     }
 
     private void configCreationMenu() {

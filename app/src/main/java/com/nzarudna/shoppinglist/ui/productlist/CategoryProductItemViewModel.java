@@ -179,6 +179,13 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         });
     }
 
+    public void onMoveItem(CategoryProductItemViewModel prevViewModel, CategoryProductItemViewModel nextViewModel) throws ShoppingListException {
+
+        Product prevProduct = (prevViewModel != null) ? prevViewModel.getProduct() : null;
+        Product nextProduct = (nextViewModel != null) ? nextViewModel.getProduct() : null;
+        mShoppingList.moveProduct(mCategoryProductItem.getProduct(), nextProduct, prevProduct);
+    }
+
     public interface CategoryProductItemViewModelObserver {
         void showContextMenu(int productPosition);
 

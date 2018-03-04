@@ -17,20 +17,24 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
@@ -42,7 +46,7 @@ import java.util.UUID;
  * Created by Nataliia on 21.01.2018.
  */
 
-public abstract class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>>,CategoryProductItemViewModel.CategoryProductItemViewModelObserver {
+public abstract class ProductListFragment extends Fragment implements Observer<PagedList<CategoryProductItem>>, CategoryProductItemViewModel.CategoryProductItemViewModelObserver {
 
     private static final String TAG = "ProductListFragment";
 
@@ -55,6 +59,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     private LiveData<PagedList<CategoryProductItem>> mProducts;
     private CategoryProductItemViewModel mCurrentContextMenuProductVM;
     protected RecyclerView mProductsRecyclerView;
+    protected ItemTouchHelper mRecycleViewItemTouchHelper;
 
     protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -100,6 +105,81 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         mAdapter = new CategoryProductAdapter();
         mProductsRecyclerView.setAdapter(mAdapter);
 
+        if (isDragAndDropEnabled()) {
+            mRecycleViewItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                    ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                    ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                int mStartPosition = -1;
+                int mTargetStartPosition = -1;
+                RecyclerView.ViewHolder mTarget;
+
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+
+                        if (mStartPosition == -1) {
+                            mStartPosition = viewHolder.getLayoutPosition();
+                            mTargetStartPosition = target.getLayoutPosition();
+                        }
+                        mTarget = target;
+
+                        mAdapter.notifyItemMoved(viewHolder.getLayoutPosition(), target.getLayoutPosition());
+                        return true;
+                }
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                }
+
+                @Override
+                public boolean isLongPressDragEnabled() {
+                    return false;
+                }
+
+                @Override
+                public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                    super.clearView(recyclerView, viewHolder);
+                    Log.d(TAG, "clear view " + viewHolder.getLayoutPosition());
+                    Log.d(TAG, "clear view: current old pos " + mStartPosition);
+                    Log.d(TAG, "clear view: target " + ((CategoryProductViewHolder) mTarget).mItemViewModel.getProductName());
+
+                    if (viewHolder.getLayoutPosition() != mStartPosition) {
+
+                        CategoryProductItemViewModel currentViewModel = ((CategoryProductViewHolder) viewHolder).mItemViewModel;
+                        CategoryProductItemViewModel prevViewModel = null;
+                        CategoryProductItemViewModel nextViewModel = null;
+
+                        if (mStartPosition < mTargetStartPosition) {
+                            prevViewModel = ((CategoryProductViewHolder) mTarget).mItemViewModel;
+                            int nextViewOffset = (mTargetStartPosition - mStartPosition) + 1;
+                            View nextView = mProductsRecyclerView.getChildAt(mTarget.getAdapterPosition() + nextViewOffset);
+                            if (nextView != null) {
+                                nextViewModel = (CategoryProductItemViewModel) nextView.getTag();
+                            }
+                        } else {
+                            nextViewModel = ((CategoryProductViewHolder) mTarget).mItemViewModel;
+                            int nextViewOffset = (mStartPosition - mTargetStartPosition) + 1;
+                            View prevView = mProductsRecyclerView.getChildAt(mTarget.getLayoutPosition() - nextViewOffset);
+                            if (prevView != null) {
+                                prevViewModel = (CategoryProductItemViewModel) prevView.getTag();
+                            }
+                        }
+                        try {
+                            currentViewModel.onMoveItem(prevViewModel, nextViewModel);
+                        } catch (ShoppingListException e) {
+                            //TODO: handle error
+                            e.printStackTrace();
+                        }
+                    }
+                    mStartPosition = -1;
+                    mTargetStartPosition = -1;
+                }
+            });
+            mRecycleViewItemTouchHelper.attachToRecyclerView(mProductsRecyclerView);
+        }
+
+
         mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
             @Override
             public void onChanged(@Nullable ProductList productList) {
@@ -115,9 +195,14 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         });
     }
 
+    protected boolean isDragAndDropEnabled() {
+        return false;
+    }
+
     @Override
     public void onChanged(@Nullable PagedList<CategoryProductItem> categoryProductItems) {
         mAdapter.setList(categoryProductItems);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -236,9 +321,9 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     @Override
     public void showContextMenu(int productPosition) {
         View productView = mProductsRecyclerView.getChildAt(productPosition);
-        registerForContextMenu(productView);
+        //registerForContextMenu(productView);
         productView.showContextMenu();
-        unregisterForContextMenu(productView);
+        //unregisterForContextMenu(productView);
 
         mCurrentContextMenuProductVM = (CategoryProductItemViewModel) productView.getTag();
     }
@@ -253,7 +338,12 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         });
     }
 
-    private class CategoryProductViewHolder extends RecyclerView.ViewHolder {
+    @Nullable
+    protected ImageView getDraggableItemViewHandler(View itemView) {
+        return null;
+    }
+
+    protected class CategoryProductViewHolder extends RecyclerView.ViewHolder {
 
         ViewDataBinding mBinding;
         CategoryProductItemViewModel mItemViewModel;
@@ -268,6 +358,21 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             mItemViewModel.setObserver(ProductListFragment.this);
 
             mBinding.setVariable(BR.viewModel, mItemViewModel);
+
+            ImageView dragHandler = getDraggableItemViewHandler(mBinding.getRoot());
+            if (isDragAndDropEnabled() && dragHandler != null) {
+                dragHandler.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN
+                                || motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                            mRecycleViewItemTouchHelper.startDrag(CategoryProductViewHolder.this);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+            }
         }
 
         public void bind(CategoryProductItem categoryProductItem, final int position) {
@@ -276,15 +381,9 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             if (CategoryProductItem.TYPE_PRODUCT.equals(categoryProductItem.getType())) {
                 mBinding.getRoot().setTag(mItemViewModel);
                 mItemViewModel.setCurrentPosition(position);
-
-                mBinding.getRoot().findViewById(R.id.product_name).setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        showContextMenu(position);
-                        return true;
-                    }
-                });
-
+                registerForContextMenu(mBinding.getRoot());
+            } else {
+                unregisterForContextMenu(mBinding.getRoot());
             }
 
             mBinding.executePendingBindings();
