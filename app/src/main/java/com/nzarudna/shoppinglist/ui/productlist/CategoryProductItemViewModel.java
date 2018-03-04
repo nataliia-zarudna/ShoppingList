@@ -123,9 +123,9 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
     private void updateProductStatus(int newStatus) {
         Product product = mCategoryProductItem.getProduct();
         product.setStatus(newStatus);
-        mShoppingList.updateProduct(product, new ShoppingList.onUpdateProductCallback() {
+        mShoppingList.updateProduct(product, new ShoppingList.OnSaveProductCallback() {
             @Override
-            public void onUpdateProduct() {
+            public void onSaveProduct() {
                 mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
             }
         });
@@ -169,9 +169,9 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
     }
 
     public void onUpdateProductDone(Product updatedProduct) {
-        mShoppingList.updateProduct(updatedProduct, new ShoppingList.onUpdateProductCallback() {
+        mShoppingList.updateProduct(updatedProduct, new ShoppingList.OnSaveProductCallback() {
             @Override
-            public void onUpdateProduct() {
+            public void onSaveProduct() {
                 if (mObserver != null) {
                     mObserver.showSuccessSaveMessage();
                 }

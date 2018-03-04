@@ -60,40 +60,45 @@ public class ShoppingList {
         }.execute();
     }
 
-    public void addProduct(@NonNull final Product product) {
-        insertProduct(product);
+    public void addProduct(@NonNull final Product product, @Nullable OnSaveProductCallback onSaveProductCallback) {
+        insertProduct(product, onSaveProductCallback);
         mProductTemplateRepository.createTemplateFromProduct(product);
     }
 
-    public void addProductFromTemplate(ProductTemplate template) {
+    public void addProductFromTemplate(ProductTemplate template, @Nullable OnSaveProductCallback onSaveProductCallback) {
 
         Product product = new Product(template.getName());
         product.setListID(mListID);
         product.setCategoryID(template.getCategoryID());
         product.setTemplateID(template.getTemplateID());
 
-        insertProduct(product);
+        insertProduct(product, onSaveProductCallback);
     }
 
-    private void insertProduct(final Product product) {
+    private void insertProduct(final Product product, final @Nullable OnSaveProductCallback onSaveProductCallback) {
         product.setListID(mListID);
-
-        ProductList productList = mProductListDao.findByIDSync(mListID);
-        if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
-            double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
-            product.setOrder(maxProductOrder + PRODUCT_ORDER_STEP);
-        }
-
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
+
+                ProductList productList = mProductListDao.findByIDSync(mListID);
+                if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
+                    double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
+                    product.setOrder(maxProductOrder + PRODUCT_ORDER_STEP);
+                }
+
                 mProductDao.insert(product);
+
+                if (onSaveProductCallback != null) {
+                    onSaveProductCallback.onSaveProduct();
+                }
+
                 return null;
             }
         }.execute();
     }
 
-    public void updateProduct(@NonNull final Product product, @Nullable final onUpdateProductCallback onUpdateProductCallback) {
+    public void updateProduct(@NonNull final Product product, @Nullable final OnSaveProductCallback onSaveProductCallback) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -106,16 +111,12 @@ public class ShoppingList {
 
                 mProductDao.update(product);
 
-                if (onUpdateProductCallback != null) {
-                    onUpdateProductCallback.onUpdateProduct();
+                if (onSaveProductCallback != null) {
+                    onSaveProductCallback.onSaveProduct();
                 }
                 return null;
             }
         }.execute();
-    }
-
-    public interface onUpdateProductCallback {
-        void onUpdateProduct();
     }
 
     //TODO: change product after and before arguments order
@@ -259,5 +260,9 @@ public class ShoppingList {
                 return null;
             }
         }.execute();
+    }
+
+    public interface OnSaveProductCallback {
+        void onSaveProduct();
     }
 }

@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,11 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
+import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlists.CopyListDialogFragment;
 
 import java.util.UUID;
@@ -31,6 +37,7 @@ public class EditProductListFragment extends ProductListFragment {
 
     private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
     private static final int REQUEST_CODE_CREATE_FORM_TEMPLATE = 1;
+    private static final int REQUEST_CODE_NEW_FRAGMENT = 2;
 
     private View mToolbarView;
     private View mFragmentView;
@@ -90,6 +97,34 @@ public class EditProductListFragment extends ProductListFragment {
         return itemView.findViewById(R.id.drag_handler);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_CREATE_FORM_TEMPLATE:
+                    break;
+                case REQUEST_CODE_NEW_FRAGMENT:
+                    Product newProduct = EditProductDialogFragment.getResultProduct(data);
+                    ((EditProductListViewModel) mViewModel).createProduct(newProduct, new ShoppingList.OnSaveProductCallback() {
+                        @Override
+                        public void onSaveProduct() {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getActivity(), R.string.save_product_success_msg, Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void configCreationMenu() {
 
         mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +142,9 @@ public class EditProductListFragment extends ProductListFragment {
         mCreateNewSubItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((EditProductListViewModel) mViewModel).onClickCreateListBtn();
+                EditProductDialogFragment newProductDialog = EditProductDialogFragment.newInstance(mViewModel.getProductListID());
+                newProductDialog.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_NEW_FRAGMENT);
+                newProductDialog.show(getFragmentManager(), "EditProductDialogFragment");
             }
         });
 
