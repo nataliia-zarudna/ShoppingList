@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
@@ -52,5 +53,10 @@ public class ReadProductListFragment extends ProductListFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected CategoryProductItemViewModel getCategoryProductItemViewModel() {
+        return new ReadCategoryProductItemViewModel();
     }
 }

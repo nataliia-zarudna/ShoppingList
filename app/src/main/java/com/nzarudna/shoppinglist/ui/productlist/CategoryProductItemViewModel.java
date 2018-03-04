@@ -19,18 +19,20 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public class CategoryProductItemViewModel extends ViewModel implements Observable {
+public abstract class CategoryProductItemViewModel extends ViewModel implements Observable {
 
     @Inject
     ProductListRepository mProductListRepository;
 
     private ShoppingList mShoppingList;
     private PropertyChangeRegistry mPropertyChangeRegistry = new PropertyChangeRegistry();
-    private CategoryProductItemViewModelObserver mObserver;
+    protected CategoryProductItemViewModelObserver mObserver;
     private int mCurrentPosition;
 
     @Bindable
-    private CategoryProductItem mCategoryProductItem;
+    protected CategoryProductItem mCategoryProductItem;
+
+    public abstract void onProductClick();
 
     public void setShoppingList(ShoppingList shoppingList) {
         this.mShoppingList = shoppingList;
@@ -96,39 +98,11 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         return mCategoryProductItem.getProduct().getStatus() == Product.ABSENT;
     }
 
-    public void onProductClick() {
-        if (!CategoryProductItem.TYPE_PRODUCT.equals(mCategoryProductItem.getType())) {
-            return;
-        }
-
-        Product product = mCategoryProductItem.getProduct();
-        int[] productStatusChain = new int[]{Product.TO_BUY, Product.BOUGHT, Product.ABSENT};
-        int newStatus = Product.TO_BUY;
-        for (int i = 0; i < productStatusChain.length; i++) {
-            if (productStatusChain[i] == product.getStatus()) {
-                newStatus = productStatusChain[(i + 1) % productStatusChain.length];
-                break;
-            }
-        }
-        updateProductStatus(newStatus);
-    }
-
     public boolean onProductLongClick() {
         if (mObserver != null) {
             mObserver.showContextMenu(mCurrentPosition);
         }
         return true;
-    }
-
-    private void updateProductStatus(int newStatus) {
-        Product product = mCategoryProductItem.getProduct();
-        product.setStatus(newStatus);
-        mShoppingList.updateProduct(product, new ShoppingList.OnSaveProductCallback() {
-            @Override
-            public void onSaveProduct() {
-                mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
-            }
-        });
     }
 
     public Product getProduct() throws ShoppingListException {
@@ -139,6 +113,17 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
     public void markProductAs(int status) throws ShoppingListException {
         checkIsProductType();
         updateProductStatus(status);
+    }
+
+    protected void updateProductStatus(int newStatus) {
+        Product product = mCategoryProductItem.getProduct();
+        product.setStatus(newStatus);
+        mShoppingList.updateProduct(product, new ShoppingList.OnSaveProductCallback() {
+            @Override
+            public void onSaveProduct() {
+                mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
+            }
+        });
     }
 
     public void removeProduct() throws ShoppingListException {
@@ -190,5 +175,7 @@ public class CategoryProductItemViewModel extends ViewModel implements Observabl
         void showContextMenu(int productPosition);
 
         void showSuccessSaveMessage();
+
+        void openEditProductDialog(Product product);
     }
 }

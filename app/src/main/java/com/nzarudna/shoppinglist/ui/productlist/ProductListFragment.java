@@ -303,7 +303,8 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         }
     }
 
-    protected void openEditProductDialog(Product product) {
+    @Override
+    public void openEditProductDialog(Product product) {
         EditProductDialogFragment dialogFragment = EditProductDialogFragment.newInstance(product);
         dialogFragment.setTargetFragment(this, REQUEST_CODE_EDIT_RPODUCT);
         dialogFragment.show(getFragmentManager(), EditProductDialogFragment.class.getName());
@@ -313,8 +314,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_RPODUCT) {
-            Product product = EditProductDialogFragment.getResultProduct(data);
-            mCurrentContextMenuProductVM.onUpdateProductDone(product);
+            showSuccessSaveMessage();
         }
     }
 
@@ -338,6 +338,8 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         });
     }
 
+    protected abstract CategoryProductItemViewModel getCategoryProductItemViewModel();
+
     @Nullable
     protected ImageView getDraggableItemViewHandler(View itemView) {
         return null;
@@ -352,7 +354,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
             super(binding.getRoot());
             mBinding = binding;
 
-            mItemViewModel = new CategoryProductItemViewModel();
+            mItemViewModel = getCategoryProductItemViewModel();
             ShoppingListApplication.getAppComponent().inject(mItemViewModel);
             mItemViewModel.setShoppingList(mViewModel.mShoppingList);
             mItemViewModel.setObserver(ProductListFragment.this);

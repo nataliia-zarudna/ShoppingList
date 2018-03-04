@@ -20,6 +20,7 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
+import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
@@ -123,6 +124,11 @@ public class EditProductListFragment extends ProductListFragment {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected CategoryProductItemViewModel getCategoryProductItemViewModel() {
+        return new EditCategoryProductItemViewModel();
     }
 
     private void configCreationMenu() {
