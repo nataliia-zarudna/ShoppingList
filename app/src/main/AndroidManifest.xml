@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nzarudna.shoppinglist" >
+    package="com.nzarudna.shoppinglist">
 
     <application
+        android:name=".ShoppingListApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:name=".ShoppingListApplication"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".ui.productlists.ProductListsActivity" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".ui.productlists.ProductListsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,7 +19,10 @@
         </activity>
         <activity android:name=".ui.productlist.read.ReadProductListActivity" />
         <activity android:name=".ui.productlist.edit.EditProductListActivity" />
-        <activity android:name=".ui.productlist.edit.template.ChooseTemplateActivity" />
+        <activity
+            android:name=".ui.productlist.edit.template.ChooseTemplateActivity"
+            android:parentActivityName=".ui.productlist.edit.EditProductListActivity"
+            android:label="@string/choose_template_activity_name"/>
     </application>
 
 </manifest>

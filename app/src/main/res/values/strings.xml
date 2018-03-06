@@ -38,6 +38,7 @@
     <string name="save_product_success_msg">Saved</string>
     <string name="create_product_from_template_title">Create from Template</string>
     <string name="new_product_title">New product</string>
+    <string name="choose_template_activity_name">Choose Templates</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

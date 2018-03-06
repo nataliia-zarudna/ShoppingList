@@ -36,6 +36,10 @@ public class ChooseTemplateViewModel extends ViewModel {
         mShoppingList = mProductListRepository.getShoppingList(productListID);
     }
 
+    public ShoppingList getShoppingList() {
+        return mShoppingList;
+    }
+
     public LiveData<PagedList<CategoryTemplateItemWithListStatistics>> getTemplates(boolean isGroupedView, int pageSize) {
 
         DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> templatesDSFactory =

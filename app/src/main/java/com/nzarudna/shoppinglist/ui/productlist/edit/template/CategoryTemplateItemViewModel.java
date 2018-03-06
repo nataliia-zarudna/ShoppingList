@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
 
 /**
@@ -9,9 +10,14 @@ import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStat
 public class CategoryTemplateItemViewModel {
 
     private CategoryTemplateItemWithListStatistics mItem;
+    private ShoppingList mShoppingList;
 
     public void setItem(CategoryTemplateItemWithListStatistics item) {
         mItem = item;
+    }
+
+    public void setShoppingList(ShoppingList shoppingList) {
+        mShoppingList = shoppingList;
     }
 
     public String getTemplateName() {
@@ -24,5 +30,13 @@ public class CategoryTemplateItemViewModel {
 
     public String getCategoryName() {
         return mItem != null ? mItem.getCategory().getName() : "";
+    }
+
+    public void setTemplateUsed(boolean isUsed) {
+        if (isUsed) {
+            mShoppingList.addProductFromTemplate(mItem.getTemplate(), null);
+        } else {
+            mShoppingList.removeProductsWithTemplate(mItem.getTemplate().getTemplateID());
+        }
     }
 }

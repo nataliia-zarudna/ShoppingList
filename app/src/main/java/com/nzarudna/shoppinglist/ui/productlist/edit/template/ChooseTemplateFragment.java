@@ -92,6 +92,7 @@ public class ChooseTemplateFragment extends Fragment {
             mDataBinding = dataBinding;
 
             mItemViewModel = new CategoryTemplateItemViewModel();
+            mItemViewModel.setShoppingList(mViewModel.getShoppingList());
             mDataBinding.setVariable(BR.viewModel, mItemViewModel);
         }
 
