@@ -1,9 +1,11 @@
 package com.nzarudna.shoppinglist.ui.templates;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -13,7 +15,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,17 +26,22 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
 /**
  * Created by Nataliia on 06.03.2018.
  */
 
-public class TemplatesFragment extends Fragment {
+public class TemplatesFragment extends Fragment implements RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem> {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
+    private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
     private TemplatesViewModel mViewModel;
     private RecyclerView mTemplatesView;
     private CategoryTemplateAdapter mAdapter;
+    private CategoryTemplateItemViewModel mContextMenuItemModelView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +49,8 @@ public class TemplatesFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(TemplatesViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
+
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -54,13 +66,67 @@ public class TemplatesFragment extends Fragment {
 
         mViewModel.getTemplates(true, DEFAULT_PAGE_SIZE)
                 .observe(this, new Observer<PagedList<CategoryTemplateItem>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<CategoryTemplateItem> categoryTemplateItems) {
-                mAdapter.setList(categoryTemplateItems);
-            }
-        });
+                    @Override
+                    public void onChanged(@Nullable PagedList<CategoryTemplateItem> categoryTemplateItems) {
+                        mAdapter.setList(categoryTemplateItems);
+                    }
+                });
 
         return fragmentView;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        mContextMenuItemModelView = (CategoryTemplateItemViewModel) v.getTag();
+
+        MenuInflater menuInflater = new MenuInflater(getContext());
+        menuInflater.inflate(R.menu.template_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_menu_item:
+                openEditItemDialog(mContextMenuItemModelView.getItem());
+                return true;
+            case R.id.remove_menu_item:
+                mContextMenuItemModelView.removeItem();
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void openCreateNewItemDialog() {
+        mContextMenuItemModelView = null;
+
+        EditTemplateDialogFragment editDialog = EditTemplateDialogFragment.newInstance();
+        editDialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
+    }
+
+    @Override
+    public void openEditItemDialog(CategoryTemplateItem item) {
+        EditTemplateDialogFragment editDialog = EditTemplateDialogFragment.newInstance(item.getTemplate());
+        editDialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
+        editDialog.show(getFragmentManager(), "EditTemplateDialogFragment");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_TEMPLATE) {
+
+            ProductTemplate template = EditTemplateDialogFragment.getResultTemplate(data);
+            mContextMenuItemModelView.setTemplate(template);
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void showItemContextMenu(CategoryTemplateItem item, int position) {
+        View itemView = mTemplatesView.getChildAt(position);
+        itemView.showContextMenu();
     }
 
     private class CategoryTemplateViewHolder extends RecyclerView.ViewHolder {
@@ -73,11 +139,20 @@ public class TemplatesFragment extends Fragment {
             mDataBinding = dataBinding;
 
             mItemViewModel = new CategoryTemplateItemViewModel();
+            mItemViewModel.setObserver(TemplatesFragment.this);
             mDataBinding.setVariable(BR.viewModel, mItemViewModel);
+
+            mDataBinding.getRoot().setTag(mItemViewModel);
         }
 
         public void bind(CategoryTemplateItem item) {
             mItemViewModel.setItem(item);
+            if (mItemViewModel.hasContextMenu()) {
+                registerForContextMenu(mDataBinding.getRoot());
+            } else {
+                unregisterForContextMenu(mDataBinding.getRoot());
+            }
+
             mDataBinding.executePendingBindings();
         }
     }

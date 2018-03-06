@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="com.nzarudna.shoppinglist.ui.ArrayItemViewModel" />
+            type="com.nzarudna.shoppinglist.ui.RecyclerItemViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,6 +25,7 @@
             android:id="@+id/menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.onMenuItemClick()}"
             android:src="@drawable/ic_more_vert_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"

@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -27,7 +29,7 @@ import java.util.UUID;
                         onUpdate = ForeignKey.SET_NULL)
         },
         indices = {@Index(value = "category_id")})
-public class ProductTemplate {
+public class ProductTemplate implements Parcelable {
 
     @PrimaryKey()
     @NonNull
@@ -43,11 +45,31 @@ public class ProductTemplate {
     @ColumnInfo(name = "unit_id")
     private UUID unitID;
 
+    //TODO: remove name from constructor params
     public ProductTemplate(@NonNull String name) {
         this.templateID = UUID.randomUUID();
         this.name = name;
         categoryID = Category.DEFAULT_CATEGORY_ID;
     }
+
+    protected ProductTemplate(Parcel in) {
+        templateID = (UUID) in.readSerializable();
+        name = in.readString();
+        categoryID = (UUID) in.readSerializable();
+        unitID = (UUID) in.readSerializable();
+    }
+
+    public static final Creator<ProductTemplate> CREATOR = new Creator<ProductTemplate>() {
+        @Override
+        public ProductTemplate createFromParcel(Parcel in) {
+            return new ProductTemplate(in);
+        }
+
+        @Override
+        public ProductTemplate[] newArray(int size) {
+            return new ProductTemplate[size];
+        }
+    };
 
     @NonNull
     public UUID getTemplateID() {
@@ -114,5 +136,18 @@ public class ProductTemplate {
                 ", categoryID=" + categoryID +
                 ", unitID=" + unitID +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeSerializable(templateID);
+        parcel.writeString(name);
+        parcel.writeSerializable(categoryID);
+        parcel.writeSerializable(unitID);
     }
 }

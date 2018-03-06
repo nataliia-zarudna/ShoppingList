@@ -36,7 +36,7 @@
 
     <item
         android:id="@+id/menu_item_edit_list"
-        android:title="@string/edit_product_menu_item"
+        android:title="@string/edit_menu_item"
         android:visible="false"/>
 
     <item

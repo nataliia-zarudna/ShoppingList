@@ -72,8 +72,6 @@ public class ViewModelArrayAdapter<T> extends ArrayAdapter<T> {
         return getView(position, convertView, parent);
     }
 
-
-
     private class ViewHolder<T> {
 
         ArrayItemViewModel<T> mViewModel;

@@ -25,7 +25,7 @@
     <string name="menu_remove_absent">Remove absent</string>
     <string name="menu_mark_all_as_bought">Mark all as active</string>
     <string name="menu_mark_all_as_active">Mark all as active</string>
-    <string name="edit_product_menu_item">Edit</string>
+    <string name="edit_menu_item">Edit</string>
     <string name="remove_product_menu_item">Remove</string>
     <string name="mark_product_as_active_menu_item">Mark as active</string>
     <string name="mark_product_as_bought_menu_item">Mark as bought</string>
@@ -49,6 +49,8 @@
     <string name="feedback_nav_item">Send Feedback</string>
     <string name="rate_app_nav_item">Rate App</string>
     <string name="templates_activity_label">Product Templates</string>
+    <string name="remove_menu_item">Remove</string>
+    <string name="new_entity_dialog_title">New</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

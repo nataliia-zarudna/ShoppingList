@@ -14,6 +14,7 @@ import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsViewModel;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesViewModel;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
 
 import javax.inject.Singleton;
 
@@ -49,4 +50,6 @@ public interface AppComponent {
     void inject(ChooseTemplateViewModel mViewModel);
 
     void inject(TemplatesViewModel mViewModel);
+
+    void inject(EditTemplateViewModel mViewModel);
 }
