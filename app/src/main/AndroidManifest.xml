@@ -19,6 +19,7 @@
         </activity>
         <activity android:name=".ui.productlist.read.ReadProductListActivity" />
         <activity android:name=".ui.productlist.edit.EditProductListActivity" />
+        <activity android:name=".ui.productlist.edit.template.ChooseTemplateActivity" />
     </application>
 
 </manifest>

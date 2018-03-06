@@ -1,10 +1,12 @@
-package com.nzarudna.shoppinglist.model.template;
+package com.nzarudna.shoppinglist.ui.productlist.edit.template;
+
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
 
 /**
  * Created by Nataliia on 05.03.2018.
  */
 
-public class TemplateItemViewModel {
+public class CategoryTemplateItemViewModel {
 
     private CategoryTemplateItemWithListStatistics mItem;
 
@@ -18,5 +20,9 @@ public class TemplateItemViewModel {
 
     public boolean isTemplateUsed() {
         return mItem != null && mItem.isIsUsedInList();
+    }
+
+    public String getCategoryName() {
+        return mItem != null ? mItem.getCategory().getName() : "";
     }
 }

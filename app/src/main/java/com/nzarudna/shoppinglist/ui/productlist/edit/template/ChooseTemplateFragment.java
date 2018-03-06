@@ -1,8 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.arch.paging.PagedListAdapter;
@@ -13,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +20,9 @@ import android.view.ViewGroup;
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
-import com.nzarudna.shoppinglist.model.template.TemplateItemViewModel;
+
+import java.util.UUID;
 
 /**
  * Created by Nataliia on 04.03.2018.
@@ -31,13 +30,21 @@ import com.nzarudna.shoppinglist.model.template.TemplateItemViewModel;
 
 public class ChooseTemplateFragment extends Fragment {
 
+    private static final String ARG_LIST_ID = "com.nzarudna.shoppinglist.ui.productlist.edit.template.list_id";
     private static final int DEFAULT_PAGE_LIST = 20;
+
     private ChooseTemplateViewModel mViewModel;
     private RecyclerView mTemplatesRecyclerView;
     private CategoryTemplateAdapter mTemplatesAdapter;
 
-    public static ChooseTemplateFragment getInstance() {
-        return new ChooseTemplateFragment();
+    public static ChooseTemplateFragment getInstance(UUID listID) {
+        ChooseTemplateFragment instance = new ChooseTemplateFragment();
+
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_LIST_ID, listID);
+        instance.setArguments(args);
+
+        return instance;
     }
 
     @Override
@@ -46,6 +53,11 @@ public class ChooseTemplateFragment extends Fragment {
 
         mViewModel = ViewModelProviders.of(this).get(ChooseTemplateViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
+
+        if (getArguments() != null) {
+            UUID listID = (UUID) getArguments().getSerializable(ARG_LIST_ID);
+            mViewModel.setProductListID(listID);
+        }
     }
 
     @Nullable
@@ -55,16 +67,17 @@ public class ChooseTemplateFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_choose_template, container, false);
 
         mTemplatesRecyclerView = view.findViewById(R.id.templates_list);
+        mTemplatesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTemplatesAdapter = new CategoryTemplateAdapter();
         mTemplatesRecyclerView.setAdapter(mTemplatesAdapter);
 
         mViewModel.getTemplates(true, DEFAULT_PAGE_LIST).observe(
                 this, new Observer<PagedList<CategoryTemplateItemWithListStatistics>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<CategoryTemplateItemWithListStatistics> list) {
-                mTemplatesAdapter.setList(list);
-            }
-        });
+                    @Override
+                    public void onChanged(@Nullable PagedList<CategoryTemplateItemWithListStatistics> list) {
+                        mTemplatesAdapter.setList(list);
+                    }
+                });
 
         return view;
     }
@@ -72,18 +85,18 @@ public class ChooseTemplateFragment extends Fragment {
     private class CategoryTemplateViewHolder extends RecyclerView.ViewHolder {
 
         private ViewDataBinding mDataBinding;
-        private TemplateItemViewModel mViewModel;
+        private CategoryTemplateItemViewModel mItemViewModel;
 
         public CategoryTemplateViewHolder(ViewDataBinding dataBinding) {
             super(dataBinding.getRoot());
             mDataBinding = dataBinding;
 
-            TemplateItemViewModel viewModel = new TemplateItemViewModel();
-            mDataBinding.setVariable(BR.viewModel, viewModel);
+            mItemViewModel = new CategoryTemplateItemViewModel();
+            mDataBinding.setVariable(BR.viewModel, mItemViewModel);
         }
 
         public void bind(CategoryTemplateItemWithListStatistics item) {
-            mViewModel.setItem(item);
+            mItemViewModel.setItem(item);
             mDataBinding.executePendingBindings();
         }
     }
@@ -102,9 +115,9 @@ public class ChooseTemplateFragment extends Fragment {
 
             int layoutResID;
             if (viewType == VIEW_TYPE_TEMPLATE) {
-                layoutResID = R.layout.item_template_product_list;
+                layoutResID = R.layout.item_template_checkable_template_list;
             } else {
-                layoutResID = R.layout.item_category_product_list;
+                layoutResID = R.layout.item_category_template_list;
             }
             ViewDataBinding dataBinding = DataBindingUtil.inflate(
                     getLayoutInflater(), layoutResID, parent, false);

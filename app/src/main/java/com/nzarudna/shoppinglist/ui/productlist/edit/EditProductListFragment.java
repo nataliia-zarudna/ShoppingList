@@ -23,6 +23,7 @@ import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.edit.template.ChooseTemplateActivity;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlists.CopyListDialogFragment;
 
@@ -157,9 +158,8 @@ public class EditProductListFragment extends ProductListFragment {
         mCreateFromTemplateSubItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
-                copyListFragment.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_CREATE_FORM_TEMPLATE);
-                copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
+                Intent intent = ChooseTemplateActivity.newIntent(getActivity(), mViewModel.getProductListID());
+                startActivity(intent);
             }
         });
     }

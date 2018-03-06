@@ -1,17 +1,28 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 
 import com.nzarudna.shoppinglist.ui.SingleFragmentActivity;
+
+import java.util.UUID;
 
 /**
  * Created by Nataliia on 04.03.2018.
  */
 
 public class ChooseTemplateActivity extends SingleFragmentActivity {
+    private static final String EXTRA_LIST_ID = "com.nzarudna.shoppinglist.ui.productlist.edit.template.list_id";
 
-    @Override
-    protected Fragment getFragment() {
-        return new ChooseTemplateFragment();
+    public static Intent newIntent(Context packageContext, UUID listID) {
+        Intent intent = new Intent(packageContext, ChooseTemplateActivity.class);
+        intent.putExtra(EXTRA_LIST_ID, listID);
+        return intent;
+    }
+
+    protected ChooseTemplateFragment getFragment() {
+        UUID listID = (UUID) getIntent().getSerializableExtra(EXTRA_LIST_ID);
+        return ChooseTemplateFragment.getInstance(listID);
     }
 }
