@@ -12,6 +12,7 @@ import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
+import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import javax.inject.Inject;
 
@@ -19,13 +20,12 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public abstract class CategoryProductItemViewModel extends ViewModel implements Observable {
+public abstract class CategoryProductItemViewModel extends ObservableViewModel {
 
     @Inject
     ProductListRepository mProductListRepository;
 
     private ShoppingList mShoppingList;
-    private PropertyChangeRegistry mPropertyChangeRegistry = new PropertyChangeRegistry();
     protected CategoryProductItemViewModelObserver mObserver;
     private int mCurrentPosition;
 
@@ -141,16 +141,6 @@ public abstract class CategoryProductItemViewModel extends ViewModel implements 
         if (mObserver != null) {
             mObserver.showContextMenu(mCurrentPosition);
         }
-    }
-
-    @Override
-    public void addOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mPropertyChangeRegistry.add(onPropertyChangedCallback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mPropertyChangeRegistry.remove(onPropertyChangedCallback);
     }
 
     public void onUpdateProductDone(Product updatedProduct) {

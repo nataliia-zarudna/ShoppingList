@@ -16,6 +16,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
+import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
  * Created by nsirobaba on 2/26/18.
  */
 
-public class EditProductViewModel extends ViewModel implements Observable {
+public class EditProductViewModel extends ObservableViewModel {
 
     @Inject
     ProductTemplateRepository mTemplateRepository;
@@ -39,8 +40,6 @@ public class EditProductViewModel extends ViewModel implements Observable {
     @Bindable
     private MutableLiveData<Product> mProduct;
 
-    private PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
-
     public void setProductInfo(Product product, UUID listID) {
         if (product == null) {
             product = new Product(null);
@@ -49,7 +48,7 @@ public class EditProductViewModel extends ViewModel implements Observable {
         this.mProduct = new MutableLiveData<>();
         mProduct.setValue(product);
 
-        mRegistry.notifyChange(this, BR._all);
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
     public LiveData<Product> getProduct() {
@@ -93,16 +92,6 @@ public class EditProductViewModel extends ViewModel implements Observable {
         return getProductName();
     }
 
-    @Override
-    public void addOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mRegistry.add(onPropertyChangedCallback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mRegistry.remove(onPropertyChangedCallback);
-    }
-
     public LiveData<List<Unit>> getUnitList() {
         return mUnitRepository.getAvailableUnits();
     }
@@ -131,6 +120,6 @@ public class EditProductViewModel extends ViewModel implements Observable {
         product.setUnitID(template.getUnitID());
 
         mProduct.postValue(product);
-        mRegistry.notifyChange(this, BR._all);
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 }

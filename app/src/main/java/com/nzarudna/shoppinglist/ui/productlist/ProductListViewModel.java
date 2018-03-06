@@ -16,6 +16,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import java.util.UUID;
 
@@ -25,11 +26,10 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public abstract class ProductListViewModel extends ViewModel implements Observable {
+public abstract class ProductListViewModel extends ObservableViewModel {
 
     @Inject
     ProductListRepository mProductListRepository;
-    protected PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
 
     @Bindable
     protected ProductList mProductList;
@@ -82,17 +82,7 @@ public abstract class ProductListViewModel extends ViewModel implements Observab
 
     public void setProductListData(ProductList productList) {
         mProductList = productList;
-        mRegistry.notifyChange(this, BR._all);
-    }
-
-    @Override
-    public void addOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mRegistry.add(onPropertyChangedCallback);
-    }
-
-    @Override
-    public void removeOnPropertyChangedCallback(OnPropertyChangedCallback onPropertyChangedCallback) {
-        mRegistry.remove(onPropertyChangedCallback);
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
     public void removeBoughtProducts() {
