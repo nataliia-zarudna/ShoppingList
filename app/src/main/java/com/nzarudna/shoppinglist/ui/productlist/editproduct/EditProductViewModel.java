@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.Bindable;
 import android.databinding.Observable;
@@ -36,7 +37,7 @@ public class EditProductViewModel extends ViewModel implements Observable {
     CategoryRepository mCategoryRepository;
 
     @Bindable
-    private Product mProduct;
+    private MutableLiveData<Product> mProduct;
 
     private PropertyChangeRegistry mRegistry = new PropertyChangeRegistry();
 
@@ -45,30 +46,31 @@ public class EditProductViewModel extends ViewModel implements Observable {
             product = new Product(null);
             product.setListID(listID);
         }
-        this.mProduct = product;
+        this.mProduct = new MutableLiveData<>();
+        mProduct.setValue(product);
 
         mRegistry.notifyChange(this, BR._all);
     }
 
-    public Product getProduct() {
+    public LiveData<Product> getProduct() {
         return mProduct;
     }
 
     public LiveData<List<ProductTemplate>> getNameAutocompleteList(String filterValue) {
-        return mTemplateRepository.getTemplatesByNameLike(filterValue, mProduct.getListID());
+        return mTemplateRepository.getTemplatesByNameLike(filterValue, mProduct.getValue().getListID());
     }
 
     public String getProductName() {
-        return mProduct != null ? mProduct.getName() : "";
+        return mProduct != null ? mProduct.getValue().getName() : "";
     }
 
     public void setProductName(String productName) {
-        mProduct.setName(productName);
+        mProduct.getValue().setName(productName);
     }
 
     public String getProductCount() {
-        if (mProduct != null && mProduct.getCount() > 0) {
-            return FormatUtils.format(mProduct.getCount());
+        if (mProduct != null && mProduct.getValue().getCount() > 0) {
+            return FormatUtils.format(mProduct.getValue().getCount());
         } else {
             return "";
         }
@@ -76,15 +78,15 @@ public class EditProductViewModel extends ViewModel implements Observable {
 
     public void onCountChange(CharSequence countStr, int i, int i1, int i2) {
         double count = Double.valueOf(countStr.toString());
-        mProduct.setCount(count);
+        mProduct.getValue().setCount(count);
     }
 
     public UUID getProductCategoryID() {
-        return mProduct != null ? mProduct.getCategoryID() : null;
+        return mProduct != null ? mProduct.getValue().getCategoryID() : null;
     }
 
     public UUID getProductUnitID() {
-        return mProduct != null ? mProduct.getUnitID() : null;
+        return mProduct != null ? mProduct.getValue().getUnitID() : null;
     }
 
     public String getDialogTitle() {
@@ -110,14 +112,25 @@ public class EditProductViewModel extends ViewModel implements Observable {
     }
 
     public void onUnitSelect(Unit unit) {
-        if (mProduct != null) {
-            mProduct.setUnitID(unit.getUnitID());
+        if (mProduct.getValue() != null) {
+            mProduct.getValue().setUnitID(unit.getUnitID());
         }
     }
 
     public void onCategorySelect(Category category) {
-        if (mProduct != null) {
-            mProduct.setCategoryID(category.getCategoryID());
+        if (mProduct.getValue() != null) {
+            mProduct.getValue().setCategoryID(category.getCategoryID());
         }
+    }
+
+    public void onChooseProductTemplate(ProductTemplate template) {
+        Product product = mProduct.getValue();
+        product.setTemplateID(template.getTemplateID());
+
+        product.setCategoryID(template.getCategoryID());
+        product.setUnitID(template.getUnitID());
+
+        mProduct.postValue(product);
+        mRegistry.notifyChange(this, BR._all);
     }
 }

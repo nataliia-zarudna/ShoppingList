@@ -51,6 +51,8 @@ public class EditProductDialogFragment extends DialogFragment {
     private ArrayAdapter<Category> mCategorySpinnerAdapter;
     private AppCompatSpinner mUnitSpinner;
     private AppCompatSpinner mCategorySpinner;
+    private List<Unit> mUnits;
+    private List<Category> mCategoties;
 
     public static EditProductDialogFragment newInstance(UUID listID) {
         Bundle args = new Bundle();
@@ -97,7 +99,7 @@ public class EditProductDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        sendResult(Activity.RESULT_OK, mViewModel.getProduct());
+                        sendResult(Activity.RESULT_OK, mViewModel.getProduct().getValue());
                     }
                 })
                 .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
@@ -133,6 +135,18 @@ public class EditProductDialogFragment extends DialogFragment {
         configUnitSpinnerView(dialogView);
         configCategorySpinnerView(dialogView);
 
+        mViewModel.getProduct().observe(this, new Observer<Product>() {
+            @Override
+            public void onChanged(@Nullable Product product) {
+                if (mCategoties != null) {
+                    updateSelectedCategory();
+                }
+                if (mUnits != null) {
+                    updateSelectedUnit();
+                }
+            }
+        });
+
         return dialogView;
     }
 
@@ -164,6 +178,8 @@ public class EditProductDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemClick template " + ((ProductTemplate) mNameAutocompleteAdapter.getItem(i)).getName());
+                ProductTemplate template = ((ProductTemplate) mNameAutocompleteAdapter.getItem(i));
+                mViewModel.onChooseProductTemplate(template);
             }
         });
     }
@@ -175,18 +191,15 @@ public class EditProductDialogFragment extends DialogFragment {
         mViewModel.getUnitList().observe(this, new Observer<List<Unit>>() {
             @Override
             public void onChanged(@Nullable List<Unit> units) {
+                mUnits = units;
+
                 if (mUnitSpinnerAdapter == null && units != null) {
                     mUnitSpinnerAdapter
                             = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
                             units, UnitItemViewModel.class);
                     mUnitSpinner.setAdapter(mUnitSpinnerAdapter);
 
-                    UUID productUnitID = mViewModel.getProductUnitID();
-                    for (int i = 0; i < units.size(); i++) {
-                        if (units.get(i).getUnitID().equals(productUnitID)) {
-                            mUnitSpinner.setSelection(i);
-                        }
-                    }
+                    updateSelectedUnit();
                 }
             }
         });
@@ -204,6 +217,15 @@ public class EditProductDialogFragment extends DialogFragment {
         });
     }
 
+    private void updateSelectedUnit() {
+        UUID productUnitID = mViewModel.getProductUnitID();
+        for (int i = 0; i < mUnits.size(); i++) {
+            if (mUnits.get(i).getUnitID().equals(productUnitID)) {
+                mUnitSpinner.setSelection(i);
+            }
+        }
+    }
+
     private void configCategorySpinnerView(View dialogView) {
 
         mCategorySpinner = dialogView.findViewById(R.id.category);
@@ -211,18 +233,15 @@ public class EditProductDialogFragment extends DialogFragment {
         mViewModel.getCategoryList().observe(this, new Observer<List<Category>>() {
             @Override
             public void onChanged(@Nullable List<Category> categories) {
+                mCategoties = categories;
+
                 if (mCategorySpinnerAdapter == null && categories != null) {
                     mCategorySpinnerAdapter
                             = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
                             categories, CategoryItemViewModel.class);
                     mCategorySpinner.setAdapter(mCategorySpinnerAdapter);
 
-                    UUID productCategoryID = mViewModel.getProductCategoryID();
-                    for (int i = 0; i < categories.size(); i++) {
-                        if (categories.get(i).getCategoryID().equals(productCategoryID)) {
-                            mCategorySpinner.setSelection(i);
-                        }
-                    }
+                    updateSelectedCategory();
                 }
             }
         });
@@ -238,6 +257,15 @@ public class EditProductDialogFragment extends DialogFragment {
 
             }
         });
+    }
+
+    private void updateSelectedCategory() {
+        UUID productCategoryID = mViewModel.getProductCategoryID();
+        for (int i = 0; i < mCategoties.size(); i++) {
+            if (mCategoties.get(i).getCategoryID().equals(productCategoryID)) {
+                mCategorySpinner.setSelection(i);
+            }
+        }
     }
 
     private void loadNameAutocompleteValues(String filterValue) {

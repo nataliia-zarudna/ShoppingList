@@ -36,6 +36,10 @@ public class EditProductListActivity extends SingleFragmentActivity {
         actionBar.setCustomView(R.layout.toolbar_edit_title);
         actionBar.setDisplayShowCustomEnabled(true);
 
+        if (mEditProductListFragment == null) {
+            mEditProductListFragment =
+                    (EditProductListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        }
         mEditProductListFragment.setToolbar(actionBar.getCustomView());
     }
 
