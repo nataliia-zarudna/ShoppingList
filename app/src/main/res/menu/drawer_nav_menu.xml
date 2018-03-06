@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/shopping_lists_item"
+            android:title="@string/shopping_lists_nav_item" />
+        <item
+            android:id="@+id/templates_item"
+            android:title="@string/templates_nav_item" />
+        <item
+            android:id="@+id/users_item"
+            android:title="@string/users_nav_item" />
+        <item
+            android:id="@+id/categories_item"
+            android:title="@string/categories_nav_item" />
+        <item
+            android:id="@+id/units_item"
+            android:title="@string/units_nav_item" />
+        <item
+            android:id="@+id/archive_item"
+            android:title="@string/archive_nav_item" />
+        <item
+            android:id="@+id/settings_item"
+            android:title="@string/settings_nav_item" />
+        <item
+            android:id="@+id/feedback_item"
+            android:title="@string/feedback_nav_item" />
+        <item
+            android:id="@+id/rate_app_item"
+            android:title="@string/rate_app_nav_item" />
+    </group>
+</menu>

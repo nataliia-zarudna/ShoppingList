@@ -1,0 +1,63 @@
+package com.nzarudna.shoppinglist.ui;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.view.Gravity;
+import android.view.MenuItem;
+
+import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
+
+/**
+ * Created by Nataliia on 06.03.2018.
+ */
+
+public abstract class NavigationSingleFragmentActivity extends SingleFragmentActivity {
+
+    private DrawerLayout mDrawerLayout;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setChecked(true);
+                mDrawerLayout.closeDrawers();
+
+                switch (item.getItemId()) {
+                    case R.id.shopping_lists_item:
+                        Class activityClass = ProductListsActivity.class;
+                        Intent intent = new Intent(NavigationSingleFragmentActivity.this, activityClass);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(Gravity.START);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+}
