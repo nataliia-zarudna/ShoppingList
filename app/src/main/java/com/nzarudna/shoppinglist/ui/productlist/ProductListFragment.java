@@ -91,7 +91,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View fragmentView = inflater.inflate(R.layout.fragment_product_list, container, false);
+        View fragmentView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
         initProductsRecyclerView(fragmentView);
 
@@ -99,7 +99,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
     }
 
     protected void initProductsRecyclerView(View fragmentView) {
-        mProductsRecyclerView = fragmentView.findViewById(R.id.products_recycle_view);
+        mProductsRecyclerView = fragmentView.findViewById(R.id.recycler_view);
         mProductsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new CategoryProductAdapter();

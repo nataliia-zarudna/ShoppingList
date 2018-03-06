@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
+import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -25,7 +26,7 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
@@ -38,13 +39,20 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                 item.setChecked(true);
                 mDrawerLayout.closeDrawers();
 
+                Class activityClass = null;
                 switch (item.getItemId()) {
                     case R.id.shopping_lists_item:
-                        Class activityClass = ProductListsActivity.class;
-                        Intent intent = new Intent(NavigationSingleFragmentActivity.this, activityClass);
-                        startActivity(intent);
+                        activityClass = ProductListsActivity.class;
+                        break;
+                    case R.id.templates_item:
+                        activityClass = TemplatesActivity.class;
                         break;
                 }
+                if (activityClass != null) {
+                    Intent intent = new Intent(NavigationSingleFragmentActivity.this, activityClass);
+                    startActivity(intent);
+                }
+
                 return true;
             }
         });

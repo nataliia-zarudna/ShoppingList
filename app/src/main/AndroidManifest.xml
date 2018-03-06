@@ -23,6 +23,8 @@
             android:name=".ui.productlist.edit.template.ChooseTemplateActivity"
             android:parentActivityName=".ui.productlist.edit.EditProductListActivity"
             android:label="@string/choose_template_activity_name"/>
+        <activity android:name=".ui.templates.TemplatesActivity"
+            android:label="@string/templates_activity_label"/>
     </application>
 
 </manifest>

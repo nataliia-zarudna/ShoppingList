@@ -64,9 +64,9 @@ public class ChooseTemplateFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_choose_template, container, false);
+        View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
-        mTemplatesRecyclerView = view.findViewById(R.id.templates_list);
+        mTemplatesRecyclerView = view.findViewById(R.id.recycler_view);
         mTemplatesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTemplatesAdapter = new CategoryTemplateAdapter();
         mTemplatesRecyclerView.setAdapter(mTemplatesAdapter);
@@ -118,7 +118,7 @@ public class ChooseTemplateFragment extends Fragment {
             if (viewType == VIEW_TYPE_TEMPLATE) {
                 layoutResID = R.layout.item_template_checkable_template_list;
             } else {
-                layoutResID = R.layout.item_category_template_list;
+                layoutResID = R.layout.item_category_checkable_template_list;
             }
             ViewDataBinding dataBinding = DataBindingUtil.inflate(
                     getLayoutInflater(), layoutResID, parent, false);

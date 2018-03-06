@@ -48,6 +48,7 @@
     <string name="settings_nav_item">Settings</string>
     <string name="feedback_nav_item">Send Feedback</string>
     <string name="rate_app_nav_item">Rate App</string>
+    <string name="templates_activity_label">Product Templates</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>
