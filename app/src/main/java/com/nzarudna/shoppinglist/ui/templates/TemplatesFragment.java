@@ -15,8 +15,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +29,6 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
 import com.nzarudna.shoppinglist.ui.RecyclerViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
@@ -46,6 +47,31 @@ public class TemplatesFragment extends Fragment
     private RecyclerView mTemplatesView;
     private CategoryTemplateAdapter mAdapter;
     private CategoryTemplateItemViewModel mContextMenuItemModelView;
+
+    private ActionMode mActionMode;
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater menuInflater = new MenuInflater(getActivity());
+            menuInflater.inflate(R.menu.template_context_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +97,18 @@ public class TemplatesFragment extends Fragment
         mTemplatesView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mAdapter = new CategoryTemplateAdapter();
+        mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mActionMode != null) {
+                    return false;
+                }
+
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+
+                return true;
+            }
+        });
         mTemplatesView.setAdapter(mAdapter);
 
         mViewModel.getItems()
@@ -89,7 +127,7 @@ public class TemplatesFragment extends Fragment
         mContextMenuItemModelView = (CategoryTemplateItemViewModel) v.getTag();
 
         MenuInflater menuInflater = new MenuInflater(getContext());
-        menuInflater.inflate(R.menu.template_menu, menu);
+        menuInflater.inflate(R.menu.template_context_menu, menu);
     }
 
     @Override
@@ -145,6 +183,12 @@ public class TemplatesFragment extends Fragment
 
         ViewDataBinding mDataBinding;
         CategoryTemplateItemViewModel mItemViewModel;
+        View.OnLongClickListener mOnItemLongClickListener;
+
+        public CategoryTemplateViewHolder(ViewDataBinding dataBinding, View.OnLongClickListener onLongClickListener) {
+            this(dataBinding);
+            mOnItemLongClickListener = onLongClickListener;
+        }
 
         public CategoryTemplateViewHolder(ViewDataBinding dataBinding) {
             super(dataBinding.getRoot());
@@ -161,8 +205,12 @@ public class TemplatesFragment extends Fragment
             mItemViewModel.setItem(item);
             if (mItemViewModel.hasContextMenu()) {
                 registerForContextMenu(mDataBinding.getRoot());
+                if (mOnItemLongClickListener != null) {
+                    mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
+                }
             } else {
                 unregisterForContextMenu(mDataBinding.getRoot());
+                mDataBinding.getRoot().setOnLongClickListener(null);
             }
 
             mDataBinding.executePendingBindings();
@@ -173,6 +221,8 @@ public class TemplatesFragment extends Fragment
 
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;
+
+        private View.OnLongClickListener mOnItemLongClickListener;
 
         protected CategoryTemplateAdapter() {
             super(DIFF_CALLBACK);
@@ -199,6 +249,10 @@ public class TemplatesFragment extends Fragment
         public int getItemViewType(int position) {
             return getItem(position).getType().equals(CategoryTemplateItem.TYPE_TEMPLATE)
                     ? TYPE_TEMPLATE : TYPE_CATEGORY;
+        }
+
+        public void setOnItemLongClickListener(View.OnLongClickListener onItemLongClickListener) {
+            this.mOnItemLongClickListener = onItemLongClickListener;
         }
     }
 
