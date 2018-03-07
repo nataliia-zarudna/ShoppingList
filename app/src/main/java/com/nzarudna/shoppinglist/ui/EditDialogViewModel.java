@@ -38,7 +38,5 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel {
         return !mIsNew ? getName() : mResourceResolver.getString(R.string.new_entity_dialog_title);
     }
 
-    public T getItem() {
-        return mItem;
-    }
+    public abstract void saveItem();
 }

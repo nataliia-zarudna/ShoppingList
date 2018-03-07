@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -30,7 +29,6 @@ import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.CategoryItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.UnitItemViewModel;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -80,8 +78,8 @@ public class EditTemplateDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ProductTemplate template = mViewModel.getItem();
-                        sendResponse(template);
+                        mViewModel.saveItem();
+                        sendResponse();
                     }
                 })
                 .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
@@ -118,6 +116,7 @@ public class EditTemplateDialogFragment extends DialogFragment {
                 mUnitAdapter =
                         new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list, units, UnitItemViewModel.class);
                 unitSpinner.setAdapter(mUnitAdapter);
+                mUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 int selectedUnitPosition = mViewModel.getTemplateUnitIndex(units);
                 unitSpinner.setSelection(selectedUnitPosition);
@@ -168,12 +167,11 @@ public class EditTemplateDialogFragment extends DialogFragment {
         });
     }
 
-    private void sendResponse(ProductTemplate template) {
-        Intent responseIntent = new Intent();
-        responseIntent.putExtra(EXTRA_PRODUCT_TEMPLATE, template);
-
+    private void sendResponse() {
         Fragment targetFragment = getTargetFragment();
-        targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, responseIntent);
+        if (targetFragment != null) {
+            targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
+        }
     }
 
     public static ProductTemplate getResultTemplate(Intent intent) {

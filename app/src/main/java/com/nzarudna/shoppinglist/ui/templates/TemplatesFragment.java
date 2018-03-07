@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
@@ -28,13 +29,16 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.ui.RecyclerViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
 /**
  * Created by Nataliia on 06.03.2018.
  */
 
-public class TemplatesFragment extends Fragment implements RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem> {
+public class TemplatesFragment extends Fragment
+        implements RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem>,
+        RecyclerViewModel.RecyclerViewModelObserver {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
@@ -49,6 +53,7 @@ public class TemplatesFragment extends Fragment implements RecyclerItemViewModel
 
         mViewModel = ViewModelProviders.of(this).get(TemplatesViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
+        mViewModel.setObserver(this);
 
         setHasOptionsMenu(true);
     }
@@ -56,7 +61,11 @@ public class TemplatesFragment extends Fragment implements RecyclerItemViewModel
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_recycler_view_with_fab, container, false);
+        ViewDataBinding dataBinding =
+                DataBindingUtil.inflate(inflater, R.layout.fragment_recycler_view_with_fab, container, false);
+        dataBinding.setVariable(BR.viewModel, mViewModel);
+
+        View fragmentView = dataBinding.getRoot();
 
         mTemplatesView = fragmentView.findViewById(R.id.recycler_view);
         mTemplatesView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -64,7 +73,7 @@ public class TemplatesFragment extends Fragment implements RecyclerItemViewModel
         mAdapter = new CategoryTemplateAdapter();
         mTemplatesView.setAdapter(mAdapter);
 
-        mViewModel.getTemplates(true, DEFAULT_PAGE_SIZE)
+        mViewModel.getItems()
                 .observe(this, new Observer<PagedList<CategoryTemplateItem>>() {
                     @Override
                     public void onChanged(@Nullable PagedList<CategoryTemplateItem> categoryTemplateItems) {
@@ -101,22 +110,25 @@ public class TemplatesFragment extends Fragment implements RecyclerItemViewModel
         mContextMenuItemModelView = null;
 
         EditTemplateDialogFragment editDialog = EditTemplateDialogFragment.newInstance();
-        editDialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
+        showEditDialog(editDialog);
     }
 
     @Override
     public void openEditItemDialog(CategoryTemplateItem item) {
         EditTemplateDialogFragment editDialog = EditTemplateDialogFragment.newInstance(item.getTemplate());
-        editDialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
-        editDialog.show(getFragmentManager(), "EditTemplateDialogFragment");
+        showEditDialog(editDialog);
+    }
+
+    private void showEditDialog(EditTemplateDialogFragment dialog) {
+        dialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
+        dialog.show(getFragmentManager(), "EditTemplateDialogFragment");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_TEMPLATE) {
 
-            ProductTemplate template = EditTemplateDialogFragment.getResultTemplate(data);
-            mContextMenuItemModelView.setTemplate(template);
+            Toast.makeText(getActivity(), R.string.save_product_success_msg, Toast.LENGTH_SHORT).show();
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);

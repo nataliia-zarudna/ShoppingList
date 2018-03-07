@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.EditDialogViewModel;
@@ -20,6 +21,8 @@ import javax.inject.Inject;
 
 public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> {
 
+    @Inject
+    ProductTemplateRepository mTemplateRepository;
     @Inject
     UnitRepository mUnitRepository;
     @Inject
@@ -38,6 +41,15 @@ public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> 
     @Override
     public void setName(String name) {
         mItem.setName(name);
+    }
+
+    @Override
+    public void saveItem() {
+        if (mIsNew) {
+            mTemplateRepository.createTemplate(mItem);
+        } else {
+            mTemplateRepository.updateTemplate(mItem);
+        }
     }
 
     public UUID getCategoryID() {

@@ -13,12 +13,6 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
         this.mObserver = observer;
     }
 
-    public void onFABClick() {
-        if (mObserver != null) {
-            mObserver.openCreateNewItemDialog();
-        }
-    }
-
     public void onItemClick() {
         if (mObserver != null) {
             mObserver.openEditItemDialog(mItem);

@@ -21,12 +21,14 @@
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/unit_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/template_name" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/category_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/unit_spinner" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
