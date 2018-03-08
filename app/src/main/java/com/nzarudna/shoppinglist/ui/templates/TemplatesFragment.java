@@ -54,7 +54,7 @@ public class TemplatesFragment extends Fragment
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater menuInflater = new MenuInflater(getActivity());
-            menuInflater.inflate(R.menu.template_context_menu, menu);
+            menuInflater.inflate(R.menu.template_multiple_context_menu, menu);
             return true;
         }
 
@@ -102,10 +102,11 @@ public class TemplatesFragment extends Fragment
             @Override
             public boolean onLongClick(View view) {
                 if (mActionMode != null) {
-                    return false;
+                    return true;
                 }
 
                 mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                view.setSelected(true);
 
                 return true;
             }
