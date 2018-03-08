@@ -32,7 +32,10 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
 import com.nzarudna.shoppinglist.ui.RecyclerViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
+
+import java.util.UUID;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -40,7 +43,7 @@ import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragm
 
 public class TemplatesFragment extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem>,
-        RecyclerViewModel.RecyclerViewModelObserver {
+        RecyclerViewModel.RecyclerViewModelObserver, TemplatesViewModel.TemplatesViewModelObserver {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
@@ -65,12 +68,19 @@ public class TemplatesFragment extends Fragment
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.create_list_menu_item:
+                    mViewModel.createProductList();
+                    mActionMode.finish();
+                    return true;
+            }
             return false;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
+            mViewModel.deselectAllItems();
         }
     };
 
@@ -81,6 +91,7 @@ public class TemplatesFragment extends Fragment
         mViewModel = ViewModelProviders.of(this).get(TemplatesViewModel.class);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
         mViewModel.setObserver(this);
+        mViewModel.setTemplateViewObserver(this);
 
         setHasOptionsMenu(true);
     }
@@ -101,12 +112,21 @@ public class TemplatesFragment extends Fragment
         mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (mActionMode != null) {
-                    return true;
+                if (mActionMode == null) {
+                    mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
                 }
 
-                mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-                view.setSelected(true);
+                CategoryTemplateItemViewModel itemViewModel = (CategoryTemplateItemViewModel) view.getTag();
+                itemViewModel.onSelect();
+                mViewModel.onItemSelected(itemViewModel.getItem());
+
+                if (mViewModel.getSelectedItemsCount() == 0) {
+                    mActionMode.finish();
+                } else {
+                    String itemsCount = String.valueOf(mViewModel.getSelectedItemsCount());
+                    String title = getString(R.string.action_mode_selected_count, itemsCount);
+                    mActionMode.setTitle(title);
+                }
 
                 return true;
             }
@@ -162,6 +182,12 @@ public class TemplatesFragment extends Fragment
     private void showEditDialog(EditTemplateDialogFragment dialog) {
         dialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
         dialog.show(getFragmentManager(), "EditTemplateDialogFragment");
+    }
+
+    @Override
+    public void onCreateProductList(UUID listID) {
+        Intent intent = EditProductListActivity.newIntent(getActivity(), listID);
+        startActivity(intent);
     }
 
     @Override

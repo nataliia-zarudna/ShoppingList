@@ -49,22 +49,4 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
         mItem.setTemplate(template);
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
-
-    /*@Bindable
-    private CategoryTemplateItem mItem;
-
-    public void setCategoryTemplateItem(CategoryTemplateItem item) {
-        mItem = item;
-        mPropertyChangeRegistry.notifyChange(this, BR._all);
-    }
-
-    public String getCategoryName() {
-        return mItem != null ? mItem.getCategory().getName() : "";
-    }
-
-    public String getTemplateName() {
-        return mItem != null ? mItem.getTemplate().getName() : "";
-    }*/
-
-
 }

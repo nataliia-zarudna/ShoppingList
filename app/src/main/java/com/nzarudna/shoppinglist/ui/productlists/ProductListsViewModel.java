@@ -18,8 +18,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_NAME;
-
 /**
  * Created by Nataliia on 19.01.2018.
  */
@@ -68,7 +66,7 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
     }
 
     public void onClickCreateListBtn() {
-        mProductListRepository.createList(this);
+        mProductListRepository.createNewList(this);
     }
 
     public void onClickCopyListBtn(UUID etalonListID) {

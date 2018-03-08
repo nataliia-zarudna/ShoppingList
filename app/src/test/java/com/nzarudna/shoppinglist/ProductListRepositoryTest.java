@@ -19,7 +19,6 @@ import com.nzarudna.shoppinglist.model.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -91,7 +90,7 @@ public class ProductListRepositoryTest {
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createList(new ProductListRepository.OnProductListCreateListener() {
+        mSubject.createNewList(new ProductListRepository.OnProductListCreateListener() {
             @Override
             public void onCreate(UUID productListID) {
 
@@ -119,7 +118,7 @@ public class ProductListRepositoryTest {
         expectedProductList.setIsGroupedView(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createList(new ProductListRepository.OnProductListCreateListener() {
+        mSubject.createNewList(new ProductListRepository.OnProductListCreateListener() {
             @Override
             public void onCreate(UUID productListID) {
 

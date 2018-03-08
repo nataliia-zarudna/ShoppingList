@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.ui;
 
+import com.nzarudna.shoppinglist.BR;
+
 /**
  * Created by Nataliia on 06.03.2018.
  */
@@ -8,9 +10,19 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
 
     protected RecyclerItemViewModelObserver<T> mObserver;
     protected int mPosition;
+    protected boolean mIsSelected;
 
     public void setObserver(RecyclerItemViewModelObserver<T> observer) {
         this.mObserver = observer;
+    }
+
+    public void onSelect() {
+        this.mIsSelected = !mIsSelected;
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public boolean isSelected() {
+        return mIsSelected;
     }
 
     public void onItemClick() {
@@ -34,8 +46,6 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
     public boolean hasContextMenu() {
         return false;
     }
-
-    ;
 
     public abstract void removeItem();
 

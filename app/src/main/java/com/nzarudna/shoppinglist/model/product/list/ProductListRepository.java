@@ -14,6 +14,7 @@ import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 
@@ -53,7 +54,25 @@ public class ProductListRepository {
         mSharedPreferences = sharedPreferences;
     }
 
-    public void createList(@Nullable final OnProductListCreateListener onProductListCreateListener) {
+    public void createNewList(@Nullable final OnProductListCreateListener onProductListCreateListener) {
+
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... voids) {
+
+                ProductList productList = createProductList();
+                mProductListDao.insert(productList);
+
+                if (onProductListCreateListener != null) {
+                    onProductListCreateListener.onCreateNewList(productList.getListID());
+                }
+
+                return null;
+            }
+        }.execute();
+    }
+
+    public void createNewList(final List<ProductTemplate> templates, @Nullable final OnProductListCreateListener onProductListCreateListener) {
 
         new AsyncTask<Void, Void, Integer>() {
             @Override
