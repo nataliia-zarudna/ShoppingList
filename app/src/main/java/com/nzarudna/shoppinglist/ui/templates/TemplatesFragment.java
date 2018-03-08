@@ -12,10 +12,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -104,7 +105,7 @@ public class TemplatesFragment extends Fragment
                     return false;
                 }
 
-                mActionMode = getActivity().startActionMode(mActionModeCallback);
+                mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
 
                 return true;
             }
@@ -236,7 +237,7 @@ public class TemplatesFragment extends Fragment
 
             ViewDataBinding dataBinding =
                     DataBindingUtil.inflate(getLayoutInflater(), layoutResID, parent, false);
-            return new CategoryTemplateViewHolder(dataBinding);
+            return new CategoryTemplateViewHolder(dataBinding, mOnItemLongClickListener);
         }
 
         @Override
