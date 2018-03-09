@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="com.nzarudna.shoppinglist.ui.RecyclerItemViewModel" />
+            type="com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

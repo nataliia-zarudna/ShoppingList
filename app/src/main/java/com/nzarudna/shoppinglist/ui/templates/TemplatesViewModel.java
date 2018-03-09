@@ -9,9 +9,8 @@ import android.content.SharedPreferences;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
-import com.nzarudna.shoppinglist.ui.RecyclerViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import java.util.UUID;
 

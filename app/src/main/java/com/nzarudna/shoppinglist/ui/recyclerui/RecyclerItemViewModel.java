@@ -1,6 +1,7 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.ui.ArrayItemViewModel;
 
 /**
  * Created by Nataliia on 06.03.2018.

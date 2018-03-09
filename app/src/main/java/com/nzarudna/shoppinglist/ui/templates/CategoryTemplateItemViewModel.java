@@ -1,14 +1,10 @@
 package com.nzarudna.shoppinglist.ui.templates;
 
-import android.databinding.Bindable;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
-import com.nzarudna.shoppinglist.ui.ArrayItemViewModel;
-import com.nzarudna.shoppinglist.ui.ObservableViewModel;
-import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 
 import javax.inject.Inject;
 

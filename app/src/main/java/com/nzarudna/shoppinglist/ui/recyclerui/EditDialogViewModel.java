@@ -1,8 +1,9 @@
-package com.nzarudna.shoppinglist.ui;
+package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
+import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import javax.inject.Inject;
 

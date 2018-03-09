@@ -30,8 +30,10 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
-import com.nzarudna.shoppinglist.ui.RecyclerItemViewModel;
-import com.nzarudna.shoppinglist.ui.RecyclerViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
@@ -108,7 +110,7 @@ public class TemplatesFragment extends Fragment
         mTemplatesView = fragmentView.findViewById(R.id.recycler_view);
         mTemplatesView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new CategoryTemplateAdapter();
+        mAdapter = new CategoryTemplateAdapter(getActivity());
         mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -207,70 +209,34 @@ public class TemplatesFragment extends Fragment
         itemView.showContextMenu();
     }
 
-    private class CategoryTemplateViewHolder extends RecyclerView.ViewHolder {
+    private class CategoryTemplateViewHolder extends RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel> {
 
-        ViewDataBinding mDataBinding;
-        CategoryTemplateItemViewModel mItemViewModel;
-        View.OnLongClickListener mOnItemLongClickListener;
-
-        public CategoryTemplateViewHolder(ViewDataBinding dataBinding, View.OnLongClickListener onLongClickListener) {
-            this(dataBinding);
-            mOnItemLongClickListener = onLongClickListener;
+        public CategoryTemplateViewHolder(Activity activity,
+                                          ViewDataBinding dataBinding,
+                                          @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem> observer) {
+            super(activity, dataBinding, observer);
         }
 
-        public CategoryTemplateViewHolder(ViewDataBinding dataBinding) {
-            super(dataBinding.getRoot());
-            mDataBinding = dataBinding;
-
-            mItemViewModel = new CategoryTemplateItemViewModel();
-            mItemViewModel.setObserver(TemplatesFragment.this);
-            mDataBinding.setVariable(BR.viewModel, mItemViewModel);
-
-            mDataBinding.getRoot().setTag(mItemViewModel);
-        }
-
-        public void bind(CategoryTemplateItem item) {
-            mItemViewModel.setItem(item);
-            if (mItemViewModel.hasContextMenu()) {
-                registerForContextMenu(mDataBinding.getRoot());
-                if (mOnItemLongClickListener != null) {
-                    mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
-                }
-            } else {
-                unregisterForContextMenu(mDataBinding.getRoot());
-                mDataBinding.getRoot().setOnLongClickListener(null);
-            }
-
-            mDataBinding.executePendingBindings();
+        @Override
+        protected CategoryTemplateItemViewModel getViewModelInstance() {
+            return new CategoryTemplateItemViewModel();
         }
     }
 
-    private class CategoryTemplateAdapter extends PagedListAdapter<CategoryTemplateItem, CategoryTemplateViewHolder> {
+    private class CategoryTemplateAdapter extends BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateViewHolder> {
 
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;
 
-        private View.OnLongClickListener mOnItemLongClickListener;
-
-        protected CategoryTemplateAdapter() {
-            super(DIFF_CALLBACK);
+        protected CategoryTemplateAdapter(Activity activity) {
+            super(activity, DIFF_CALLBACK);
         }
 
         @Override
-        public CategoryTemplateViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            int layoutResID = (viewType == TYPE_TEMPLATE)
+        protected int getItemLayoutResID(int viewType) {
+            return (viewType == TYPE_TEMPLATE)
                     ? R.layout.item_recycler_list
                     : R.layout.item_category_template_list;
-
-            ViewDataBinding dataBinding =
-                    DataBindingUtil.inflate(getLayoutInflater(), layoutResID, parent, false);
-            return new CategoryTemplateViewHolder(dataBinding, mOnItemLongClickListener);
-        }
-
-        @Override
-        public void onBindViewHolder(CategoryTemplateViewHolder holder, int position) {
-            CategoryTemplateItem item = getItem(position);
-            holder.bind(item);
         }
 
         @Override
@@ -279,8 +245,9 @@ public class TemplatesFragment extends Fragment
                     ? TYPE_TEMPLATE : TYPE_CATEGORY;
         }
 
-        public void setOnItemLongClickListener(View.OnLongClickListener onItemLongClickListener) {
-            this.mOnItemLongClickListener = onItemLongClickListener;
+        @Override
+        protected CategoryTemplateViewHolder getViewHolderInstance(ViewDataBinding dataBinding) {
+            return new CategoryTemplateViewHolder(getActivity(), dataBinding, TemplatesFragment.this);
         }
     }
 

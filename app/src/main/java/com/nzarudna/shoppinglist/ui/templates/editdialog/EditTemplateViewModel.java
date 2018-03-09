@@ -8,7 +8,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
-import com.nzarudna.shoppinglist.ui.EditDialogViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 
 import java.util.List;
 import java.util.UUID;
