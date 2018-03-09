@@ -209,21 +209,8 @@ public class TemplatesFragment extends Fragment
         itemView.showContextMenu();
     }
 
-    private class CategoryTemplateViewHolder extends RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel> {
-
-        public CategoryTemplateViewHolder(Activity activity,
-                                          ViewDataBinding dataBinding,
-                                          @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItem> observer) {
-            super(activity, dataBinding, observer);
-        }
-
-        @Override
-        protected CategoryTemplateItemViewModel getViewModelInstance() {
-            return new CategoryTemplateItemViewModel();
-        }
-    }
-
-    private class CategoryTemplateAdapter extends BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateViewHolder> {
+    private class CategoryTemplateAdapter
+            extends BaseRecyclerAdapter<CategoryTemplateItem, RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>> {
 
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;

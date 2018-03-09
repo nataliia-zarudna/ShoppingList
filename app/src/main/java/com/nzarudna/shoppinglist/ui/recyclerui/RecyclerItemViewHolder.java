@@ -8,12 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.utils.GenericFactory;
 
 /**
  * Created by Nataliia on 09.03.2018.
  */
 
-public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel<T>> extends RecyclerView.ViewHolder {
+public class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel<T>> extends RecyclerView.ViewHolder {
 
     private Activity mActivity;
     private ViewDataBinding mDataBinding;
@@ -24,21 +25,30 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
                                   ViewDataBinding dataBinding,
                                   @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<T> observer) {
         super(dataBinding.getRoot());
-        mDataBinding = dataBinding;
-        mActivity = activity;
+        try {
 
-        mItemViewModel = getViewModelInstance();
-        mItemViewModel.setObserver(observer);
-        mDataBinding.setVariable(BR.viewModel, mItemViewModel);
+            mDataBinding = dataBinding;
+            mActivity = activity;
 
-        mDataBinding.getRoot().setTag(mItemViewModel);
+            mItemViewModel = new GenericFactory<VM>().newInstance();
+            mItemViewModel.setObserver(observer);
+            mDataBinding.setVariable(BR.viewModel, mItemViewModel);
+
+            mDataBinding.getRoot().setTag(mItemViewModel);
+
+        } catch (IllegalAccessException | InstantiationException e) {
+            //TODO: add error handler
+            e.printStackTrace();
+        }
+    }
+
+    public void setViewDataBinding(ViewDataBinding dataBinding) {
+
     }
 
     public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
         this.mOnItemLongClickListener = onLongClickListener;
     }
-
-    protected abstract VM getViewModelInstance();
 
     public void bind(T item) {
         mItemViewModel.setItem(item);

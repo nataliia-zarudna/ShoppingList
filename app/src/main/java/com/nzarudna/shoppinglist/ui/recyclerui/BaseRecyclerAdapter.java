@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.utils.GenericFactory;
 
 /**
  * Created by Nataliia on 09.03.2018.
@@ -37,7 +38,16 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerItemViewHolder> 
         return viewHolder;
     }
 
-    protected abstract VH getViewHolderInstance(ViewDataBinding dataBinding);
+    protected VH getViewHolderInstance(ViewDataBinding dataBinding) {
+        try {
+            VH viewHolder = new GenericFactory<VH>().newInstance();
+            viewHolder.setViewDataBinding(dataBinding);
+
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     @LayoutRes
     protected int getItemLayoutResID(int viewType) {
