@@ -23,11 +23,13 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.CategoryItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.UnitItemViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 
 import java.util.List;
 
@@ -35,7 +37,7 @@ import java.util.List;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class EditTemplateDialogFragment extends DialogFragment {
+public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<ProductTemplate, EditTemplateViewModel> {
 
     private static final String EXTRA_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
     private static final String ARG_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
@@ -70,35 +72,22 @@ public class EditTemplateDialogFragment extends DialogFragment {
         mViewModel.setItem(template);
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getContext())
-                .setTitle(mViewModel.getDialogTitle())
-                .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mViewModel.saveItem();
-                        sendResponse();
-                    }
-                })
-                .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dismiss();
-                    }
-                })
-                .setView(getCustomView())
-                .create();
+    protected EditTemplateViewModel getViewMode() {
+        EditTemplateViewModel viewModel = ViewModelProviders.of(this).get(EditTemplateViewModel.class);
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+        return viewModel;
     }
 
-    private View getCustomView() {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        ViewDataBinding dataBinding =
-                DataBindingUtil.inflate(inflater, R.layout.fragment_edit_template_dialog, null, false);
-        dataBinding.setVariable(BR.viewModel, mViewModel);
+    @Override
+    protected int getDialogFragmentResID() {
+        return R.layout.fragment_edit_template_dialog;
+    }
 
-        View fragmentView = dataBinding.getRoot();
+    @Override
+    protected View getCustomView() {
+
+        View fragmentView = super.getCustomView();
 
         configUnitSpinner(fragmentView);
         configCategorySpinner(fragmentView);
@@ -165,13 +154,6 @@ public class EditTemplateDialogFragment extends DialogFragment {
 
             }
         });
-    }
-
-    private void sendResponse() {
-        Fragment targetFragment = getTargetFragment();
-        if (targetFragment != null) {
-            targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
-        }
     }
 
     public static ProductTemplate getResultTemplate(Intent intent) {

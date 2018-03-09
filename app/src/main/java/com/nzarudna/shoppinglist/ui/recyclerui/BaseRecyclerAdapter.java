@@ -5,6 +5,7 @@ import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,11 @@ import com.nzarudna.shoppinglist.utils.GenericFactory;
  * Created by Nataliia on 09.03.2018.
  */
 
-public abstract class BaseRecyclerAdapter<T, VH extends RecyclerItemViewHolder> extends PagedListAdapter<T, VH> {
+public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel> extends PagedListAdapter<T, RecyclerItemViewHolder> {
 
     private Activity mActivity;
     private View.OnLongClickListener mOnItemLongClickListener;
+    private RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
 
     protected BaseRecyclerAdapter(Activity activity, DiffCallback<T> diffCallback) {
         super(diffCallback);
@@ -27,27 +29,28 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerItemViewHolder> 
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         int layoutResID = getItemLayoutResID(viewType);
         ViewDataBinding dataBinding =
                 DataBindingUtil.inflate(mActivity.getLayoutInflater(), layoutResID, parent, false);
-        VH viewHolder = getViewHolderInstance(dataBinding);
+        RecyclerItemViewHolder viewHolder = getViewHolderInstance(dataBinding);
         viewHolder.setOnLongClickListener(mOnItemLongClickListener);
 
         return viewHolder;
     }
 
-    protected VH getViewHolderInstance(ViewDataBinding dataBinding) {
-        try {
-            VH viewHolder = new GenericFactory<VH>().newInstance();
-            viewHolder.setViewDataBinding(dataBinding);
+    protected RecyclerItemViewHolder getViewHolderInstance(ViewDataBinding dataBinding) {
 
-        } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new RecyclerItemViewHolder(mActivity, dataBinding, mRecyclerItemViewModelObserver) {
+            @Override
+            protected RecyclerItemViewModel<IVM> getItemViewModel() {
+                return BaseRecyclerAdapter.this.getItemViewModel();
+            }
+        };
     }
+
+    protected abstract IVM getItemViewModel();
 
     @LayoutRes
     protected int getItemLayoutResID(int viewType) {
@@ -55,9 +58,13 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerItemViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(VH holder, int position) {
+    public void onBindViewHolder(RecyclerItemViewHolder holder, int position) {
         T item = getItem(position);
         holder.bind(item);
+    }
+
+    public void setRecyclerItemViewModelObserver(RecyclerItemViewModel.RecyclerItemViewModelObserver<T> observer) {
+        this.mRecyclerItemViewModelObserver = observer;
     }
 
     public void setOnItemLongClickListener(View.OnLongClickListener onItemLongClickListener) {

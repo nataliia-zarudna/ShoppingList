@@ -6,8 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,6 @@ import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.template.ChooseTemplateActivity;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
-import com.nzarudna.shoppinglist.ui.productlists.CopyListDialogFragment;
 
 import java.util.UUID;
 
@@ -114,7 +111,7 @@ public class EditProductListFragment extends ProductListFragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getActivity(), R.string.save_product_success_msg, Toast.LENGTH_SHORT)
+                                        Toast.makeText(getActivity(), R.string.save_item_success_msg, Toast.LENGTH_SHORT)
                                                 .show();
                                     }
                                 });

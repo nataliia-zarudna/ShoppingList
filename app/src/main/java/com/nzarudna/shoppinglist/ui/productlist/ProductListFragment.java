@@ -34,7 +34,6 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
-import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
@@ -333,7 +332,7 @@ public abstract class ProductListFragment extends Fragment implements Observer<P
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getActivity(), R.string.save_product_success_msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.save_item_success_msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
