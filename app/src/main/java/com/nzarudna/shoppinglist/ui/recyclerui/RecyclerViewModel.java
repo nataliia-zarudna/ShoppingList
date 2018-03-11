@@ -3,7 +3,6 @@ package com.nzarudna.shoppinglist.ui.recyclerui;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.PagedList;
 
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import java.util.LinkedList;

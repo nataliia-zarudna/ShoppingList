@@ -15,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -26,8 +25,6 @@ import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
-import com.nzarudna.shoppinglist.ui.categories.EditCategoryViewModel;
 
 /**
  * Created by nsirobaba on 3/9/18.
@@ -35,7 +32,7 @@ import com.nzarudna.shoppinglist.ui.categories.EditCategoryViewModel;
 
 public abstract class BaseRecyclerViewFragment
         <T extends Parcelable, VM extends RecyclerViewModel,
-                IVM extends RecyclerItemViewModel, EVM extends EditDialogViewModel<T>>
+                IVM extends RecyclerItemViewModel<T>, EVM extends EditDialogViewModel<T>>
         extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
         RecyclerViewModel.RecyclerViewModelObserver {
@@ -69,7 +66,7 @@ public abstract class BaseRecyclerViewFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewDataBinding dataBinding =
-                DataBindingUtil.inflate(inflater, R.layout.fragment_recycler_view_with_fab, container, false);
+                DataBindingUtil.inflate(inflater, getLayoutResID(), container, false);
         dataBinding.setVariable(BR.viewModel, mViewModel);
 
         View fragmentView = dataBinding.getRoot();
@@ -77,13 +74,7 @@ public abstract class BaseRecyclerViewFragment
         mRecyclerView = fragmentView.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new BaseRecyclerAdapter<T, IVM>(this, getDiffCallback()) {
-            @Override
-            protected IVM getItemViewModel() {
-                return getListItemViewModel();
-            }
-        };
-        mAdapter.setRecyclerItemViewModelObserver(this);
+        mAdapter = getRecyclerViewAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
         mViewModel.getItems(DEFAULT_PAGE_SIZE)
@@ -95,6 +86,21 @@ public abstract class BaseRecyclerViewFragment
                 });
 
         return fragmentView;
+    }
+
+    protected int getLayoutResID() {
+        return R.layout.fragment_recycler_view_with_fab;
+    }
+
+    protected BaseRecyclerAdapter<T, IVM> getRecyclerViewAdapter() {
+        BaseRecyclerAdapter<T, IVM> adapter = new BaseRecyclerAdapter<T, IVM>(this, getDiffCallback()) {
+            @Override
+            protected IVM getItemViewModel() {
+                return getListItemViewModel();
+            }
+        };
+        adapter.setRecyclerItemViewModelObserver(this);
+        return adapter;
     }
 
     @MenuRes
@@ -170,7 +176,6 @@ public abstract class BaseRecyclerViewFragment
     @Override
     public void showItemContextMenu(T item, int position) {
         View itemView = mRecyclerView.getChildAt(position);
-        Log.d("DEBBUG", "itemView " + itemView);
         itemView.showContextMenu();
     }
 }

@@ -55,7 +55,6 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
     public abstract void removeItem();
 
     public interface RecyclerItemViewModelObserver<T> {
-        void openCreateNewItemDialog();
 
         void openEditItemDialog(T item);
 

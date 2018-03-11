@@ -6,7 +6,6 @@ import android.support.v7.recyclerview.extensions.DiffCallback;
 
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 
 /**

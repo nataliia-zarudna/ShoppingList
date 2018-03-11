@@ -29,7 +29,7 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     private static final String EXTRA_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
     private static final String ARG_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
 
-    private VM mViewModel;
+    protected VM mViewModel;
 
     public static BaseEditItemDialogFragment newInstance() {
         return new BaseEditItemDialogFragment();
@@ -40,10 +40,6 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
         args.putParcelable(ARG_ITEM, template);
 
         this.setArguments(args);
-    }
-
-    public static Parcelable getResultItem(Intent intent) {
-        return intent.getParcelableExtra(EXTRA_ITEM);
     }
 
     @Override

@@ -121,12 +121,12 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
         };
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View fragmentView = super.onCreateView(inflater, container, savedInstanceState);
+    protected BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateItemViewModel> getRecyclerViewAdapter() {
+        CategoryTemplateAdapter adapter = new CategoryTemplateAdapter(this, getDiffCallback());
+        adapter.setRecyclerItemViewModelObserver(this);
 
-        mAdapter.setOnItemLongClickListener(new View.OnLongClickListener() {
+        adapter.setOnItemLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if (mActionMode == null) {
@@ -148,8 +148,7 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
                 return true;
             }
         });
-
-        return fragmentView;
+        return adapter;
     }
 
     @Override
@@ -169,18 +168,19 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
     }
 
     private class CategoryTemplateAdapter
-            extends BaseRecyclerAdapter<CategoryTemplateItem, RecyclerItemViewModel> {
+            extends BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateItemViewModel> {
 
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;
 
-        protected CategoryTemplateAdapter(Fragment activity, DiffCallback<CategoryTemplateItem> diffCallback) {
-            super(activity, diffCallback);
+        protected CategoryTemplateAdapter(Fragment fragment, DiffCallback<CategoryTemplateItem> diffCallback) {
+            super(fragment, diffCallback);
         }
 
         @Override
         protected RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel> getViewHolderInstance(ViewDataBinding dataBinding) {
-            return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>(TemplatesFragment.this, dataBinding, null) {
+            return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>
+                    (TemplatesFragment.this, dataBinding, null) {
                 @Override
                 protected CategoryTemplateItemViewModel getItemViewModel() {
                     return new CategoryTemplateItemViewModel();
@@ -189,7 +189,7 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
         }
 
         @Override
-        protected RecyclerItemViewModel getItemViewModel() {
+        protected CategoryTemplateItemViewModel getItemViewModel() {
             return TemplatesFragment.this.getListItemViewModel();
         }
 

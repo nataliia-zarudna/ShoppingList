@@ -1,29 +1,16 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -42,7 +29,7 @@ public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<Categ
 
     private static final String EXTRA_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
     private static final String ARG_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
-    private EditTemplateViewModel mViewModel;
+
     private ViewModelArrayAdapter<Unit> mUnitAdapter;
     private ViewModelArrayAdapter<Category> mCategoryAdapter;
 
@@ -58,24 +45,6 @@ public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<Categ
         instance.setArguments(args);
         return instance;
     }
-
-    public static ProductTemplate getResultTemplate(Intent intent) {
-        return intent.getParcelableExtra(EXTRA_PRODUCT_TEMPLATE);
-    }
-
-    /*@Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mViewModel = ViewModelProviders.of(this).get(EditTemplateViewModel.class);
-        ShoppingListApplication.getAppComponent().inject(mViewModel);
-
-        ProductTemplate template = null;
-        if (getArguments() != null) {
-            template = getArguments().getParcelable(ARG_PRODUCT_TEMPLATE);
-        }
-        mViewModel.setItem(template);
-    }*/
 
     @Override
     protected EditTemplateViewModel getViewModel() {

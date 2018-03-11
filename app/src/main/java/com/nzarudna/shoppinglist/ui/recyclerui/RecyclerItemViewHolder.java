@@ -4,7 +4,6 @@ import android.databinding.ViewDataBinding;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.nzarudna.shoppinglist.BR;
@@ -16,6 +15,7 @@ import com.nzarudna.shoppinglist.BR;
 public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel<T>> extends RecyclerView.ViewHolder {
 
     private static final String TAG = "RecyclerItemViewHolder";
+
     private Fragment mFragment;
     private ViewDataBinding mDataBinding;
     private VM mItemViewModel;
@@ -33,9 +33,6 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
         mDataBinding.setVariable(BR.viewModel, mItemViewModel);
 
         mDataBinding.getRoot().setTag(mItemViewModel);
-
-        Log.d(TAG, "Create " + toString());
-        Log.d(TAG, "Create mItemViewModel " + mItemViewModel.toString());
     }
 
     protected abstract VM getItemViewModel();
@@ -45,10 +42,6 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
     }
 
     public void bind(T item, int position) {
-        Log.d(TAG, "-----" + toString());
-        Log.d(TAG, "Bind item " + item.toString());
-        Log.d(TAG, "Bind mDataBinding " + mDataBinding.toString());
-        Log.d(TAG, "Bind mItemViewModel " + mItemViewModel.toString());
 
         mItemViewModel.setItem(item);
         mItemViewModel.setPosition(position);
