@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="2dp"
-        android:onClick="@{() -> viewModel.onListClick()}">
+        android:onClick="@{() -> viewModel.onItemClick()}">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/product_layout"
@@ -25,7 +25,7 @@
                 android:id="@+id/list_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.listName}"
+                android:text="@{viewModel.itemName}"
                 tool:text="Shopping list 1" />
 
             <TextView
@@ -40,7 +40,7 @@
                 android:id="@+id/btn_product_list_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="@{() -> viewModel.onMenuIconClick()}"
+                android:onClick="@{() -> viewModel.onMenuItemClick()}"
                 android:src="@drawable/ic_more_vert_black_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

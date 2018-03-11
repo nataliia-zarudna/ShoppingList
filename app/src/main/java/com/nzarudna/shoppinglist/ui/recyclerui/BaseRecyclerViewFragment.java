@@ -8,9 +8,11 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,12 +40,13 @@ public abstract class BaseRecyclerViewFragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
         RecyclerViewModel.RecyclerViewModelObserver {
 
-    private static final int DEFAULT_PAGE_SIZE = 20;
+    protected static final int DEFAULT_PAGE_SIZE = 20;
     private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
+
     protected VM mViewModel;
     protected RecyclerView mRecyclerView;
     protected BaseRecyclerAdapter<T, IVM> mAdapter;
-    protected RecyclerItemViewModel<T> mItemModelView;
+    private IVM mItemModelView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +78,7 @@ public abstract class BaseRecyclerViewFragment
         mRecyclerView = getRecyclerView(fragmentView);
 
         mAdapter = getRecyclerViewAdapter();
+        mAdapter.setItemLayoutResID(getItemLayoutResID());
         mRecyclerView.setAdapter(mAdapter);
 
         mViewModel.getItems(DEFAULT_PAGE_SIZE)
@@ -88,8 +92,14 @@ public abstract class BaseRecyclerViewFragment
         return fragmentView;
     }
 
+    @LayoutRes
     protected int getLayoutResID() {
         return R.layout.fragment_recycler_view_with_fab;
+    }
+
+    @LayoutRes
+    protected int getItemLayoutResID() {
+        return R.layout.item_recycler_list;
     }
 
     protected RecyclerView getRecyclerView(View fragmentView) {
@@ -120,6 +130,34 @@ public abstract class BaseRecyclerViewFragment
         return mRecyclerView;
     }
 
+    private void removeItem(final IVM itemViewModel, final int position) {
+
+        //final ProductListWithStatistics listToRemove = itemViewModel.getProductList();
+//        mProductLists.remove(position);
+        //Log.d(TAG, "list to remove " + itemViewModel.getProductList().getName());
+
+        /*mAdapter.notifyItemRemoved(position);
+
+        Snackbar.make(getView(), R.string.message_remove_list, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo_removal, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mAdapter.notifyItemInserted(position);
+                    }
+                })
+                .addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        super.onDismissed(transientBottomBar, event);
+
+                        if (event != DISMISS_EVENT_ACTION) {
+                            Log.d(TAG, "removed list " + itemViewModel.getProductList().getName());
+                            itemViewModel.onSwipeProductListItem();
+                        }
+                    }
+                }).show();*/
+    }
+
     protected BaseRecyclerAdapter<T, IVM> getRecyclerViewAdapter() {
         BaseRecyclerAdapter<T, IVM> adapter = new BaseRecyclerAdapter<T, IVM>(this, getDiffCallback()) {
             @Override
@@ -139,7 +177,7 @@ public abstract class BaseRecyclerViewFragment
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        mItemModelView = (RecyclerItemViewModel<T>) v.getTag();
+        mItemModelView = (IVM) v.getTag();
 
         MenuInflater menuInflater = new MenuInflater(getContext());
         menuInflater.inflate(getItemContextMenuResID(), menu);
@@ -156,6 +194,10 @@ public abstract class BaseRecyclerViewFragment
                 return true;
         }
         return super.onContextItemSelected(item);
+    }
+
+    protected IVM getCurrentItemViewModel() {
+        return mItemModelView;
     }
 
     @Override

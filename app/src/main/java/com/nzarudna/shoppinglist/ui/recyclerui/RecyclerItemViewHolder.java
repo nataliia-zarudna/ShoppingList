@@ -20,6 +20,7 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
     private ViewDataBinding mDataBinding;
     private VM mItemViewModel;
     private View.OnLongClickListener mOnItemLongClickListener;
+    private View.OnClickListener mOnItemClickListener;
 
     public RecyclerItemViewHolder(Fragment fragment,
                                   ViewDataBinding dataBinding,
@@ -41,6 +42,10 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
         this.mOnItemLongClickListener = onLongClickListener;
     }
 
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.mOnItemClickListener = onClickListener;
+    }
+
     public void bind(T item, int position) {
 
         mItemViewModel.setItem(item);
@@ -50,6 +55,9 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
             mFragment.registerForContextMenu(mDataBinding.getRoot());
 
             if (mOnItemLongClickListener != null) {
+                mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
+            }
+            if (mOnItemClickListener != null) {
                 mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
             }
         } else {

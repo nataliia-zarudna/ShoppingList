@@ -20,12 +20,16 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
     private static final String TAG = "BaseRecyclerAdapter";
 
     private Fragment mFragment;
-    private View.OnLongClickListener mOnItemLongClickListener;
+    private int mItemLayoutResID;
     private RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
+    private View.OnLongClickListener mOnItemLongClickListener;
+    private View.OnClickListener mOnItemClickListener;
 
     protected BaseRecyclerAdapter(Fragment fragment, DiffCallback<T> diffCallback) {
         super(diffCallback);
         mFragment = fragment;
+
+        mItemLayoutResID = R.layout.item_recycler_list;
     }
 
     @Override
@@ -54,7 +58,11 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
 
     @LayoutRes
     protected int getItemLayoutResID(int viewType) {
-        return R.layout.item_recycler_list;
+        return mItemLayoutResID;
+    }
+
+    public void setItemLayoutResID(@LayoutRes int itemLayoutResID) {
+        this.mItemLayoutResID = itemLayoutResID;
     }
 
     @Override
@@ -69,5 +77,9 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
 
     public void setOnItemLongClickListener(View.OnLongClickListener onItemLongClickListener) {
         this.mOnItemLongClickListener = onItemLongClickListener;
+    }
+
+    public void setOnItemClickListener(View.OnClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
     }
 }

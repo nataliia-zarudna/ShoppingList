@@ -24,10 +24,10 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
     ProductListRepository mProductListRepository;
 
 
-    private ProductListItemViewModelObserver mObserver;
+    private ProductListItemViewModelObserver mProductListItemViewModelObserver;
 
-    public void setObserver(ProductListItemViewModelObserver observer) {
-        this.mObserver = observer;
+    public void setProductListItemViewModelObserver(ProductListItemViewModelObserver observer) {
+        this.mProductListItemViewModelObserver = observer;
     }
 
     @Override
@@ -42,9 +42,10 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
         return mItem.getBoughtProductsCount() + "/" + allProductsCount;
     }
 
-    public void onListClick() {
-        if (mObserver != null) {
-            mObserver.startProductListActivity(mItem.getListID());
+    @Override
+    public void onItemClick() {
+        if (mProductListItemViewModelObserver != null) {
+            mProductListItemViewModelObserver.startProductListActivity(mItem.getListID());
         }
     }
 
