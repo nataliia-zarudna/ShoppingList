@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 
 public class TemplatesFragment extends BaseRecyclerViewFragment
-        <CategoryTemplateItem, TemplatesViewModel, CategoryTemplateItemViewModel, EditTemplateViewModel>
+        <CategoryTemplateItem, TemplatesViewModel, CategoryTemplateItemViewModel>
         implements TemplatesViewModel.TemplatesViewModelObserver {
 
     private ActionMode mActionMode;

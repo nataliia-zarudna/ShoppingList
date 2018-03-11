@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -32,7 +33,7 @@ import com.nzarudna.shoppinglist.R;
 
 public abstract class BaseRecyclerViewFragment
         <T extends Parcelable, VM extends RecyclerViewModel,
-                IVM extends RecyclerItemViewModel<T>, EVM extends EditDialogViewModel<T>>
+                IVM extends RecyclerItemViewModel<T>/*, EVM extends EditDialogViewModel<T>*/>
         extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
         RecyclerViewModel.RecyclerViewModelObserver {
@@ -58,7 +59,7 @@ public abstract class BaseRecyclerViewFragment
 
     protected abstract IVM getListItemViewModel();
 
-    protected abstract EVM getEditDialogViewModel();
+    protected abstract EditDialogViewModel<T> getEditDialogViewModel();
 
     protected abstract DiffCallback<T> getDiffCallback();
 
@@ -71,8 +72,7 @@ public abstract class BaseRecyclerViewFragment
 
         View fragmentView = dataBinding.getRoot();
 
-        mRecyclerView = fragmentView.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView = getRecyclerView(fragmentView);
 
         mAdapter = getRecyclerViewAdapter();
         mRecyclerView.setAdapter(mAdapter);
@@ -90,6 +90,34 @@ public abstract class BaseRecyclerViewFragment
 
     protected int getLayoutResID() {
         return R.layout.fragment_recycler_view_with_fab;
+    }
+
+    protected RecyclerView getRecyclerView(View fragmentView) {
+
+        RecyclerView mRecyclerView = fragmentView.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                //Log.d(TAG, "onSwiped direction " + direction);
+
+                //ProductListItemViewModel itemViewModel = ((ProductListsFragmentOld.ProductListViewHolder) viewHolder).mBinding.getViewModel();
+                //removeListItem(itemViewModel, viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(mRecyclerView);
+
+        return mRecyclerView;
     }
 
     protected BaseRecyclerAdapter<T, IVM> getRecyclerViewAdapter() {
@@ -144,20 +172,20 @@ public abstract class BaseRecyclerViewFragment
         showEditDialog(editDialog);
     }
 
-    protected BaseEditItemDialogFragment<T, EVM> getEditItemDialogFragment() {
-        BaseEditItemDialogFragment<T, EVM> editDialog = BaseEditItemDialogFragment.newInstance();
-        EVM editDialogViewModel = getEditDialogViewModel();
+    protected BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> getEditItemDialogFragment() {
+        BaseEditItemDialogFragment<T, EditDialogViewModel<T>> editDialog = BaseEditItemDialogFragment.newInstance();
+        EditDialogViewModel<T> editDialogViewModel = getEditDialogViewModel();
         editDialog.setViewModel(editDialogViewModel);
         return editDialog;
     }
 
-    protected BaseEditItemDialogFragment<T, EVM> getEditItemDialogFragment(T item) {
-        BaseEditItemDialogFragment<T, EVM> editDialog = getEditItemDialogFragment();
+    protected BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> getEditItemDialogFragment(T item) {
+        BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> editDialog = getEditItemDialogFragment();
         editDialog.setArguments(item);
         return editDialog;
     }
 
-    private void showEditDialog(BaseEditItemDialogFragment<T, EVM> dialog) {
+    private void showEditDialog(BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> dialog) {
         dialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
         dialog.show(getFragmentManager(), "EditTemplateDialogFragment");
     }

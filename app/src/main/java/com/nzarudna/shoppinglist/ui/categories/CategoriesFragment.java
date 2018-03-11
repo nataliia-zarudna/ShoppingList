@@ -12,7 +12,7 @@ import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
  * Created by Nataliia on 09.03.2018.
  */
 
-public class CategoriesFragment extends BaseRecyclerViewFragment<Category, CategoriesViewModel, CategoryItemViewModel, EditCategoryViewModel> {
+public class CategoriesFragment extends BaseRecyclerViewFragment<Category, CategoriesViewModel, CategoryItemViewModel> {
 
     public static CategoriesFragment newInstance() {
         return new CategoriesFragment();

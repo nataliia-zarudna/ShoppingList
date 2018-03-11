@@ -12,6 +12,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,8 @@ import javax.inject.Inject;
  * Created by Nataliia on 19.01.2018.
  */
 
-public class ProductListsViewModel extends ViewModel implements ProductListRepository.OnProductListCreateListener {
+public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStatistics>
+        implements ProductListRepository.OnProductListCreateListener {
 
     @Inject
     ProductListRepository mProductListRepository;
@@ -32,25 +34,32 @@ public class ProductListsViewModel extends ViewModel implements ProductListRepos
 
     private ProductListViewModelObserver mObserver;
 
+    @ProductListRepository.ProductListSorting
+    private int mSorting;
+
     public void setObserver(ProductListViewModelObserver observer) {
         this.mObserver = observer;
     }
 
-    public LiveData<PagedList<ProductListWithStatistics>> getList
-            (@ProductListRepository.ProductListSorting int sorting, int pageSize) {
+    public void setSorting(int sorting) {
+        this.mSorting = sorting;
+    }
 
-        if (sorting == 0) {
-            sorting = mSharedPreferences.getInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING,
+    @Override
+    public LiveData<PagedList<ProductListWithStatistics>> getItems(int pageSize) {
+
+        if (mSorting == 0) {
+            mSorting = mSharedPreferences.getInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING,
                     ProductListRepository.SORT_LISTS_BY_NAME);
         } else {
             mSharedPreferences.edit()
-                    .putInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING, sorting)
+                    .putInt(SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_SORTING, mSorting)
                     .apply();
         }
 
         try {
             DataSource.Factory<Integer, ProductListWithStatistics> listFactory
-                    = mProductListRepository.getLists(ProductList.STATUS_ACTIVE, sorting);
+                    = mProductListRepository.getLists(ProductList.STATUS_ACTIVE, mSorting);
 
             return new LivePagedListBuilder<>(listFactory, pageSize).build();
 

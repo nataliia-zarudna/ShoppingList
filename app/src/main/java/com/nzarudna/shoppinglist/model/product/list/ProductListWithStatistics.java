@@ -1,6 +1,8 @@
 package com.nzarudna.shoppinglist.model.product.list;
 
 import android.arch.persistence.room.ColumnInfo;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.UUID;
 
@@ -9,7 +11,7 @@ import java.util.UUID;
  * of bought/all products count
  */
 
-public class ProductListWithStatistics {
+public class ProductListWithStatistics implements Parcelable {
 
     @ColumnInfo(name = "list_id")
     private UUID listID;
@@ -32,6 +34,26 @@ public class ProductListWithStatistics {
         this.absentProductsCount = absentProductsCount;
         this.boughtProductsCount = boughtProductsCount;
     }
+
+    protected ProductListWithStatistics(Parcel in) {
+        listID = (UUID) in.readSerializable();
+        name = in.readString();
+        toBuyProductsCount = in.readInt();
+        absentProductsCount = in.readInt();
+        boughtProductsCount = in.readInt();
+    }
+
+    public static final Creator<ProductListWithStatistics> CREATOR = new Creator<ProductListWithStatistics>() {
+        @Override
+        public ProductListWithStatistics createFromParcel(Parcel in) {
+            return new ProductListWithStatistics(in);
+        }
+
+        @Override
+        public ProductListWithStatistics[] newArray(int size) {
+            return new ProductListWithStatistics[size];
+        }
+    };
 
     public UUID getListID() {
         return listID;
@@ -106,5 +128,19 @@ public class ProductListWithStatistics {
                 ", absentProductsCount=" + absentProductsCount +
                 ", boughtProductsCount=" + boughtProductsCount +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeSerializable(listID);
+        parcel.writeString(name);
+        parcel.writeInt(toBuyProductsCount);
+        parcel.writeInt(absentProductsCount);
+        parcel.writeInt(boughtProductsCount);
     }
 }

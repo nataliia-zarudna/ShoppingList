@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
@@ -35,7 +37,7 @@ import java.util.UUID;
                         onDelete = ForeignKey.SET_NULL)
         },
         indices = {@Index(value = "status")})
-public class ProductList {
+public class ProductList implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_ACTIVE, STATUS_ARCHIVED})
@@ -93,6 +95,31 @@ public class ProductList {
         this.createdAt = new Date();
         this.setStatus(STATUS_ACTIVE);
     }
+
+    protected ProductList(Parcel in) {
+        listID = (UUID) in.readSerializable();
+        name = in.readString();
+        createdAt = new Date(in.readLong());
+        createdBy = (UUID) in.readSerializable();
+        modifiedAt = new Date(in.readLong());
+        modifiedBy = (UUID) in.readSerializable();
+        status = in.readInt();
+        sorting = in.readInt();
+        isGroupedView = in.readByte() != 0;
+        assignedID = (UUID) in.readSerializable();
+    }
+
+    public static final Creator<ProductList> CREATOR = new Creator<ProductList>() {
+        @Override
+        public ProductList createFromParcel(Parcel in) {
+            return new ProductList(in);
+        }
+
+        @Override
+        public ProductList[] newArray(int size) {
+            return new ProductList[size];
+        }
+    };
 
     @NonNull
     public UUID getListID() {
@@ -229,5 +256,24 @@ public class ProductList {
                 ", isGroupedView=" + isGroupedView +
                 ", assignedID=" + assignedID +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeSerializable(listID);
+        parcel.writeString(name);
+        parcel.writeLong(createdAt.getTime());
+        parcel.writeSerializable(createdBy);
+        parcel.writeLong(modifiedAt.getTime());
+        parcel.writeSerializable(modifiedBy);
+        parcel.writeInt(status);
+        parcel.writeInt(sorting);
+        parcel.writeByte((byte) (isGroupedView ? 1 : 0));
+        parcel.writeSerializable(assignedID);
     }
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 
 import java.util.UUID;
 
@@ -15,93 +16,59 @@ import javax.inject.Inject;
  * View Model for item of product lists
  */
 
-public class ProductListItemViewModel extends BaseObservable {
+public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListWithStatistics> {
 
     private static final String TAG = "ProductListItemVM";
 
     @Inject
     ProductListRepository mProductListRepository;
 
-    @Bindable
-    private ProductListWithStatistics mProductList;
 
     private ProductListItemViewModelObserver mObserver;
-    private int mCurrentPosition;
 
     public void setObserver(ProductListItemViewModelObserver observer) {
         this.mObserver = observer;
     }
 
-    public void setCurrentPosition(int currentPosition) {
-        this.mCurrentPosition = currentPosition;
-    }
-
-    public int getCurrentPosition() {
-        return this.mCurrentPosition;
-    }
-
-    public String getListName() {
-        Log.d(TAG, "getListName => " + (mProductList != null ? mProductList.getName() : ""));
-
-        return mProductList != null ? mProductList.getName() : "";
+    @Override
+    public String getItemName() {
+        return mItem.getName();
     }
 
     public String getBoughtToAllText() {
-        int allProductsCount = mProductList.getToBuyProductsCount() +
-                mProductList.getAbsentProductsCount() +
-                mProductList.getBoughtProductsCount();
-        return mProductList.getBoughtProductsCount() + "/" + allProductsCount;
-    }
-
-    public void setProductList(ProductListWithStatistics productList) {
-        Log.d(TAG, "setProductList => " + (productList != null ? productList.getName() : ""));
-
-        this.mProductList = productList;
-        notifyChange();
-    }
-
-    public ProductListWithStatistics getProductList() {
-        return mProductList;
+        int allProductsCount = mItem.getToBuyProductsCount() +
+                mItem.getAbsentProductsCount() +
+                mItem.getBoughtProductsCount();
+        return mItem.getBoughtProductsCount() + "/" + allProductsCount;
     }
 
     public void onListClick() {
-        Log.d(TAG, "Click on list " + mProductList.getName());
-
         if (mObserver != null) {
-            mObserver.startProductListActivity(mProductList.getListID());
+            mObserver.startProductListActivity(mItem.getListID());
         }
     }
 
-    public void onSwipeProductListItem() {
-        mProductListRepository.archiveList(mProductList.getListID());
+    @Override
+    public void removeItem() {
+
     }
 
+    /*public void onSwipeProductListItem() {
+        mProductListRepository.archiveList(mItem.getListID());
+    }*/
+
     public void onDeleteMenuItemSelected() {
-        mProductListRepository.archiveList(mProductList.getListID());
+        mProductListRepository.archiveList(mItem.getListID());
     }
 
     public void onArchiveMenuItemSelected() {
-        mProductListRepository.removeList(mProductList.getListID());
-    }
-
-    public void onEditMenuItemSelected() {
-        if (mObserver != null) {
-            mObserver.startEditProductListActivity(mProductList.getListID());
-        }
-    }
-
-    public void onMenuIconClick() {
-        if (mObserver != null) {
-            mObserver.showContextMenu(this);
-        }
+        mProductListRepository.removeList(mItem.getListID());
     }
 
     public interface ProductListItemViewModelObserver {
 
         void startProductListActivity(UUID productsListID);
 
-        void startEditProductListActivity(UUID productsListID);
-
-        void showContextMenu(ProductListItemViewModel itemViewModel);
+        //void startEditProductListActivity(UUID productsListID);
     }
 }

@@ -16,8 +16,10 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/lists_recycle_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/show_create_list_menu"
