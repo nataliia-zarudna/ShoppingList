@@ -66,7 +66,7 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel> 
     @Override
     public void onBindViewHolder(RecyclerItemViewHolder holder, int position) {
         T item = getItem(position);
-        holder.bind(item);
+        holder.bind(item, position);
     }
 
     public void setRecyclerItemViewModelObserver(RecyclerItemViewModel.RecyclerItemViewModelObserver<T> observer) {

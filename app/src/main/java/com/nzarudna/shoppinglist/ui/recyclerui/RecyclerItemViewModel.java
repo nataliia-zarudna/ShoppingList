@@ -13,6 +13,10 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
     protected int mPosition;
     protected boolean mIsSelected;
 
+    public void setPosition(int position) {
+        this.mPosition = position;
+    }
+
     public void setObserver(RecyclerItemViewModelObserver<T> observer) {
         this.mObserver = observer;
     }

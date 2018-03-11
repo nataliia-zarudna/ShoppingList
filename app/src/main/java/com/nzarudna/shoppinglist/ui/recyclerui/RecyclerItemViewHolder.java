@@ -44,17 +44,17 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
         this.mOnItemLongClickListener = onLongClickListener;
     }
 
-    public void bind(T item) {
+    public void bind(T item, int position) {
         Log.d(TAG, "-----" + toString());
         Log.d(TAG, "Bind item " + item.toString());
         Log.d(TAG, "Bind mDataBinding " + mDataBinding.toString());
         Log.d(TAG, "Bind mItemViewModel " + mItemViewModel.toString());
 
         mItemViewModel.setItem(item);
+        mItemViewModel.setPosition(position);
+
         if (mItemViewModel.hasContextMenu()) {
             mFragment.registerForContextMenu(mDataBinding.getRoot());
-
-            Log.d("DEBBUG", "registerForContextMenu " + mDataBinding.getRoot());
 
             if (mOnItemLongClickListener != null) {
                 mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
