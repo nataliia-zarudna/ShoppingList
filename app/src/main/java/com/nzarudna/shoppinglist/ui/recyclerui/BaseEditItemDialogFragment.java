@@ -2,14 +2,12 @@ package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,36 +16,41 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
-import com.nzarudna.shoppinglist.model.unit.Unit;
-import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
-import com.nzarudna.shoppinglist.ui.productlist.editproduct.CategoryItemViewModel;
-import com.nzarudna.shoppinglist.ui.productlist.editproduct.UnitItemViewModel;
-import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
-
-import java.util.List;
 
 /**
  * Created by Nataliia on 06.03.2018.
  */
 
-public abstract class BaseEditItemDialogFragment<T, VM extends EditDialogViewModel<T>> extends DialogFragment {
+public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDialogViewModel<T>> extends DialogFragment {
 
+    private static final String EXTRA_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
     private static final String ARG_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
+
     private VM mViewModel;
+
+    public static BaseEditItemDialogFragment newInstance() {
+        return new BaseEditItemDialogFragment();
+    }
+
+    public void setArguments(T template) {
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_ITEM, template);
+
+        this.setArguments(args);
+    }
+
+    public static Parcelable getResultItem(Intent intent) {
+        return intent.getParcelableExtra(EXTRA_ITEM);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = getViewMode();
+        mViewModel = getViewModel();
 
         T item = null;
         if (getArguments() != null) {
@@ -56,7 +59,13 @@ public abstract class BaseEditItemDialogFragment<T, VM extends EditDialogViewMod
         mViewModel.setItem(item);
     }
 
-    protected abstract VM getViewMode();
+    public void setViewModel(VM viewModel) {
+        this.mViewModel = viewModel;
+    }
+
+    protected VM getViewModel() {
+        return mViewModel;
+    }
 
     @NonNull
     @Override
@@ -94,7 +103,7 @@ public abstract class BaseEditItemDialogFragment<T, VM extends EditDialogViewMod
         return dataBinding.getRoot();
     }
 
-    private void sendResponse() {
+    protected void sendResponse() {
         Fragment targetFragment = getTargetFragment();
         if (targetFragment != null) {
             targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());

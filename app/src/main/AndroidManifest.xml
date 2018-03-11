@@ -25,6 +25,8 @@
             android:label="@string/choose_template_activity_name"/>
         <activity android:name=".ui.templates.TemplatesActivity"
             android:label="@string/templates_activity_label"/>
+        <activity android:name=".ui.categories.CategoriesActivity"
+            android:label="@string/categories_activity_label" />
     </application>
 
 </manifest>

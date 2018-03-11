@@ -38,15 +38,15 @@ public class TemplatesViewModel extends RecyclerViewModel<CategoryTemplateItem> 
     }
 
     @Override
-    public LiveData<PagedList<CategoryTemplateItem>> getItems() {
+    public LiveData<PagedList<CategoryTemplateItem>> getItems(int pageSize) {
         boolean isGroupedView = mSharedPreferences.getBoolean(SHARED_PREFERENCE_TEMPLATES_IS_GROUP_VIEW, false);
-        return getItems(isGroupedView);
+        return getItems(isGroupedView, pageSize);
     }
 
-    public LiveData<PagedList<CategoryTemplateItem>> getItems(boolean isGroupedView) {
+    public LiveData<PagedList<CategoryTemplateItem>> getItems(boolean isGroupedView, int pageSize) {
         DataSource.Factory<Integer, CategoryTemplateItem> factory =
                 mTemplateRepository.getTemplates(isGroupedView);
-        return new LivePagedListBuilder<>(factory, DEFAULT_PAGE_SIZE).build();
+        return new LivePagedListBuilder<>(factory, pageSize).build();
     }
 
     public void createProductList() {

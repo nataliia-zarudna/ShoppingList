@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -19,7 +20,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> {
+public class EditTemplateViewModel extends EditDialogViewModel<CategoryTemplateItem> {
 
     @Inject
     ProductTemplateRepository mTemplateRepository;
@@ -28,36 +29,40 @@ public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> 
     @Inject
     CategoryRepository mCategoryRepository;
 
+    private ProductTemplate mTemplate;
+
     @Override
-    protected ProductTemplate createNewItem() {
-        return new ProductTemplate("");
+    protected CategoryTemplateItem createItemObject() {
+        mTemplate = new ProductTemplate("");
+        return new CategoryTemplateItem(mTemplate);
     }
 
     @Override
     public String getName() {
-        return mItem.getName();
+        return mTemplate.getName();
     }
 
     @Override
     public void setName(String name) {
-        mItem.setName(name);
+        mTemplate.setName(name);
     }
 
     @Override
-    public void saveItem() {
-        if (mIsNew) {
-            mTemplateRepository.createTemplate(mItem);
-        } else {
-            mTemplateRepository.updateTemplate(mItem);
-        }
+    protected void updateItem() {
+        mTemplateRepository.updateTemplate(mTemplate);
+    }
+
+    @Override
+    protected void createItem() {
+        mTemplateRepository.createTemplate(mTemplate);
     }
 
     public UUID getCategoryID() {
-        return mItem.getCategoryID();
+        return mTemplate.getCategoryID();
     }
 
     public UUID getUnitID() {
-        return mItem.getUnitID();
+        return mTemplate.getUnitID();
     }
 
     public LiveData<List<Unit>> getUnits() {
@@ -66,7 +71,7 @@ public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> 
 
     public int getTemplateUnitIndex(List<Unit> units) {
         for (int i = 0; i < units.size(); i++) {
-            if (units.get(i).getUnitID().equals(mItem.getUnitID())) {
+            if (units.get(i).getUnitID().equals(mTemplate.getUnitID())) {
                 return i;
             }
         }
@@ -79,7 +84,7 @@ public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> 
 
     public int getTemplateCategoryIndex(List<Category> categories) {
         for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getCategoryID().equals(mItem.getCategoryID())) {
+            if (categories.get(i).getCategoryID().equals(mTemplate.getCategoryID())) {
                 return i;
             }
         }
@@ -87,10 +92,10 @@ public class EditTemplateViewModel extends EditDialogViewModel<ProductTemplate> 
     }
 
     public void setUnit(Unit selectedUnit) {
-        mItem.setUnitID(selectedUnit.getUnitID());
+        mTemplate.setUnitID(selectedUnit.getUnitID());
     }
 
     public void setCategory(Category selectedCategory) {
-        mItem.setCategoryID(selectedCategory.getCategoryID());
+        mTemplate.setCategoryID(selectedCategory.getCategoryID());
     }
 }

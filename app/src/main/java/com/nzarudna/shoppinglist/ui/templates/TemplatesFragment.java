@@ -7,6 +7,7 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.view.ActionMode;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
@@ -28,6 +30,7 @@ import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
 
 import java.util.UUID;
 
@@ -35,7 +38,8 @@ import java.util.UUID;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class TemplatesFragment extends BaseRecyclerViewFragment<CategoryTemplateItem, TemplatesViewModel, CategoryTemplateItemViewModel>
+public class TemplatesFragment extends BaseRecyclerViewFragment
+        <CategoryTemplateItem, TemplatesViewModel, CategoryTemplateItemViewModel, EditTemplateViewModel>
         implements TemplatesViewModel.TemplatesViewModelObserver {
 
     private ActionMode mActionMode;
@@ -85,6 +89,13 @@ public class TemplatesFragment extends BaseRecyclerViewFragment<CategoryTemplate
         ShoppingListApplication.getAppComponent().inject(itemViewModel);
 
         return itemViewModel;
+    }
+
+    @Override
+    protected EditTemplateViewModel getEditDialogViewModel() {
+        EditTemplateViewModel viewModel = new EditTemplateViewModel();
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+        return viewModel;
     }
 
     @Override
@@ -163,13 +174,13 @@ public class TemplatesFragment extends BaseRecyclerViewFragment<CategoryTemplate
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;
 
-        protected CategoryTemplateAdapter(Activity activity, DiffCallback<CategoryTemplateItem> diffCallback) {
+        protected CategoryTemplateAdapter(Fragment activity, DiffCallback<CategoryTemplateItem> diffCallback) {
             super(activity, diffCallback);
         }
 
         @Override
         protected RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel> getViewHolderInstance(ViewDataBinding dataBinding) {
-            return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>(getActivity(), dataBinding, null) {
+            return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>(TemplatesFragment.this, dataBinding, null) {
                 @Override
                 protected CategoryTemplateItemViewModel getItemViewModel() {
                     return new CategoryTemplateItemViewModel();

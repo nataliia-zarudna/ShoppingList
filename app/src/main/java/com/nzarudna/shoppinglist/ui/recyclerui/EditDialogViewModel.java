@@ -23,13 +23,13 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel {
         if (item != null) {
             this.mItem = item;
         } else {
-            this.mItem = createNewItem();
+            this.mItem = createItemObject();
             mIsNew = true;
         }
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
-    protected abstract T createNewItem();
+    protected abstract T createItemObject();
 
     public abstract String getName();
 
@@ -39,5 +39,15 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel {
         return !mIsNew ? getName() : mResourceResolver.getString(R.string.new_entity_dialog_title);
     }
 
-    public abstract void saveItem();
+    public void saveItem() {
+        if (mIsNew) {
+            createItem();
+        } else {
+            updateItem();
+        }
+    }
+
+    protected abstract void updateItem();
+
+    protected abstract void createItem();
 }

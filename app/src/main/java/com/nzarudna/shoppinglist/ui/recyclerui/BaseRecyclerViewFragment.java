@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -24,12 +26,17 @@ import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
+import com.nzarudna.shoppinglist.ui.categories.EditCategoryViewModel;
 
 /**
  * Created by nsirobaba on 3/9/18.
  */
 
-public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, IVM extends RecyclerItemViewModel/*, EVM extends EditDialogViewModel*/> extends Fragment
+public abstract class BaseRecyclerViewFragment
+        <T extends Parcelable, VM extends RecyclerViewModel,
+                IVM extends RecyclerItemViewModel, EVM extends EditDialogViewModel<T>>
+        extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
         RecyclerViewModel.RecyclerViewModelObserver {
 
@@ -54,7 +61,7 @@ public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, 
 
     protected abstract IVM getListItemViewModel();
 
-    //protected abstract EVM getEditDialogViewModel();
+    protected abstract EVM getEditDialogViewModel();
 
     protected abstract DiffCallback<T> getDiffCallback();
 
@@ -70,15 +77,16 @@ public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, 
         mRecyclerView = fragmentView.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new BaseRecyclerAdapter<T, IVM>(getActivity(), getDiffCallback()) {
+        mAdapter = new BaseRecyclerAdapter<T, IVM>(this, getDiffCallback()) {
             @Override
             protected IVM getItemViewModel() {
                 return getListItemViewModel();
             }
         };
+        mAdapter.setRecyclerItemViewModelObserver(this);
         mRecyclerView.setAdapter(mAdapter);
 
-        mViewModel.getItems()
+        mViewModel.getItems(DEFAULT_PAGE_SIZE)
                 .observe(this, new Observer<PagedList<T>>() {
                     @Override
                     public void onChanged(@Nullable PagedList<T> items) {
@@ -96,6 +104,7 @@ public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, 
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
         mItemModelView = (RecyclerItemViewModel<T>) v.getTag();
 
         MenuInflater menuInflater = new MenuInflater(getContext());
@@ -129,11 +138,20 @@ public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, 
         showEditDialog(editDialog);
     }
 
-    protected abstract BaseEditItemDialogFragment getEditItemDialogFragment();
+    protected BaseEditItemDialogFragment<T, EVM> getEditItemDialogFragment() {
+        BaseEditItemDialogFragment<T, EVM> editDialog = BaseEditItemDialogFragment.newInstance();
+        EVM editDialogViewModel = getEditDialogViewModel();
+        editDialog.setViewModel(editDialogViewModel);
+        return editDialog;
+    }
 
-    protected abstract BaseEditItemDialogFragment getEditItemDialogFragment(T item);
+    protected BaseEditItemDialogFragment<T, EVM> getEditItemDialogFragment(T item) {
+        BaseEditItemDialogFragment<T, EVM> editDialog = getEditItemDialogFragment();
+        editDialog.setArguments(item);
+        return editDialog;
+    }
 
-    private void showEditDialog(BaseEditItemDialogFragment dialog) {
+    private void showEditDialog(BaseEditItemDialogFragment<T, EVM> dialog) {
         dialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
         dialog.show(getFragmentManager(), "EditTemplateDialogFragment");
     }
@@ -152,6 +170,7 @@ public abstract class BaseRecyclerViewFragment<T, VM extends RecyclerViewModel, 
     @Override
     public void showItemContextMenu(T item, int position) {
         View itemView = mRecyclerView.getChildAt(position);
+        Log.d("DEBBUG", "itemView " + itemView);
         itemView.showContextMenu();
     }
 }

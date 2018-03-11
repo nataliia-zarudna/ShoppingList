@@ -24,6 +24,7 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
@@ -37,7 +38,7 @@ import java.util.List;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<ProductTemplate, EditTemplateViewModel> {
+public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<CategoryTemplateItem, EditTemplateViewModel> {
 
     private static final String EXTRA_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
     private static final String ARG_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
@@ -58,7 +59,11 @@ public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<Produ
         return instance;
     }
 
-    @Override
+    public static ProductTemplate getResultTemplate(Intent intent) {
+        return intent.getParcelableExtra(EXTRA_PRODUCT_TEMPLATE);
+    }
+
+    /*@Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -70,10 +75,10 @@ public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<Produ
             template = getArguments().getParcelable(ARG_PRODUCT_TEMPLATE);
         }
         mViewModel.setItem(template);
-    }
+    }*/
 
     @Override
-    protected EditTemplateViewModel getViewMode() {
+    protected EditTemplateViewModel getViewModel() {
         EditTemplateViewModel viewModel = ViewModelProviders.of(this).get(EditTemplateViewModel.class);
         ShoppingListApplication.getAppComponent().inject(viewModel);
         return viewModel;
@@ -154,9 +159,5 @@ public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<Produ
 
             }
         });
-    }
-
-    public static ProductTemplate getResultTemplate(Intent intent) {
-        return (ProductTemplate) intent.getParcelableExtra(EXTRA_PRODUCT_TEMPLATE);
     }
 }

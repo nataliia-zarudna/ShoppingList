@@ -56,7 +56,7 @@ public class CategoryTemplateItemWithListStatistics extends CategoryTemplateItem
     public String toString() {
         return "CategoryTemplateItemWithListStatistics{" +
                 "mIsUsedInList=" + mIsUsedInList +
-                ", type='" + type + '\'' +
+                ", type='" + mType + '\'' +
                 ", mCategory=" + mCategory +
                 ", mTemplate=" + mTemplate +
                 '}';

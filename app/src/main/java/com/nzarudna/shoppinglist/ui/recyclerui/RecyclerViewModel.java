@@ -15,8 +15,6 @@ import java.util.List;
 
 public abstract class RecyclerViewModel<T> extends ObservableViewModel {
 
-    protected static final int DEFAULT_PAGE_SIZE = 20;
-
     protected RecyclerViewModelObserver mObserver;
     protected List<T> mSelectedItems = new LinkedList<>();
 
@@ -24,7 +22,7 @@ public abstract class RecyclerViewModel<T> extends ObservableViewModel {
         this.mObserver = observer;
     }
 
-    public abstract LiveData<PagedList<T>> getItems();
+    public abstract LiveData<PagedList<T>> getItems(int pageSize);
 
     public void onItemSelected(T item) {
         if (!mSelectedItems.contains(item)) {

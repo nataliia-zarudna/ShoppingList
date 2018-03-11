@@ -1,17 +1,17 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
-import android.app.Activity;
 import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.utils.GenericFactory;
 
 /**
  * Created by Nataliia on 09.03.2018.
@@ -19,13 +19,15 @@ import com.nzarudna.shoppinglist.utils.GenericFactory;
 
 public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel> extends PagedListAdapter<T, RecyclerItemViewHolder> {
 
-    private Activity mActivity;
+    private static final String TAG = "BaseRecyclerAdapter";
+
+    private Fragment mFragment;
     private View.OnLongClickListener mOnItemLongClickListener;
     private RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
 
-    protected BaseRecyclerAdapter(Activity activity, DiffCallback<T> diffCallback) {
+    protected BaseRecyclerAdapter(Fragment fragment, DiffCallback<T> diffCallback) {
         super(diffCallback);
-        mActivity = activity;
+        mFragment = fragment;
     }
 
     @Override
@@ -33,7 +35,8 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel> 
 
         int layoutResID = getItemLayoutResID(viewType);
         ViewDataBinding dataBinding =
-                DataBindingUtil.inflate(mActivity.getLayoutInflater(), layoutResID, parent, false);
+                DataBindingUtil.inflate(mFragment.getLayoutInflater(), layoutResID, parent, false);
+
         RecyclerItemViewHolder viewHolder = getViewHolderInstance(dataBinding);
         viewHolder.setOnLongClickListener(mOnItemLongClickListener);
 
@@ -42,12 +45,15 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel> 
 
     protected RecyclerItemViewHolder getViewHolderInstance(ViewDataBinding dataBinding) {
 
-        return new RecyclerItemViewHolder(mActivity, dataBinding, mRecyclerItemViewModelObserver) {
+        RecyclerItemViewHolder viewHolder = new RecyclerItemViewHolder(mFragment, dataBinding, mRecyclerItemViewModelObserver) {
             @Override
             protected RecyclerItemViewModel<IVM> getItemViewModel() {
                 return BaseRecyclerAdapter.this.getItemViewModel();
             }
         };
+        Log.d(TAG, "Adapter view holder " + viewHolder.toString());
+
+        return viewHolder;
     }
 
     protected abstract IVM getItemViewModel();

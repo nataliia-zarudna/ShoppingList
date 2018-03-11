@@ -1,6 +1,9 @@
 package com.nzarudna.shoppinglist.model.template;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Embedded;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -12,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * Item in grouped by categories template list
  */
 
-public class CategoryTemplateItem {
+public class CategoryTemplateItem implements Parcelable {
 
     public static final String TYPE_CATEGORY = "category";
     public static final String TYPE_TEMPLATE = "template";
@@ -22,20 +25,9 @@ public class CategoryTemplateItem {
     @interface ItemType {
     }
 
-    public CategoryTemplateItem() {}
-
-    public CategoryTemplateItem(Category category) {
-        mCategory = category;
-        type = TYPE_CATEGORY;
-    }
-
-    public CategoryTemplateItem(ProductTemplate template) {
-        mTemplate = template;
-        type = TYPE_TEMPLATE;
-    }
-
     @ItemType
-    protected String type;
+    @ColumnInfo(name = "type")
+    protected String mType;
 
     @Embedded(prefix = "cat_")
     protected Category mCategory;
@@ -43,12 +35,43 @@ public class CategoryTemplateItem {
     @Embedded(prefix = "temp_")
     protected ProductTemplate mTemplate;
 
+    public CategoryTemplateItem() {
+    }
+
+    public CategoryTemplateItem(Category category) {
+        mCategory = category;
+        mType = TYPE_CATEGORY;
+    }
+
+    public CategoryTemplateItem(ProductTemplate template) {
+        mTemplate = template;
+        mType = TYPE_TEMPLATE;
+    }
+
+    public CategoryTemplateItem(Parcel parcel) {
+        mType = parcel.readString();
+        mCategory = parcel.readParcelable(Category.class.getClassLoader());
+        mTemplate = parcel.readParcelable(ProductTemplate.class.getClassLoader());
+    }
+
+    public static final Creator<CategoryTemplateItem> CREATOR = new Creator<CategoryTemplateItem>() {
+        @Override
+        public CategoryTemplateItem createFromParcel(Parcel parcel) {
+            return new CategoryTemplateItem(parcel);
+        }
+
+        @Override
+        public CategoryTemplateItem[] newArray(int i) {
+            return new CategoryTemplateItem[0];
+        }
+    };
+
     public String getType() {
-        return type;
+        return mType;
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.mType = type;
     }
 
     public Category getCategory() {
@@ -74,7 +97,7 @@ public class CategoryTemplateItem {
 
         CategoryTemplateItem that = (CategoryTemplateItem) o;
 
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
+        if (mType != null ? !mType.equals(that.mType) : that.mType != null) return false;
         if (mCategory != null ? !mCategory.equals(that.mCategory) : that.mCategory != null)
             return false;
         return mTemplate != null ? mTemplate.equals(that.mTemplate) : that.mTemplate == null;
@@ -82,7 +105,7 @@ public class CategoryTemplateItem {
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
+        int result = mType != null ? mType.hashCode() : 0;
         result = 31 * result + (mCategory != null ? mCategory.hashCode() : 0);
         result = 31 * result + (mTemplate != null ? mTemplate.hashCode() : 0);
         return result;
@@ -91,9 +114,21 @@ public class CategoryTemplateItem {
     @Override
     public String toString() {
         return "CategoryTemplateItem{" +
-                "type='" + type + '\'' +
+                "type='" + mType + '\'' +
                 ", mCategory=" + mCategory +
                 ", mTemplate=" + mTemplate +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mType);
+        parcel.writeParcelable(mCategory, i);
+        parcel.writeParcelable(mTemplate, i);
     }
 }

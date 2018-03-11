@@ -7,6 +7,9 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
+import com.nzarudna.shoppinglist.ui.categories.CategoriesViewModel;
+import com.nzarudna.shoppinglist.ui.categories.CategoryItemViewModel;
+import com.nzarudna.shoppinglist.ui.categories.EditCategoryViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.template.ChooseTemplateViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
@@ -55,4 +58,10 @@ public interface AppComponent {
     void inject(EditTemplateViewModel mViewModel);
 
     void inject(CategoryTemplateItemViewModel itemViewModel);
+
+    void inject(CategoriesViewModel viewModel);
+
+    void inject(CategoryItemViewModel itemViewModel);
+
+    void inject(EditCategoryViewModel viewModel);
 }

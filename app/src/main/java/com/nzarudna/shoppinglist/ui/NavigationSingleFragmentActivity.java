@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ui.categories.CategoriesActivity;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
 
@@ -46,6 +47,9 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                         break;
                     case R.id.templates_item:
                         activityClass = TemplatesActivity.class;
+                        break;
+                    case R.id.categories_item:
+                        activityClass = CategoriesActivity.class;
                         break;
                 }
                 if (activityClass != null) {
