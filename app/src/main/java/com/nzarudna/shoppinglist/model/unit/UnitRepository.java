@@ -1,6 +1,9 @@
 package com.nzarudna.shoppinglist.model.unit;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.PagedList;
+import android.os.AsyncTask;
 
 import java.util.List;
 
@@ -23,4 +26,46 @@ public class UnitRepository {
         return mUnitDao.findAll();
     }
 
+    public DataSource.Factory<Integer, Unit> getAllUnits() {
+        return mUnitDao.findAllDataSource();
+    }
+
+    //TODO: add tests. start
+    public void createUnit(final Unit unit) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mUnitDao.insert(unit);
+
+                return null;
+            }
+        };
+    }
+
+    public void updateUnit(final Unit unit) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mUnitDao.update(unit);
+
+                return null;
+            }
+        };
+    }
+
+    public void removeUnit(final Unit unit) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                mUnitDao.delete(unit);
+
+                return null;
+            }
+        };
+    }
+
+    //TODO: add tests. end
 }

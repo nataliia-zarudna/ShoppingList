@@ -27,6 +27,8 @@
             android:label="@string/templates_activity_label"/>
         <activity android:name=".ui.categories.CategoriesActivity"
             android:label="@string/categories_activity_label" />
+        <activity android:name=".ui.units.UnitsActivity"
+            android:label="@string/units_activity_label" />
     </application>
 
 </manifest>

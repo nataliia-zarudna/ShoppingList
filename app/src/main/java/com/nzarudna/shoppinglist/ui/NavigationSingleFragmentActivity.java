@@ -14,6 +14,7 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.categories.CategoriesActivity;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
+import com.nzarudna.shoppinglist.ui.units.UnitsActivity;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -50,6 +51,9 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                         break;
                     case R.id.categories_item:
                         activityClass = CategoriesActivity.class;
+                        break;
+                    case R.id.units_item:
+                        activityClass = UnitsActivity.class;
                         break;
                 }
                 if (activityClass != null) {
