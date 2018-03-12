@@ -21,6 +21,7 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 
 import java.util.UUID;
 
@@ -28,7 +29,8 @@ import java.util.UUID;
  * Created by Nataliia on 04.03.2018.
  */
 
-public class ChooseTemplateFragment extends Fragment {
+public class ChooseTemplateFragment
+        extends BaseRecyclerViewFragment<CategoryTemplateItemWithListStatistics, ChooseTemplateViewModel, CategoryTemplateItemViewModel> {
 
     private static final String ARG_LIST_ID = "com.nzarudna.shoppinglist.ui.productlist.edit.template.list_id";
     private static final int DEFAULT_PAGE_LIST = 20;
@@ -71,7 +73,7 @@ public class ChooseTemplateFragment extends Fragment {
         mTemplatesAdapter = new CategoryTemplateAdapter();
         mTemplatesRecyclerView.setAdapter(mTemplatesAdapter);
 
-        mViewModel.getTemplates(true, DEFAULT_PAGE_LIST).observe(
+        mViewModel.getItems(DEFAULT_PAGE_LIST).observe(
                 this, new Observer<PagedList<CategoryTemplateItemWithListStatistics>>() {
                     @Override
                     public void onChanged(@Nullable PagedList<CategoryTemplateItemWithListStatistics> list) {

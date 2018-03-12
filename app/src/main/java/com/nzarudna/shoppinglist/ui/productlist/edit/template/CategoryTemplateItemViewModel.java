@@ -1,13 +1,15 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 
 /**
  * Created by Nataliia on 05.03.2018.
  */
 
-public class CategoryTemplateItemViewModel {
+public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<CategoryTemplateItemWithListStatistics> {
 
     private CategoryTemplateItemWithListStatistics mItem;
     private ShoppingList mShoppingList;
@@ -16,20 +18,23 @@ public class CategoryTemplateItemViewModel {
         mItem = item;
     }
 
+    @Override
+    public String getItemName() {
+        if (mItem != null) {
+            return mItem.getType().equals(CategoryTemplateItem.TYPE_TEMPLATE)
+                    ? mItem.getTemplate().getName()
+                    : mItem.getCategory().getName();
+        } else {
+            return "";
+        }
+    }
+
     public void setShoppingList(ShoppingList shoppingList) {
         mShoppingList = shoppingList;
     }
 
-    public String getTemplateName() {
-        return mItem != null ? mItem.getTemplate().getName() : "";
-    }
-
     public boolean isTemplateUsed() {
         return mItem != null && mItem.isIsUsedInList();
-    }
-
-    public String getCategoryName() {
-        return mItem != null ? mItem.getCategory().getName() : "";
     }
 
     public void setTemplateUsed(boolean isUsed) {
@@ -38,5 +43,10 @@ public class CategoryTemplateItemViewModel {
         } else {
             mShoppingList.removeProductsWithTemplate(mItem.getTemplate().getTemplateID());
         }
+    }
+
+    @Override
+    public void removeItem() {
+
     }
 }
