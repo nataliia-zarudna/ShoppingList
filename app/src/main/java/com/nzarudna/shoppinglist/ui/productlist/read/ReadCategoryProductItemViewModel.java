@@ -23,12 +23,12 @@ import javax.inject.Inject;
 public class ReadCategoryProductItemViewModel extends CategoryProductItemViewModel {
 
     @Override
-    public void onProductClick() {
-        if (!CategoryProductItem.TYPE_PRODUCT.equals(mCategoryProductItem.getType())) {
+    public void onItemClick() {
+        if (!CategoryProductItem.TYPE_PRODUCT.equals(mItem.getType())) {
             return;
         }
 
-        Product product = mCategoryProductItem.getProduct();
+        Product product = mItem.getProduct();
         int[] productStatusChain = new int[]{Product.TO_BUY, Product.BOUGHT, Product.ABSENT};
         int newStatus = Product.TO_BUY;
         for (int i = 0; i < productStatusChain.length; i++) {

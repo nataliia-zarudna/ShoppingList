@@ -9,15 +9,5 @@ import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 
 public class EditCategoryProductItemViewModel extends CategoryProductItemViewModel {
 
-    @Override
-    public void onProductClick() {
-        if (mObserver != null) {
-            try {
-                mObserver.openEditProductDialog(getProduct());
-            } catch (ShoppingListException e) {
-                //TODO: add event handler
-                e.printStackTrace();
-            }
-        }
-    }
+
 }

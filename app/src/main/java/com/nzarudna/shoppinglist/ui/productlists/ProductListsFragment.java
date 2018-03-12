@@ -40,12 +40,10 @@ public class ProductListsFragment
         extends BaseRecyclerViewFragment<ProductListWithStatistics, ProductListsViewModel, ProductListItemViewModel>
         implements
         ProductListItemViewModel.ProductListItemViewModelObserver,
-        ProductListsViewModel.ProductListViewModelObserver,
-        Observer<PagedList<ProductListWithStatistics>> {
+        ProductListsViewModel.ProductListViewModelObserver {
 
     private static final int REQUEST_CODE_LIST_TO_COPY = 1;
 
-    private LiveData<PagedList<ProductListWithStatistics>> mItems;
     private FloatingActionButton mShowCreationMenuBtn;
     private FloatingActionButton mCreateNewSubItem;
     private FloatingActionButton mCopySubItem;
@@ -129,22 +127,6 @@ public class ProductListsFragment
         }
     }
 
-
-    private void loadList(int sorting) {
-        if (mItems != null) {
-            mItems.removeObserver(this);
-        }
-
-        mViewModel.setSorting(sorting);
-        mItems = mViewModel.getItems(DEFAULT_PAGE_SIZE);
-        mItems.observe(this, this);
-    }
-
-    @Override
-    public void onChanged(@Nullable PagedList<ProductListWithStatistics> productLists) {
-        mAdapter.setList(productLists);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -168,19 +150,24 @@ public class ProductListsFragment
 
         switch (item.getItemId()) {
             case R.id.sort_by_name:
-                loadList(ProductListRepository.SORT_LISTS_BY_NAME);
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_NAME);
+                loadItems();
                 return true;
             case R.id.sort_by_created_by:
-                loadList(ProductListRepository.SORT_LISTS_BY_CREATED_BY);
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_CREATED_BY);
+                loadItems();
                 return true;
             case R.id.sort_by_created_at:
-                loadList(ProductListRepository.SORT_LISTS_BY_CREATED_AT);
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_CREATED_AT);
+                loadItems();
                 return true;
             case R.id.sort_by_modified_at:
-                loadList(ProductListRepository.SORT_LISTS_BY_MODIFIED_AT);
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_MODIFIED_AT);
+                loadItems();
                 return true;
             case R.id.sort_by_assigned:
-                loadList(ProductListRepository.SORT_LISTS_BY_ASSIGNED);
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_ASSIGNED);
+                loadItems();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -190,7 +177,7 @@ public class ProductListsFragment
     @Override
     protected RecyclerView getRecyclerView(View fragmentView) {
         RecyclerView recyclerView = super.getRecyclerView(fragmentView);
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         return recyclerView;
     }
 

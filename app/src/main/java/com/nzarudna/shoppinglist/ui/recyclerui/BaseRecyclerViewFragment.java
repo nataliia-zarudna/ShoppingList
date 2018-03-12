@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.paging.PagedList;
 import android.content.Intent;
@@ -38,11 +39,12 @@ public abstract class BaseRecyclerViewFragment
                 IVM extends RecyclerItemViewModel<T>/*, EVM extends EditDialogViewModel<T>*/>
         extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
-        RecyclerViewModel.RecyclerViewModelObserver {
+        RecyclerViewModel.RecyclerViewModelObserver, Observer<PagedList<T>> {
 
     protected static final int DEFAULT_PAGE_SIZE = 20;
     private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
 
+    protected LiveData<PagedList<T>> mItemsLiveData;
     protected VM mViewModel;
     protected RecyclerView mRecyclerView;
     protected BaseRecyclerAdapter<T, IVM> mAdapter;
@@ -81,15 +83,23 @@ public abstract class BaseRecyclerViewFragment
         mAdapter.setItemLayoutResID(getItemLayoutResID());
         mRecyclerView.setAdapter(mAdapter);
 
-        mViewModel.getItems(DEFAULT_PAGE_SIZE)
-                .observe(this, new Observer<PagedList<T>>() {
-                    @Override
-                    public void onChanged(@Nullable PagedList<T> items) {
-                        mAdapter.setList(items);
-                    }
-                });
+        loadItems();
 
         return fragmentView;
+    }
+
+    protected void loadItems() {
+        if (mItemsLiveData != null) {
+            mItemsLiveData.removeObserver(this);
+        }
+
+        mItemsLiveData = mViewModel.getItems(DEFAULT_PAGE_SIZE);
+        mItemsLiveData.observe(this, this);
+    }
+
+    @Override
+    public void onChanged(@Nullable PagedList<T> items) {
+        mAdapter.setList(items);
     }
 
     @LayoutRes

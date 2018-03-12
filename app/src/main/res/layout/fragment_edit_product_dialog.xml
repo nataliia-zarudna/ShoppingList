@@ -28,7 +28,7 @@
             android:hint="@string/product_count_hint"
             android:inputType="numberDecimal"
             android:text="@{viewModel.productCount}"
-            android:onTextChanged="@{viewModel.onCountChange}"
+            android:onTextChanged="@{viewModel::onCountChange}"
             app:layout_constraintTop_toBottomOf="@id/name" />
 
         <android.support.v7.widget.AppCompatSpinner

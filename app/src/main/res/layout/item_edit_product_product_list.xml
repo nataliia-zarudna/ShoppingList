@@ -15,15 +15,15 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> viewModel.onProductClick()}"
+        android:onClick="@{() -> viewModel.onItemClick()}"
+        android:onLongClick="@{() -> viewModel.onItemLongClick()}"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.productName}"
-            android:onLongClick="@{() -> viewModel.onProductLongClick()}"
+            android:text="@{viewModel.itemName}"
             android:textColor="@{viewModel.isGreyedProductName() ? @android:color/darker_gray : @android:color/black}"
             tools:text="Chocolate" />
 
@@ -31,7 +31,6 @@
             android:id="@+id/product_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onLongClick="@{() -> viewModel.onProductLongClick()}"
             android:text="@{viewModel.productUnitInfo}"
             android:visibility="@{!viewModel.productUnitInfo.isEmpty() ? View.VISIBLE : View.GONE}"
             app:layout_constraintLeft_toLeftOf="parent"

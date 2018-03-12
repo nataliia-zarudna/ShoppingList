@@ -15,14 +15,14 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> viewModel.onProductClick()}"
+        android:onClick="@{() -> viewModel.onItemClick()}"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.productName}"
+            android:text="@{viewModel.itemName}"
             android:textColor="@{viewModel.isGreyedProductName() ? @android:color/darker_gray : @android:color/black}"
             tools:text="Chocolate" />
 
@@ -40,7 +40,7 @@
             android:id="@+id/product_menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.onMenuButtonClick()}"
+            android:onClick="@{() -> viewModel.onMenuItemClick()}"
             android:src="@drawable/ic_more_vert_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"

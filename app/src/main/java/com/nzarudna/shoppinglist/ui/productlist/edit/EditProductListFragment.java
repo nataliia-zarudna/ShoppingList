@@ -34,7 +34,6 @@ public class EditProductListFragment extends ProductListFragment {
 
     private static final String TAG = "EditProductListFragment";
 
-    private static final String ARG_PRODUCTS_LIST_ID = "products_list_id";
     private static final int REQUEST_CODE_CREATE_FORM_TEMPLATE = 1;
     private static final int REQUEST_CODE_NEW_FRAGMENT = 2;
 
@@ -62,18 +61,21 @@ public class EditProductListFragment extends ProductListFragment {
         return R.layout.item_edit_product_product_list;
     }
 
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.fragment_edit_product_list;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mFragmentView = inflater.inflate(R.layout.fragment_edit_product_list, container, false);
+        mFragmentView = super.onCreateView(inflater, container, savedInstanceState);
 
         if (mToolbarView != null) {
             ToolbarEditTitleBinding viewDataBinding = DataBindingUtil.bind(mToolbarView);
             viewDataBinding.setEditListViewModel((EditProductListViewModel) mViewModel);
         }
-
-        initProductsRecyclerView(mFragmentView);
 
         mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_product_menu);
         mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_new_product);

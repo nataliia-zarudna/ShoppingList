@@ -36,10 +36,12 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
         }
     }
 
-    public void onItemLongClick() {
+    public boolean onItemLongClick() {
         if (mObserver != null) {
             mObserver.showItemContextMenu(mItem, mPosition);
+            return true;
         }
+        return false;
     }
 
     public void onMenuItemClick() {
