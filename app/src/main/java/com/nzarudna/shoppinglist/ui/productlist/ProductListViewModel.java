@@ -17,6 +17,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public abstract class ProductListViewModel extends ObservableViewModel {
+public abstract class ProductListViewModel extends RecyclerViewModel<CategoryProductItem> {
 
     @Inject
     ProductListRepository mProductListRepository;
@@ -36,6 +37,11 @@ public abstract class ProductListViewModel extends ObservableViewModel {
 
     protected UUID mProductListID;
     protected ShoppingList mShoppingList;
+
+    @ProductList.ProductSorting
+    protected int mSorting;
+
+    protected boolean mIsGroupedView;
 
     public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
@@ -47,42 +53,48 @@ public abstract class ProductListViewModel extends ObservableViewModel {
         return mProductListID;
     }
 
-    public String getListName() {
-        return mProductList != null ? mProductList.getName() : "";
-    }
-
-    public LiveData<PagedList<CategoryProductItem>> getProducts(int pageSize) {
-        return getProducts(mProductList.getSorting(), mProductList.isGroupedView(), pageSize);
-    }
-
-    public LiveData<PagedList<CategoryProductItem>> getProducts(int productSort, int pageSize) {
-        return getProducts(productSort, mProductList.isGroupedView(), pageSize);
-    }
-
-    public LiveData<PagedList<CategoryProductItem>> getProducts(boolean isGroupedView, int pageSize) {
-        return getProducts(mProductList.getSorting(), isGroupedView, pageSize);
-    }
-
-    private LiveData<PagedList<CategoryProductItem>> getProducts(int productSort,
-                                                                boolean isGroupedView, int pageSize) {
-
-        DataSource.Factory<Integer, CategoryProductItem> productsFactory = null;
-        try {
-            productsFactory = mShoppingList.getProducts(productSort, isGroupedView);
-        } catch (ShoppingListException e) {
-            //TODO: handle error
-            e.printStackTrace();
-        }
-        return new LivePagedListBuilder<>(productsFactory, pageSize).build();
-    }
-
     public LiveData<ProductList> getProductListData() {
         return mShoppingList.getListData();
     }
 
     public void setProductListData(ProductList productList) {
         mProductList = productList;
+
+        mSorting = mProductList.getSorting();
+        mIsGroupedView = mProductList.isGroupedView();
+
         mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public void setSorting(int sorting) {
+        this.mSorting = sorting;
+
+        mProductList.setSorting(sorting);
+        mShoppingList.updateProductList(mProductList);
+    }
+
+    public void setIsGroupedView(Boolean isGroupedView) {
+        this.mIsGroupedView = isGroupedView;
+
+        mProductList.setIsGroupedView(isGroupedView);
+        mShoppingList.updateProductList(mProductList);
+    }
+
+    public String getListName() {
+        return mProductList != null ? mProductList.getName() : "";
+    }
+
+    @Override
+    public LiveData<PagedList<CategoryProductItem>> getItems(int pageSize) {
+
+        DataSource.Factory<Integer, CategoryProductItem> productsFactory = null;
+        try {
+            productsFactory = mShoppingList.getProducts(mSorting, mIsGroupedView);
+        } catch (ShoppingListException e) {
+            //TODO: handle error
+            e.printStackTrace();
+        }
+        return new LivePagedListBuilder<>(productsFactory, pageSize).build();
     }
 
     public void removeBoughtProducts() {

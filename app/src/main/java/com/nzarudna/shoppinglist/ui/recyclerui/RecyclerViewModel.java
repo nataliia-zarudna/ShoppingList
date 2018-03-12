@@ -3,6 +3,8 @@ package com.nzarudna.shoppinglist.ui.recyclerui;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.PagedList;
 
+import com.nzarudna.shoppinglist.SharedPreferencesConstants;
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import java.util.LinkedList;
@@ -14,8 +16,8 @@ import java.util.List;
 
 public abstract class RecyclerViewModel<T> extends ObservableViewModel {
 
-    protected RecyclerViewModelObserver mObserver;
     protected List<T> mSelectedItems = new LinkedList<>();
+    protected RecyclerViewModelObserver mObserver;
 
     public void setObserver(RecyclerViewModelObserver observer) {
         this.mObserver = observer;

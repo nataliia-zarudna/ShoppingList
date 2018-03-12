@@ -125,7 +125,7 @@ public class EditProductListFragment extends ProductListFragment {
     }
 
     @Override
-    protected CategoryProductItemViewModel getCategoryProductItemViewModel() {
+    protected CategoryProductItemViewModel getListItemViewModel() {
         return new EditCategoryProductItemViewModel();
     }
 

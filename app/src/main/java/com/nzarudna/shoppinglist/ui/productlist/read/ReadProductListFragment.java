@@ -56,7 +56,7 @@ public class ReadProductListFragment extends ProductListFragment {
     }
 
     @Override
-    protected CategoryProductItemViewModel getCategoryProductItemViewModel() {
+    protected CategoryProductItemViewModel getListItemViewModel() {
         return new ReadCategoryProductItemViewModel();
     }
 }

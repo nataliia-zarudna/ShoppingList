@@ -1,6 +1,8 @@
 package com.nzarudna.shoppinglist.model.product;
 
 import android.arch.persistence.room.Embedded;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -13,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
  * Created by Nataliia on 28.01.2018.
  */
 
-public class CategoryProductItem {
+public class CategoryProductItem implements Parcelable {
 
     public static final String TYPE_PRODUCT = "product";
     public static final String TYPE_CATEGORY = "category";
@@ -22,6 +24,18 @@ public class CategoryProductItem {
     @StringDef({TYPE_PRODUCT, TYPE_CATEGORY})
     @interface ItemType {
     }
+
+    @ItemType
+    private String type;
+
+    @Embedded(prefix = "prod_")
+    private Product product;
+
+    @Embedded(prefix = "cat_")
+    private Category category;
+
+    @Embedded(prefix = "unit_")
+    private Unit unit;
 
     public CategoryProductItem() {
     }
@@ -37,17 +51,24 @@ public class CategoryProductItem {
         type = TYPE_CATEGORY;
     }
 
-    @ItemType
-    private String type;
+    protected CategoryProductItem(Parcel in) {
+        type = in.readString();
+        product = in.readParcelable(Product.class.getClassLoader());
+        category = in.readParcelable(Category.class.getClassLoader());
+        unit = in.readParcelable(Unit.class.getClassLoader());
+    }
 
-    @Embedded(prefix = "prod_")
-    private Product product;
+    public static final Creator<CategoryProductItem> CREATOR = new Creator<CategoryProductItem>() {
+        @Override
+        public CategoryProductItem createFromParcel(Parcel in) {
+            return new CategoryProductItem(in);
+        }
 
-    @Embedded(prefix = "cat_")
-    private Category category;
-
-    @Embedded(prefix = "unit_")
-    private Unit unit;
+        @Override
+        public CategoryProductItem[] newArray(int size) {
+            return new CategoryProductItem[size];
+        }
+    };
 
     @ItemType
     public String getType() {
@@ -113,5 +134,18 @@ public class CategoryProductItem {
                 ", category=" + category +
                 ", unit=" + unit +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(type);
+        parcel.writeParcelable(product, i);
+        parcel.writeParcelable(category, i);
+        parcel.writeParcelable(unit, i);
     }
 }

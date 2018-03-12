@@ -17,8 +17,8 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
     private static final String TAG = "RecyclerItemViewHolder";
 
     private Fragment mFragment;
-    private ViewDataBinding mDataBinding;
-    private VM mItemViewModel;
+    protected ViewDataBinding mDataBinding;
+    protected VM mItemViewModel;
     private View.OnLongClickListener mOnItemLongClickListener;
     private View.OnClickListener mOnItemClickListener;
 
