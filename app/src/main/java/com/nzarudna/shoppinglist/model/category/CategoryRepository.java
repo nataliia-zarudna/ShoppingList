@@ -10,11 +10,12 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Category repository
  */
-
+@Singleton
 public class CategoryRepository {
 
     private CategoryDao mCategoryDao;

@@ -35,8 +35,7 @@ import com.nzarudna.shoppinglist.R;
  */
 
 public abstract class BaseRecyclerViewFragment
-        <T extends Parcelable, VM extends RecyclerViewModel,
-                IVM extends RecyclerItemViewModel<T>/*, EVM extends EditDialogViewModel<T>*/>
+        <T extends Parcelable, VM extends RecyclerViewModel, IVM extends RecyclerItemViewModel<T>>
         extends Fragment
         implements RecyclerItemViewModel.RecyclerItemViewModelObserver<T>,
         RecyclerViewModel.RecyclerViewModelObserver, Observer<PagedList<T>> {

@@ -19,6 +19,7 @@ import com.nzarudna.shoppinglist.ui.productlists.ProductListsViewModel;
 import com.nzarudna.shoppinglist.ui.templates.CategoryTemplateItemViewModel;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
+import com.nzarudna.shoppinglist.ui.units.EditUnitViewModel;
 import com.nzarudna.shoppinglist.ui.units.UnitItemViewModel;
 import com.nzarudna.shoppinglist.ui.units.UnitsViewModel;
 
@@ -70,4 +71,6 @@ public interface AppComponent {
     void inject(UnitsViewModel viewModel);
 
     void inject(UnitItemViewModel itemViewModel);
+
+    void inject(EditUnitViewModel viewModel);
 }

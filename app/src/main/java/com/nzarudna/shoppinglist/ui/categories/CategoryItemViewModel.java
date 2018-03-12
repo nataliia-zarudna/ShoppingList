@@ -16,11 +16,6 @@ public class CategoryItemViewModel extends RecyclerItemViewModel<Category> {
     CategoryRepository mCategoryRepository;
 
     @Override
-    public boolean hasContextMenu() {
-        return true;
-    }
-
-    @Override
     public String getItemName() {
         return mItem.getName();
     }

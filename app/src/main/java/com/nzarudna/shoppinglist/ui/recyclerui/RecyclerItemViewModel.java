@@ -51,7 +51,7 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
     }
 
     public boolean hasContextMenu() {
-        return false;
+        return true;
     }
 
     public abstract void removeItem();

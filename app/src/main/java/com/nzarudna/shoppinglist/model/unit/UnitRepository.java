@@ -40,7 +40,7 @@ public class UnitRepository {
 
                 return null;
             }
-        };
+        }.execute();
     }
 
     public void updateUnit(final Unit unit) {
@@ -52,7 +52,7 @@ public class UnitRepository {
 
                 return null;
             }
-        };
+        }.execute();
     }
 
     public void removeUnit(final Unit unit) {
@@ -64,7 +64,7 @@ public class UnitRepository {
 
                 return null;
             }
-        };
+        }.execute();
     }
 
     //TODO: add tests. end

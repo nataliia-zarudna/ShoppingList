@@ -7,6 +7,8 @@ import com.nzarudna.shoppinglist.AndroidResourceResolver;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -28,11 +30,13 @@ public class AppModule {
     }
 
     @Provides
+    @Singleton
     public SharedPreferences provideSharedPreferences() {
         return mContext.getSharedPreferences(mContext.getString(R.string.preference_key_file), Context.MODE_PRIVATE);
     }
 
     @Provides
+    @Singleton
     public ResourceResolver provideResourceResolver() {
         return new AndroidResourceResolver(mContext);
     }

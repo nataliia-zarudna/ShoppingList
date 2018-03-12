@@ -35,7 +35,9 @@ public class UnitsFragment extends BaseRecyclerViewFragment<Unit, UnitsViewModel
 
     @Override
     protected EditDialogViewModel<Unit> getEditDialogViewModel() {
-        return new EditUnitViewModel();
+        EditUnitViewModel viewModel = new EditUnitViewModel();
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+        return viewModel;
     }
 
     @Override

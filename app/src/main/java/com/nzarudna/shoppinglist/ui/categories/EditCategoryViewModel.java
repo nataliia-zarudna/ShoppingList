@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.ui.categories;
 
+import android.util.Log;
+
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
@@ -32,6 +34,8 @@ public class EditCategoryViewModel extends EditDialogViewModel<Category> {
 
     @Override
     protected void updateItem() {
+        Log.d("magic", "mCategoryRepository updateItem " + mCategoryRepository.toString());
+
         mCategoryRepository.update(mItem);
     }
 
