@@ -75,6 +75,8 @@ public class EditProductListFragment extends ProductListFragment {
         if (mToolbarView != null) {
             ToolbarEditTitleBinding viewDataBinding = DataBindingUtil.bind(mToolbarView);
             viewDataBinding.setEditListViewModel((EditProductListViewModel) mViewModel);
+
+            getActivity().setTitle("");
         }
 
         mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_product_menu);

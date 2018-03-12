@@ -18,7 +18,7 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
 
     private Fragment mFragment;
     protected ViewDataBinding mDataBinding;
-    protected VM mItemViewModel;
+    private VM mItemViewModel;
     private View.OnLongClickListener mOnItemLongClickListener;
     private View.OnClickListener mOnItemClickListener;
 
@@ -29,14 +29,18 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
         mDataBinding = dataBinding;
         mFragment = fragment;
 
-        mItemViewModel = getItemViewModel();
+        mItemViewModel = newItemViewModel();
         mItemViewModel.setObserver(observer);
         mDataBinding.setVariable(BR.viewModel, mItemViewModel);
 
         mDataBinding.getRoot().setTag(mItemViewModel);
     }
 
-    protected abstract VM getItemViewModel();
+    protected abstract VM newItemViewModel();
+
+    public VM getItemViewModel() {
+        return mItemViewModel;
+    }
 
     public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
         this.mOnItemLongClickListener = onLongClickListener;

@@ -53,7 +53,7 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         return mProductListID;
     }
 
-    public LiveData<ProductList> getProductListData() {
+    public LiveData<ProductList> getProductListLiveData() {
         return mShoppingList.getListData();
     }
 
@@ -64,6 +64,10 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         mIsGroupedView = mProductList.isGroupedView();
 
         mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public ProductList getProductList() {
+        return mProductList;
     }
 
     public void setSorting(int sorting) {

@@ -203,6 +203,11 @@ public class ProductListsFragment
     }
 
     @Override
+    public void openEditItemDialog(ProductListWithStatistics item) {
+        startEditProductListActivity(item.getListID());
+    }
+
+    @Override
     public void startProductListActivity(UUID productListID) {
         Intent intent = ReadProductListActivity.newIntent(getActivity(), productListID);
         startActivity(intent);

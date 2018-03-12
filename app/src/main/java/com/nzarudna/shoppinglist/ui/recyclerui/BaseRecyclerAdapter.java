@@ -19,9 +19,9 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
 
     private static final String TAG = "BaseRecyclerAdapter";
 
-    private Fragment mFragment;
+    protected Fragment mFragment;
     private int mItemLayoutResID;
-    private RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
+    protected RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
     private View.OnLongClickListener mOnItemLongClickListener;
     private View.OnClickListener mOnItemClickListener;
 
@@ -48,7 +48,7 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
     protected RecyclerItemViewHolder<T, IVM> getViewHolderInstance(ViewDataBinding dataBinding) {
         return new RecyclerItemViewHolder<T, IVM>(mFragment, dataBinding, mRecyclerItemViewModelObserver) {
             @Override
-            protected IVM getItemViewModel() {
+            protected IVM newItemViewModel() {
                 return BaseRecyclerAdapter.this.getItemViewModel();
             }
         };

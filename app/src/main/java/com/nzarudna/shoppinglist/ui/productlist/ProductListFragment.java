@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
-import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -17,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,13 +24,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
@@ -64,11 +62,17 @@ public abstract class ProductListFragment
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         mProductListID = (UUID) getArguments().getSerializable(ARG_PRODUCT_LIST_ID);
 
+        super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    protected void loadItems() {
+        if (mViewModel.getProductList() != null) {
+            super.loadItems();
+        }
     }
 
     @Override
@@ -155,25 +159,22 @@ public abstract class ProductListFragment
                 @Override
                 public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                     super.clearView(recyclerView, viewHolder);
-                    Log.d(TAG, "clear view " + viewHolder.getLayoutPosition());
-                    Log.d(TAG, "clear view: current old pos " + mStartPosition);
-                    Log.d(TAG, "clear view: target " + ((CategoryProductViewHolder) mTarget).mItemViewModel.getItemName());
 
                     if (viewHolder.getLayoutPosition() != mStartPosition) {
 
-                        CategoryProductItemViewModel currentViewModel = ((CategoryProductViewHolder) viewHolder).mItemViewModel;
+                        CategoryProductItemViewModel currentViewModel = ((CategoryProductViewHolder) viewHolder).getItemViewModel();
                         CategoryProductItemViewModel prevViewModel = null;
                         CategoryProductItemViewModel nextViewModel = null;
 
                         if (mStartPosition < mTargetStartPosition) {
-                            prevViewModel = ((CategoryProductViewHolder) mTarget).mItemViewModel;
+                            prevViewModel = ((CategoryProductViewHolder) mTarget).getItemViewModel();
                             int nextViewOffset = (mTargetStartPosition - mStartPosition) + 1;
                             View nextView = recyclerView.getChildAt(mTarget.getAdapterPosition() + nextViewOffset);
                             if (nextView != null) {
                                 nextViewModel = (CategoryProductItemViewModel) nextView.getTag();
                             }
                         } else {
-                            nextViewModel = ((CategoryProductViewHolder) mTarget).mItemViewModel;
+                            nextViewModel = ((CategoryProductViewHolder) mTarget).getItemViewModel();
                             int nextViewOffset = (mStartPosition - mTargetStartPosition) + 1;
                             View prevView = recyclerView.getChildAt(mTarget.getLayoutPosition() - nextViewOffset);
                             if (prevView != null) {
@@ -194,22 +195,28 @@ public abstract class ProductListFragment
             mRecycleViewItemTouchHelper.attachToRecyclerView(recyclerView);
         }
 
-
-        mViewModel.getProductListData().observe(this, new Observer<ProductList>() {
+        mViewModel.getProductListLiveData().observe(this, new Observer<ProductList>() {
             @Override
             public void onChanged(@Nullable ProductList productList) {
                 mViewModel.setProductListData(productList);
 
-                getActivity().setTitle(mViewModel.getListName());
+                onLoadProductList(productList);
+                loadItems();
             }
         });
 
         return recyclerView;
     }
 
+    protected void onLoadProductList(ProductList productList) {
+
+    }
+
     @Override
     protected BaseRecyclerAdapter<CategoryProductItem, CategoryProductItemViewModel> getRecyclerViewAdapter() {
-        return new CategoryProductAdapter(this, getDiffCallback());
+        CategoryProductAdapter adapter = new CategoryProductAdapter(this, getDiffCallback());
+        adapter.setRecyclerItemViewModelObserver(this);
+        return adapter;
     }
 
     protected boolean isDragAndDropEnabled() {
@@ -328,14 +335,12 @@ public abstract class ProductListFragment
 
     protected class CategoryProductViewHolder extends RecyclerItemViewHolder<CategoryProductItem, CategoryProductItemViewModel> {
 
-        protected CategoryProductItemViewModel mItemViewModel;
-
         public CategoryProductViewHolder(Fragment fragment,
                                       ViewDataBinding dataBinding,
                                       @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryProductItem> observer) {
             super(fragment, dataBinding, observer);
 
-            mItemViewModel.setShoppingList(mViewModel.mShoppingList);
+            getItemViewModel().setShoppingList(mViewModel.mShoppingList);
 
             ImageView dragHandler = getDraggableItemViewHandler(mDataBinding.getRoot());
             if (isDragAndDropEnabled() && dragHandler != null) {
@@ -354,7 +359,7 @@ public abstract class ProductListFragment
         }
 
         @Override
-        protected CategoryProductItemViewModel getItemViewModel() {
+        protected CategoryProductItemViewModel newItemViewModel() {
             return ProductListFragment.this.getListItemViewModel();
         }
     }
@@ -366,6 +371,11 @@ public abstract class ProductListFragment
 
         protected CategoryProductAdapter(Fragment fragment, DiffCallback<CategoryProductItem> diffCallback) {
             super(fragment, diffCallback);
+        }
+
+        @Override
+        protected RecyclerItemViewHolder<CategoryProductItem, CategoryProductItemViewModel> getViewHolderInstance(ViewDataBinding dataBinding) {
+            return new CategoryProductViewHolder(mFragment, dataBinding, mRecyclerItemViewModelObserver);
         }
 
         @Override

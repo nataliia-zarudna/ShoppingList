@@ -182,7 +182,7 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
             return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>
                     (TemplatesFragment.this, dataBinding, null) {
                 @Override
-                protected CategoryTemplateItemViewModel getItemViewModel() {
+                protected CategoryTemplateItemViewModel newItemViewModel() {
                     return new CategoryTemplateItemViewModel();
                 }
             };

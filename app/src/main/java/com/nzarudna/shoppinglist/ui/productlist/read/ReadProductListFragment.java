@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
@@ -35,6 +36,11 @@ public class ReadProductListFragment extends ProductListFragment {
     @Override
     protected int getProductItemLayoutID() {
         return R.layout.item_product_product_list;
+    }
+
+    @Override
+    protected void onLoadProductList(ProductList productList) {
+        getActivity().setTitle(mViewModel.getListName());
     }
 
     @Override
