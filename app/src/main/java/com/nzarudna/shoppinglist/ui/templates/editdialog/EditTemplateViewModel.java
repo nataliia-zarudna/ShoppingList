@@ -38,6 +38,12 @@ public class EditTemplateViewModel extends EditDialogViewModel<CategoryTemplateI
     }
 
     @Override
+    public void setItem(CategoryTemplateItem item) {
+        super.setItem(item);
+        mTemplate = mItem.getTemplate();
+    }
+
+    @Override
     public String getName() {
         return mTemplate.getName();
     }

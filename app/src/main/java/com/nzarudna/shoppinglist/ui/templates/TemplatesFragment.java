@@ -158,7 +158,9 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
 
     @Override
     protected BaseEditItemDialogFragment getEditItemDialogFragment(CategoryTemplateItem item) {
-        return EditTemplateDialogFragment.newInstance(item.getTemplate());
+        EditTemplateDialogFragment editFragment = EditTemplateDialogFragment.newInstance();
+        editFragment.setArguments(item);
+        return editFragment;
     }
 
     @Override

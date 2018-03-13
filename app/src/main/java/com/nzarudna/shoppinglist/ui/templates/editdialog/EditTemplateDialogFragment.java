@@ -27,23 +27,11 @@ import java.util.List;
 
 public class EditTemplateDialogFragment extends BaseEditItemDialogFragment<CategoryTemplateItem, EditTemplateViewModel> {
 
-    private static final String EXTRA_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
-    private static final String ARG_PRODUCT_TEMPLATE = "com.nzarudna.shoppinglist.ui.templates.editdialog.product_template";
-
     private ViewModelArrayAdapter<Unit> mUnitAdapter;
     private ViewModelArrayAdapter<Category> mCategoryAdapter;
 
     public static EditTemplateDialogFragment newInstance() {
         return new EditTemplateDialogFragment();
-    }
-
-    public static EditTemplateDialogFragment newInstance(ProductTemplate template) {
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PRODUCT_TEMPLATE, template);
-
-        EditTemplateDialogFragment instance = new EditTemplateDialogFragment();
-        instance.setArguments(args);
-        return instance;
     }
 
     @Override
