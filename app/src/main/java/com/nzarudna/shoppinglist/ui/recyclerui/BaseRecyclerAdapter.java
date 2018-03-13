@@ -6,7 +6,6 @@ import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
@@ -22,8 +21,6 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
     protected Fragment mFragment;
     private int mItemLayoutResID;
     protected RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
-    private View.OnLongClickListener mOnItemLongClickListener;
-    private View.OnClickListener mOnItemClickListener;
 
     protected BaseRecyclerAdapter(Fragment fragment, DiffCallback<T> diffCallback) {
         super(diffCallback);
@@ -39,10 +36,7 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
         ViewDataBinding dataBinding =
                 DataBindingUtil.inflate(mFragment.getLayoutInflater(), layoutResID, parent, false);
 
-        RecyclerItemViewHolder<T, IVM> viewHolder = getViewHolderInstance(dataBinding);
-        viewHolder.setOnLongClickListener(mOnItemLongClickListener);
-
-        return viewHolder;
+        return getViewHolderInstance(dataBinding);
     }
 
     protected RecyclerItemViewHolder<T, IVM> getViewHolderInstance(ViewDataBinding dataBinding) {
@@ -73,13 +67,5 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
 
     public void setRecyclerItemViewModelObserver(RecyclerItemViewModel.RecyclerItemViewModelObserver<T> observer) {
         this.mRecyclerItemViewModelObserver = observer;
-    }
-
-    public void setOnItemLongClickListener(View.OnLongClickListener onItemLongClickListener) {
-        this.mOnItemLongClickListener = onItemLongClickListener;
-    }
-
-    public void setOnItemClickListener(View.OnClickListener onItemClickListener) {
-        this.mOnItemClickListener = onItemClickListener;
     }
 }

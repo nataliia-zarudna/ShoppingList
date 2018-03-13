@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
-import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import javax.inject.Inject;

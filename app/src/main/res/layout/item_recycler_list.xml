@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_item_height"
         android:onClick="@{() -> viewModel.onItemClick()}"
+        android:onLongClick="@{() -> viewModel.onItemLongClick()}"
         android:background="@{viewModel.isSelected ? @android:color/holo_green_light : @android:color/white}">
 
         <TextView

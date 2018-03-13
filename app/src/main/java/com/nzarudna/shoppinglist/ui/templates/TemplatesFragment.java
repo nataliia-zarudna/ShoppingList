@@ -2,7 +2,6 @@ package com.nzarudna.shoppinglist.ui.templates;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -11,16 +10,13 @@ import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
-import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
 
@@ -32,7 +28,8 @@ import java.util.UUID;
 
 public class TemplatesFragment extends BaseRecyclerViewFragment
         <CategoryTemplateItem, TemplatesViewModel, CategoryTemplateItemViewModel>
-        implements TemplatesViewModel.TemplatesViewModelObserver {
+        implements TemplatesViewModel.TemplatesViewModelObserver,
+        CategoryTemplateItemViewModel.CategoryTemplateItemViewModelObserver {
 
     private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -77,9 +74,9 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
 
     @Override
     protected CategoryTemplateItemViewModel getListItemViewModel() {
-        CategoryTemplateItemViewModel itemViewModel = ViewModelProviders.of(this).get(CategoryTemplateItemViewModel.class);
+        CategoryTemplateItemViewModel itemViewModel = new CategoryTemplateItemViewModel();
         ShoppingListApplication.getAppComponent().inject(itemViewModel);
-
+        itemViewModel.setCategoryTemplateItemViewModelObserver(this);
         return itemViewModel;
     }
 
@@ -114,32 +111,26 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
     }
 
     @Override
+    public void onTemplateSelected(CategoryTemplateItem item) {
+        if (mActionMode == null) {
+            mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+        }
+
+        mViewModel.onItemSelected(item);
+
+        if (mViewModel.getSelectedItemsCount() == 0) {
+            mActionMode.finish();
+        } else {
+            String itemsCount = String.valueOf(mViewModel.getSelectedItemsCount());
+            String title = getString(R.string.action_mode_selected_count, itemsCount);
+            mActionMode.setTitle(title);
+        }
+    }
+
+    @Override
     protected BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateItemViewModel> getRecyclerViewAdapter() {
         CategoryTemplateAdapter adapter = new CategoryTemplateAdapter(this, getDiffCallback());
         adapter.setRecyclerItemViewModelObserver(this);
-
-        adapter.setOnItemLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (mActionMode == null) {
-                    mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-                }
-
-                CategoryTemplateItemViewModel itemViewModel = (CategoryTemplateItemViewModel) view.getTag();
-                itemViewModel.onSelect();
-                mViewModel.onItemSelected(itemViewModel.getItem());
-
-                if (mViewModel.getSelectedItemsCount() == 0) {
-                    mActionMode.finish();
-                } else {
-                    String itemsCount = String.valueOf(mViewModel.getSelectedItemsCount());
-                    String title = getString(R.string.action_mode_selected_count, itemsCount);
-                    mActionMode.setTitle(title);
-                }
-
-                return true;
-            }
-        });
         return adapter;
     }
 
@@ -194,17 +185,6 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
 
         protected CategoryTemplateAdapter(Fragment fragment, DiffCallback<CategoryTemplateItem> diffCallback) {
             super(fragment, diffCallback);
-        }
-
-        @Override
-        protected RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel> getViewHolderInstance(ViewDataBinding dataBinding) {
-            return new RecyclerItemViewHolder<CategoryTemplateItem, CategoryTemplateItemViewModel>
-                    (TemplatesFragment.this, dataBinding, TemplatesFragment.this) {
-                @Override
-                protected CategoryTemplateItemViewModel newItemViewModel() {
-                    return new CategoryTemplateItemViewModel();
-                }
-            };
         }
 
         @Override

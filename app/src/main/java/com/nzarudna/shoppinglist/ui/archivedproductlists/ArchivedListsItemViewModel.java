@@ -15,6 +15,12 @@ public class ArchivedListsItemViewModel extends RecyclerItemViewModel<ProductLis
     @Inject
     ProductListRepository mProductListRepository;
 
+    private ArchivedListsItemViewModelObserver mArchivedListsItemViewModelObserver;
+
+    public void setArchivedListsItemViewModelObserver(ArchivedListsItemViewModelObserver observer) {
+        this.mArchivedListsItemViewModelObserver = observer;
+    }
+
     @Override
     public String getItemName() {
         return mItem.getName();
@@ -23,5 +29,16 @@ public class ArchivedListsItemViewModel extends RecyclerItemViewModel<ProductLis
     @Override
     public void removeItem() {
         mProductListRepository.removeList(mItem.getListID());
+    }
+
+    @Override
+    public void onItemClick() {
+        if (mArchivedListsItemViewModelObserver != null) {
+            mArchivedListsItemViewModelObserver.openReadProductListFragment(mItem);
+        }
+    }
+
+    public interface ArchivedListsItemViewModelObserver {
+        void openReadProductListFragment(ProductList productList);
     }
 }

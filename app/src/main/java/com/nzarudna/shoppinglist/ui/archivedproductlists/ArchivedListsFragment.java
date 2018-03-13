@@ -2,19 +2,13 @@ package com.nzarudna.shoppinglist.ui.archivedproductlists;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.databinding.generated.callback.OnClickListener;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.DiffCallback;
-import android.view.MenuItem;
-import android.view.View;
 
-import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragment;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 
@@ -22,7 +16,9 @@ import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
  * Created by nsirobaba on 3/13/18.
  */
 
-public class ArchivedListsFragment extends BaseRecyclerViewFragment<ProductList, ArchivedListsViewModel, ArchivedListsItemViewModel> {
+public class ArchivedListsFragment
+        extends BaseRecyclerViewFragment<ProductList, ArchivedListsViewModel, ArchivedListsItemViewModel>
+        implements ArchivedListsItemViewModel.ArchivedListsItemViewModelObserver {
 
     public static ArchivedListsFragment newInstance() {
         return new ArchivedListsFragment();
@@ -38,6 +34,7 @@ public class ArchivedListsFragment extends BaseRecyclerViewFragment<ProductList,
     @Override
     protected ArchivedListsItemViewModel getListItemViewModel() {
         ArchivedListsItemViewModel itemViewModel = new ArchivedListsItemViewModel();
+        itemViewModel.setArchivedListsItemViewModelObserver(this);
         ShoppingListApplication.getAppComponent().inject(itemViewModel);
         return itemViewModel;
     }
@@ -49,20 +46,9 @@ public class ArchivedListsFragment extends BaseRecyclerViewFragment<ProductList,
     }
 
     @Override
-    protected BaseRecyclerAdapter<ProductList, ArchivedListsItemViewModel> getRecyclerViewAdapter() {
-        BaseRecyclerAdapter<ProductList, ArchivedListsItemViewModel> adapter = super.getRecyclerViewAdapter();
-
-        adapter.setOnItemClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArchivedListsItemViewModel itemViewModel = (ArchivedListsItemViewModel) view.getTag();
-
-                Intent intent = ReadProductListActivity.newIntent(getActivity(), itemViewModel.getItem().getListID());
-                startActivity(intent);
-            }
-        });
-
-        return adapter;
+    public void openReadProductListFragment(ProductList productList) {
+        Intent intent = ReadProductListActivity.newIntent(getActivity(), productList.getListID());
+        startActivity(intent);
     }
 
     @Override

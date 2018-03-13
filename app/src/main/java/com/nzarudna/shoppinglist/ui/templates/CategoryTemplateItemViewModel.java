@@ -17,6 +17,12 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
     @Inject
     ProductTemplateRepository mTemplateRepository;
 
+    private CategoryTemplateItemViewModelObserver mCategoryTemplateItemViewModelObserver;
+
+    public void setCategoryTemplateItemViewModelObserver(CategoryTemplateItemViewModelObserver observer) {
+        this.mCategoryTemplateItemViewModelObserver = observer;
+    }
+
     @Override
     public String getItemName() {
         if (mItem != null) {
@@ -44,5 +50,18 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
     public void setTemplate(ProductTemplate template) {
         mItem.setTemplate(template);
         mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    @Override
+    public boolean onItemLongClick() {
+        onSelect();
+        if (mCategoryTemplateItemViewModelObserver != null) {
+            mCategoryTemplateItemViewModelObserver.onTemplateSelected(mItem);
+        }
+        return true;
+    }
+
+    public interface CategoryTemplateItemViewModelObserver {
+        void onTemplateSelected(CategoryTemplateItem item);
     }
 }
