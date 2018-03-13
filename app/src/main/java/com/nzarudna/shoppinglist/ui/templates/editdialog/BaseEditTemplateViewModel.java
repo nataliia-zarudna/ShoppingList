@@ -1,7 +1,9 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import android.arch.lifecycle.LiveData;
+import android.databinding.Bindable;
 
+import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -23,6 +25,28 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
     UnitRepository mUnitRepository;
     @Inject
     CategoryRepository mCategoryRepository;
+
+    @Bindable
+    private boolean mIsNewCategorySelected;
+
+    private String mCategoryName;
+
+    public void setCategoryName(String categoryName) {
+        this.mCategoryName = categoryName;
+    }
+
+    public String getCategoryName() {
+        return mCategoryName;
+    }
+
+    public void toggleIsNewCategorySelected() {
+        this.mIsNewCategorySelected = !mIsNewCategorySelected;
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public boolean isNewCategorySelected() {
+        return mIsNewCategorySelected;
+    }
 
     public abstract UUID getCategoryID();
 
