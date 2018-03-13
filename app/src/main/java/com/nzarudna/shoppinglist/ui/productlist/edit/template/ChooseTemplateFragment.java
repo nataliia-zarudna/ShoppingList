@@ -128,8 +128,6 @@ public class ChooseTemplateFragment
         }
     }
 
-
-
     private class CategoryTemplateViewHolder
             extends RecyclerItemViewHolder<CategoryTemplateItemWithListStatistics, CategoryTemplateItemViewModel> {
 

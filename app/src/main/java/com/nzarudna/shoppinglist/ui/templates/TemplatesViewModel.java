@@ -6,6 +6,7 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
@@ -31,21 +32,29 @@ public class TemplatesViewModel extends RecyclerViewModel<CategoryTemplateItem> 
     @Inject
     SharedPreferences mSharedPreferences;
 
+    private Boolean mIsGroupedView;
     private TemplatesViewModelObserver mTemplateViewObserver;
 
     public void setTemplateViewObserver(TemplatesViewModelObserver templateViewObserver) {
         this.mTemplateViewObserver = templateViewObserver;
     }
 
-    @Override
-    public LiveData<PagedList<CategoryTemplateItem>> getItems(int pageSize) {
-        boolean isGroupedView = mSharedPreferences.getBoolean(SHARED_PREFERENCE_TEMPLATES_IS_GROUP_VIEW, false);
-        return getItems(isGroupedView, pageSize);
+    public void setIsGroupedView(boolean isGroupedView) {
+        this.mIsGroupedView = isGroupedView;
+
+        mSharedPreferences.edit()
+                .putBoolean(SHARED_PREFERENCE_TEMPLATES_IS_GROUP_VIEW, mIsGroupedView)
+                .apply();
     }
 
-    public LiveData<PagedList<CategoryTemplateItem>> getItems(boolean isGroupedView, int pageSize) {
+    @Override
+    public LiveData<PagedList<CategoryTemplateItem>> getItems(int pageSize) {
+        if (mIsGroupedView == null) {
+            mIsGroupedView = mSharedPreferences.getBoolean(SHARED_PREFERENCE_TEMPLATES_IS_GROUP_VIEW, false);
+        }
+
         DataSource.Factory<Integer, CategoryTemplateItem> factory =
-                mTemplateRepository.getTemplates(isGroupedView);
+                mTemplateRepository.getTemplates(mIsGroupedView);
         return new LivePagedListBuilder<>(factory, pageSize).build();
     }
 

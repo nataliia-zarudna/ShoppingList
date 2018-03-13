@@ -167,6 +167,29 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
         startActivity(intent);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.templates_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.view_by_categories:
+                mViewModel.setIsGroupedView(true);
+                loadItems();
+                return true;
+            case R.id.view_separately:
+                mViewModel.setIsGroupedView(false);
+                loadItems();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private class CategoryTemplateAdapter
             extends BaseRecyclerAdapter<CategoryTemplateItem, CategoryTemplateItemViewModel> {
 
