@@ -1,9 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.paging.PagedList;
-import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
@@ -11,17 +8,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
-import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
+import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
+import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 
 import java.util.UUID;
 
@@ -33,11 +32,6 @@ public class ChooseTemplateFragment
         extends BaseRecyclerViewFragment<CategoryTemplateItemWithListStatistics, ChooseTemplateViewModel, CategoryTemplateItemViewModel> {
 
     private static final String ARG_LIST_ID = "com.nzarudna.shoppinglist.ui.productlist.edit.template.list_id";
-    private static final int DEFAULT_PAGE_LIST = 20;
-
-    private ChooseTemplateViewModel mViewModel;
-    private RecyclerView mTemplatesRecyclerView;
-    private CategoryTemplateAdapter mTemplatesAdapter;
 
     public static ChooseTemplateFragment getInstance(UUID listID) {
         ChooseTemplateFragment instance = new ChooseTemplateFragment();
@@ -53,64 +47,113 @@ public class ChooseTemplateFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this).get(ChooseTemplateViewModel.class);
-        ShoppingListApplication.getAppComponent().inject(mViewModel);
-
         if (getArguments() != null) {
             UUID listID = (UUID) getArguments().getSerializable(ARG_LIST_ID);
             mViewModel.setProductListID(listID);
         }
+
+        setHasOptionsMenu(true);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected ChooseTemplateViewModel getFragmentViewModel() {
+        ChooseTemplateViewModel viewModel = ViewModelProviders.of(this).get(ChooseTemplateViewModel.class);
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+        return viewModel;
+    }
 
-        View view = inflater.inflate(R.layout.fragment_recycler_view, container, false);
+    @Override
+    protected CategoryTemplateItemViewModel getListItemViewModel() {
+        return new CategoryTemplateItemViewModel();
+    }
 
-        mTemplatesRecyclerView = view.findViewById(R.id.recycler_view);
-        mTemplatesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mTemplatesAdapter = new CategoryTemplateAdapter();
-        mTemplatesRecyclerView.setAdapter(mTemplatesAdapter);
+    @Override
+    protected EditDialogViewModel<CategoryTemplateItemWithListStatistics> getEditDialogViewModel() {
+        return null;
+    }
 
-        mViewModel.getItems(DEFAULT_PAGE_LIST).observe(
-                this, new Observer<PagedList<CategoryTemplateItemWithListStatistics>>() {
-                    @Override
-                    public void onChanged(@Nullable PagedList<CategoryTemplateItemWithListStatistics> list) {
-                        mTemplatesAdapter.setList(list);
+    @Override
+    protected DiffCallback<CategoryTemplateItemWithListStatistics> getDiffCallback() {
+        return new DiffCallback<CategoryTemplateItemWithListStatistics>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull CategoryTemplateItemWithListStatistics oldItem, @NonNull CategoryTemplateItemWithListStatistics newItem) {
+                if (oldItem.getType().equals(newItem.getType())) {
+                    if (oldItem.getType().equals(CategoryTemplateItemWithListStatistics.TYPE_TEMPLATE)) {
+                        return oldItem.getTemplate().getTemplateID().equals(newItem.getTemplate().getTemplateID());
+                    } else {
+                        return oldItem.getCategory().getCategoryID().equals(newItem.getCategory().getCategoryID());
                     }
-                });
+                } else {
+                    return false;
+                }
+            }
 
-        return view;
+            @Override
+            public boolean areContentsTheSame(@NonNull CategoryTemplateItemWithListStatistics oldItem, @NonNull CategoryTemplateItemWithListStatistics newItem) {
+                return oldItem.equals(newItem);
+            }
+        };
     }
 
-    private class CategoryTemplateViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    protected BaseRecyclerAdapter<CategoryTemplateItemWithListStatistics, CategoryTemplateItemViewModel> getRecyclerViewAdapter() {
+        return new CategoryTemplateAdapter(this, getDiffCallback());
+    }
 
-        private ViewDataBinding mDataBinding;
-        private CategoryTemplateItemViewModel mItemViewModel;
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.fragment_recycler_view;
+    }
 
-        public CategoryTemplateViewHolder(ViewDataBinding dataBinding) {
-            super(dataBinding.getRoot());
-            mDataBinding = dataBinding;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
 
-            mItemViewModel = new CategoryTemplateItemViewModel();
-            mItemViewModel.setShoppingList(mViewModel.getShoppingList());
-            mDataBinding.setVariable(BR.viewModel, mItemViewModel);
-        }
+        inflater.inflate(R.menu.choose_template_menu, menu);
+    }
 
-        public void bind(CategoryTemplateItemWithListStatistics item) {
-            mItemViewModel.setItem(item);
-            mDataBinding.executePendingBindings();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.view_by_categories:
+                mViewModel.setIsGroupedView(true);
+                loadItems();
+                return true;
+            case R.id.view_separately:
+                mViewModel.setIsGroupedView(false);
+                loadItems();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    private class CategoryTemplateAdapter extends PagedListAdapter<CategoryTemplateItemWithListStatistics, CategoryTemplateViewHolder> {
+
+
+    private class CategoryTemplateViewHolder
+            extends RecyclerItemViewHolder<CategoryTemplateItemWithListStatistics, CategoryTemplateItemViewModel> {
+
+        public CategoryTemplateViewHolder(Fragment fragment, ViewDataBinding dataBinding,
+                                          @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryTemplateItemWithListStatistics> observer) {
+            super(fragment, dataBinding, observer);
+
+            getItemViewModel().setShoppingList(mViewModel.getShoppingList());
+        }
+
+        @Override
+        protected CategoryTemplateItemViewModel newItemViewModel() {
+            return ChooseTemplateFragment.this.getListItemViewModel();
+        }
+    }
+
+    private class CategoryTemplateAdapter
+            extends BaseRecyclerAdapter<CategoryTemplateItemWithListStatistics, CategoryTemplateItemViewModel> {
 
         private static final int VIEW_TYPE_TEMPLATE = 1;
         private static final int VIEW_TYPE_CATEGORY = 2;
 
-        protected CategoryTemplateAdapter() {
-            super(DIFF_CALLBACK);
+        protected CategoryTemplateAdapter(Fragment fragment, DiffCallback<CategoryTemplateItemWithListStatistics> diffCallback) {
+            super(fragment, diffCallback);
         }
 
         @Override
@@ -125,13 +168,12 @@ public class ChooseTemplateFragment
             ViewDataBinding dataBinding = DataBindingUtil.inflate(
                     getLayoutInflater(), layoutResID, parent, false);
 
-            return new CategoryTemplateViewHolder(dataBinding);
+            return new CategoryTemplateViewHolder(mFragment, dataBinding, mRecyclerItemViewModelObserver);
         }
 
         @Override
-        public void onBindViewHolder(CategoryTemplateViewHolder holder, int position) {
-            CategoryTemplateItemWithListStatistics item = getItem(position);
-            holder.bind(item);
+        protected CategoryTemplateItemViewModel getItemViewModel() {
+            return ChooseTemplateFragment.this.getListItemViewModel();
         }
 
         @Override
@@ -141,25 +183,4 @@ public class ChooseTemplateFragment
                     ? VIEW_TYPE_TEMPLATE : VIEW_TYPE_CATEGORY;
         }
     }
-
-    private final DiffCallback<CategoryTemplateItemWithListStatistics> DIFF_CALLBACK =
-            new DiffCallback<CategoryTemplateItemWithListStatistics>() {
-                @Override
-                public boolean areItemsTheSame(@NonNull CategoryTemplateItemWithListStatistics oldItem, @NonNull CategoryTemplateItemWithListStatistics newItem) {
-                    if (oldItem.getType().equals(newItem.getType())) {
-                        if (oldItem.getType().equals(CategoryTemplateItemWithListStatistics.TYPE_TEMPLATE)) {
-                            return oldItem.getTemplate().getTemplateID().equals(newItem.getTemplate().getTemplateID());
-                        } else {
-                            return oldItem.getCategory().getCategoryID().equals(newItem.getCategory().getCategoryID());
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-
-                @Override
-                public boolean areContentsTheSame(@NonNull CategoryTemplateItemWithListStatistics oldItem, @NonNull CategoryTemplateItemWithListStatistics newItem) {
-                    return oldItem.equals(newItem);
-                }
-            };
 }

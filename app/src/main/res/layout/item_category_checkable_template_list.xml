@@ -17,7 +17,7 @@
             android:id="@+id/category_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.categoryName}"
+            android:text="@{viewModel.itemName}"
             android:textColor="@android:color/holo_blue_dark" />
 
     </android.support.constraint.ConstraintLayout>

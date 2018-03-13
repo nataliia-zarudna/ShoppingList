@@ -1,14 +1,12 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 import android.arch.paging.DataSource;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
@@ -34,12 +32,7 @@ public class ChooseTemplateViewModel extends RecyclerViewModel<CategoryTemplateI
 
     private UUID mProductListID;
     private ShoppingList mShoppingList;
-    private boolean mIsGroupedView;
-
-    public ChooseTemplateViewModel() {
-        mIsGroupedView =
-                mSharedPreferences.getBoolean(SharedPreferencesConstants.DEFAULT_CHOOSE_TEMPLATES_IS_GROUPED_VIEW, false);
-    }
+    private Boolean mIsGroupedView;
 
     public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
@@ -60,6 +53,11 @@ public class ChooseTemplateViewModel extends RecyclerViewModel<CategoryTemplateI
 
     @Override
     public LiveData<PagedList<CategoryTemplateItemWithListStatistics>> getItems(int pageSize) {
+        if (mIsGroupedView == null) {
+            mIsGroupedView = mSharedPreferences.getBoolean(
+                    SharedPreferencesConstants.DEFAULT_CHOOSE_TEMPLATES_IS_GROUPED_VIEW, false);
+        }
+
         DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> templatesDSFactory =
                 mTemplateRepository.getTemplates(mIsGroupedView, mProductListID);
         return new LivePagedListBuilder<>(templatesDSFactory, pageSize).build();
