@@ -184,7 +184,7 @@ public class ProductListsFragment
     @Override
     protected ProductListsViewModel getFragmentViewModel() {
         mViewModel = ViewModelProviders.of(this).get(ProductListsViewModel.class);
-        //mViewModel.setObserver(this);
+        mViewModel.setProductListViewModelObserver(this);
         ShoppingListApplication.getAppComponent().inject(mViewModel);
         return mViewModel;
     }

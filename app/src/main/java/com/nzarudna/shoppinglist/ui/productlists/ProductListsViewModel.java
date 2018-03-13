@@ -32,13 +32,13 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
     @Inject
     SharedPreferences mSharedPreferences;
 
-    private ProductListViewModelObserver mObserver;
+    private ProductListViewModelObserver mProductListViewModelObserver;
 
     @ProductListRepository.ProductListSorting
     private int mSorting;
 
-    public void setObserver(ProductListViewModelObserver observer) {
-        this.mObserver = observer;
+    public void setProductListViewModelObserver(ProductListViewModelObserver observer) {
+        this.mProductListViewModelObserver = observer;
     }
 
     public void setSorting(int sorting) {
@@ -84,8 +84,8 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
 
     @Override
     public void onCreateNewList(UUID productListID) {
-        if (mObserver != null) {
-            mObserver.startEditProductListActivity(productListID);
+        if (mProductListViewModelObserver != null) {
+            mProductListViewModelObserver.startEditProductListActivity(productListID);
         }
     }
 
