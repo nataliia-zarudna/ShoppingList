@@ -198,7 +198,7 @@ public class ProductListRepository {
         switch (sorting) {
             case SORT_LISTS_BY_NAME:
                 return mProductListDao.findByStatusSortByName(status);
-            case SORT_LISTS_BY_CREATED_AT:
+            case SORT_LISTS_BY_MODIFIED_AT:
                 return mProductListDao.findStatusSortByModifiedAtDesc(status);
 
             default:

@@ -4,9 +4,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
@@ -22,6 +27,11 @@ public class ArchivedListsFragment
 
     public static ArchivedListsFragment newInstance() {
         return new ArchivedListsFragment();
+    }
+
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.fragment_recycler_view;
     }
 
     @Override
@@ -54,6 +64,27 @@ public class ArchivedListsFragment
     @Override
     protected EditDialogViewModel<ProductList> getEditDialogViewModel() {
         return null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.archived_lists_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort_by_name:
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_NAME);
+                loadItems();
+                return true;
+            case R.id.sort_by_modified_at:
+                mViewModel.setSorting(ProductListRepository.SORT_LISTS_BY_MODIFIED_AT);
+                loadItems();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
