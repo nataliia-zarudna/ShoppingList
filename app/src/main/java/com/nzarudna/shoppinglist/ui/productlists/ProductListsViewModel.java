@@ -59,7 +59,7 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
 
         try {
             DataSource.Factory<Integer, ProductListWithStatistics> listFactory
-                    = mProductListRepository.getLists(ProductList.STATUS_ACTIVE, mSorting);
+                    = mProductListRepository.getListsWithStatistics(ProductList.STATUS_ACTIVE, mSorting);
 
             return new LivePagedListBuilder<>(listFactory, pageSize).build();
 

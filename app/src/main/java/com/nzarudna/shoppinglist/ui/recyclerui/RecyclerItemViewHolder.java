@@ -59,7 +59,7 @@ public abstract class RecyclerItemViewHolder<T, VM extends RecyclerItemViewModel
             mFragment.registerForContextMenu(mDataBinding.getRoot());
 
             if (mOnItemLongClickListener != null) {
-                mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);
+                mDataBinding.getRoot().setOnClickListener(mOnItemClickListener);
             }
             if (mOnItemClickListener != null) {
                 mDataBinding.getRoot().setOnLongClickListener(mOnItemLongClickListener);

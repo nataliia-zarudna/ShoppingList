@@ -58,12 +58,8 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
         mProductListRepository.archiveList(mItem.getListID());
     }*/
 
-    public void onDeleteMenuItemSelected() {
-        mProductListRepository.archiveList(mItem.getListID());
-    }
-
     public void onArchiveMenuItemSelected() {
-        mProductListRepository.removeList(mItem.getListID());
+        mProductListRepository.archiveList(mItem.getListID());
     }
 
     public interface ProductListItemViewModelObserver {

@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsActivity;
 import com.nzarudna.shoppinglist.ui.categories.CategoriesActivity;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
@@ -54,6 +55,9 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                         break;
                     case R.id.units_item:
                         activityClass = UnitsActivity.class;
+                        break;
+                    case R.id.archive_item:
+                        activityClass = ArchivedListsActivity.class;
                         break;
                 }
                 if (activityClass != null) {

@@ -57,24 +57,34 @@ public interface ProductListDao {
     LiveData<ProductList> findByID(UUID listID);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.name")
-    DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByName(
+    DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByName(
             @ProductList.ProductListStatus int status);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.created_by, list.name")
-    DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByCreatedByAndName(
+    DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByCreatedByAndName(
             @ProductList.ProductListStatus int status);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.created_at DESC")
-    DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByCreatedAtDesc(
+    DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByCreatedAtDesc(
             @ProductList.ProductListStatus int status);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.modified_at DESC")
-    DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByModifiedAtDesc(
+    DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByModifiedAtDesc(
             @ProductList.ProductListStatus int status);
 
     @Query(value = STATISTICS_QUERY + " ORDER BY list.assigned_id, list.name")
-    DataSource.Factory<Integer, ProductListWithStatistics> findWithStaticticsByStatusSortByAssignedAndName(
+    DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByAssignedAndName(
             @ProductList.ProductListStatus int status);
+
+    //TODO: add tests start
+    @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY name")
+    DataSource.Factory<Integer, ProductList> findByStatusSortByName(
+            @ProductList.ProductListStatus int status);
+
+    @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
+    DataSource.Factory<Integer, ProductList> findStatusSortByModifiedAtDesc(
+            @ProductList.ProductListStatus int status);
+    //TODO: add tests end
 
     //TODO: fix test
     @Query(value = "SELECT * FROM product_lists ORDER BY modified_at DESC")

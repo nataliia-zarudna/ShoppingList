@@ -11,4 +11,8 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
+    <style name="AppTheme.Grey">
+
+    </style>
+
 </resources>

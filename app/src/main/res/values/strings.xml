@@ -55,6 +55,7 @@
     <string name="action_mode_selected_count">%1$s selected</string>
     <string name="categories_activity_label">Categories</string>
     <string name="units_activity_label">Units</string>
+    <string name="archive_activity_label">Archive</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

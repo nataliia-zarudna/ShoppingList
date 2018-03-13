@@ -170,24 +170,39 @@ public class ProductListRepository {
         return shoppingList;
     }
 
-    public DataSource.Factory<Integer, ProductListWithStatistics> getLists(@ProductList.ProductListStatus int status,
+    public DataSource.Factory<Integer, ProductListWithStatistics> getListsWithStatistics(@ProductList.ProductListStatus int status,
                                                                            @ProductListSorting int sorting)
             throws ShoppingListException {
 
         switch (sorting) {
             case SORT_LISTS_BY_NAME:
-                return mProductListDao.findWithStaticticsByStatusSortByName(status);
+                return mProductListDao.findWithStatisticsByStatusSortByName(status);
             case SORT_LISTS_BY_CREATED_AT:
-                return mProductListDao.findWithStaticticsByStatusSortByCreatedAtDesc(status);
+                return mProductListDao.findWithStatisticsByStatusSortByCreatedAtDesc(status);
             case SORT_LISTS_BY_CREATED_BY:
-                return mProductListDao.findWithStaticticsByStatusSortByCreatedByAndName(status);
+                return mProductListDao.findWithStatisticsByStatusSortByCreatedByAndName(status);
             case SORT_LISTS_BY_ASSIGNED:
-                return mProductListDao.findWithStaticticsByStatusSortByAssignedAndName(status);
+                return mProductListDao.findWithStatisticsByStatusSortByAssignedAndName(status);
             case SORT_LISTS_BY_MODIFIED_AT:
-                return mProductListDao.findWithStaticticsByStatusSortByModifiedAtDesc(status);
+                return mProductListDao.findWithStatisticsByStatusSortByModifiedAtDesc(status);
 
             default:
                 throw new ShoppingListException("Unknown sorting " + sorting);
+        }
+    }
+
+    public DataSource.Factory<Integer, ProductList> getLists(@ProductList.ProductListStatus int status,
+                                                                           @ProductListSorting int sorting)
+            throws ShoppingListException {
+
+        switch (sorting) {
+            case SORT_LISTS_BY_NAME:
+                return mProductListDao.findByStatusSortByName(status);
+            case SORT_LISTS_BY_CREATED_AT:
+                return mProductListDao.findStatusSortByModifiedAtDesc(status);
+
+            default:
+                throw new ShoppingListException("Unsupported sorting " + sorting);
         }
     }
 

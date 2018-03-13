@@ -29,6 +29,9 @@
             android:label="@string/categories_activity_label" />
         <activity android:name=".ui.units.UnitsActivity"
             android:label="@string/units_activity_label" />
+        <activity android:name=".ui.archivedproductlists.ArchivedListsActivity"
+            android:label="@string/archive_activity_label"
+            android:theme="@style/AppTheme.Grey"/>
     </application>
 
 </manifest>

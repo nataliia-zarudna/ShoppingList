@@ -272,7 +272,7 @@ public class ProductListDaoTest {
         );
 
         DataSource.Factory<Integer, ProductListWithStatistics> foundLists =
-                mSubjectDao.findWithStaticticsByStatusSortByName(ProductList.STATUS_ACTIVE);
+                mSubjectDao.findWithStatisticsByStatusSortByName(ProductList.STATUS_ACTIVE);
         PagedList<ProductListWithStatistics> foundProductsList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductsList);
@@ -316,7 +316,7 @@ public class ProductListDaoTest {
         );
 
         DataSource.Factory<Integer, ProductListWithStatistics> foundLists =
-                mSubjectDao.findWithStaticticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
+                mSubjectDao.findWithStatisticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
         PagedList<ProductListWithStatistics> foundProductsList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductsList);
@@ -367,7 +367,7 @@ public class ProductListDaoTest {
         );
 
         DataSource.Factory<Integer, ProductListWithStatistics> foundLists =
-                mSubjectDao.findWithStaticticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
+                mSubjectDao.findWithStatisticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
         PagedList<ProductListWithStatistics> foundProductsList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductsList);
@@ -413,7 +413,7 @@ public class ProductListDaoTest {
         );
 
         DataSource.Factory<Integer, ProductListWithStatistics> foundLists =
-                mSubjectDao.findWithStaticticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
+                mSubjectDao.findWithStatisticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
         PagedList<ProductListWithStatistics> foundProductsList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductsList);
@@ -456,7 +456,7 @@ public class ProductListDaoTest {
         );
 
         DataSource.Factory<Integer, ProductListWithStatistics> foundLists =
-                mSubjectDao.findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
+                mSubjectDao.findWithStatisticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
         PagedList<ProductListWithStatistics> foundProductsList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductsList);

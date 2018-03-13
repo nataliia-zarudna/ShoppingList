@@ -264,7 +264,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByName(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findWithStatisticsByStatusSortByName(ProductList.STATUS_ACTIVE);
     }
 
     @Test
@@ -272,7 +272,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_AT);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findWithStatisticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
     }
 
     @Test
@@ -280,7 +280,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_BY);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findWithStatisticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
     }
 
     @Test
@@ -288,7 +288,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_MODIFIED_AT);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findWithStatisticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
     }
 
     @Test
@@ -296,7 +296,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ARCHIVED, SORT_LISTS_BY_MODIFIED_AT);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ARCHIVED);
+        verify(mProductListDao).findWithStatisticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ARCHIVED);
     }
 
     @Test
@@ -304,7 +304,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
 
-        verify(mProductListDao).findWithStaticticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findWithStatisticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
     }
 
     @Test
