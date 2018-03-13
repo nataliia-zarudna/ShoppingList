@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.Bindable;
 import android.databinding.Observable;
@@ -10,13 +11,18 @@ import android.databinding.PropertyChangeRegistry;
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
+import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.BaseEditTemplateViewModel;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -28,98 +34,114 @@ import javax.inject.Inject;
  * Created by nsirobaba on 2/26/18.
  */
 
-public class EditProductViewModel extends ObservableViewModel {
+public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProductItem> {
 
     @Inject
     ProductTemplateRepository mTemplateRepository;
     @Inject
-    UnitRepository mUnitRepository;
-    @Inject
-    CategoryRepository mCategoryRepository;
+    ProductListRepository mProductListRepository;
 
-    @Bindable
-    private MutableLiveData<Product> mProduct;
+    private Product mProduct;
+    private ShoppingList mShoppingList;
 
-    public void setProductInfo(Product product, UUID listID) {
-        if (product == null) {
-            product = new Product(null);
-            product.setListID(listID);
-        }
-        this.mProduct = new MutableLiveData<>();
-        mProduct.setValue(product);
-
-        mPropertyChangeRegistry.notifyChange(this, BR._all);
+    public void setListID(UUID listID) {
+        mShoppingList = mProductListRepository.getShoppingList(listID);
     }
 
-    public LiveData<Product> getProduct() {
-        return mProduct;
+    @Override
+    public void setItem(CategoryProductItem item) {
+        super.setItem(item);
+        mProduct = mItem.getProduct();
+
+        if (mShoppingList == null) {
+            setListID(mProduct.getListID());
+        }
+    }
+
+    @Override
+    protected CategoryProductItem createItemObject() {
+        mProduct = new Product("");
+        return new CategoryProductItem(mProduct, null);
+    }
+
+    @Override
+    public String getName() {
+        return mProduct.getName();
+    }
+
+    @Override
+    public void setName(String name) {
+        mProduct.setName(name);
+    }
+
+    @Override
+    protected void updateItem() {
+        mShoppingList.updateProduct(mProduct, null);
+    }
+
+    @Override
+    protected void createItem() {
+        mShoppingList.addProduct(mProduct, null);
     }
 
     public LiveData<List<ProductTemplate>> getNameAutocompleteList(String filterValue) {
-        return mTemplateRepository.getTemplatesByNameLike(filterValue, mProduct.getValue().getListID());
+        return mTemplateRepository.getTemplatesByNameLike(filterValue, mProduct.getListID());
     }
 
-    public String getProductName() {
+    /*public String getProductName() {
         return mProduct != null ? mProduct.getValue().getName() : "";
     }
 
     public void setProductName(String productName) {
         mProduct.getValue().setName(productName);
-    }
+    }*/
 
     public String getProductCount() {
-        if (mProduct != null && mProduct.getValue().getCount() > 0) {
-            return FormatUtils.format(mProduct.getValue().getCount());
+        if (mProduct != null && mProduct.getCount() > 0) {
+            return FormatUtils.format(mProduct.getCount());
         } else {
             return "";
         }
     }
 
-    public void onCountChange(CharSequence countStr, int i, int i1, int i2) {
-        double count = Double.valueOf(countStr.toString());
-        mProduct.getValue().setCount(count);
+    public void onCountChange(CharSequence countSequence, int i, int i1, int i2) {
+        String countStr = countSequence.toString().trim();
+        double count = !countStr.isEmpty() ? Double.valueOf(countStr) : 0;
+        mProduct.setCount(count);
     }
 
-    public UUID getProductCategoryID() {
+    /*public UUID getProductCategoryID() {
         return mProduct != null ? mProduct.getValue().getCategoryID() : null;
     }
 
     public UUID getProductUnitID() {
         return mProduct != null ? mProduct.getValue().getUnitID() : null;
-    }
-
-    public String getDialogTitle() {
-        return getProductName();
-    }
-
-    public LiveData<List<Unit>> getUnitList() {
-        return mUnitRepository.getAvailableUnits();
-    }
-
-    public LiveData<List<Category>> getCategoryList() {
-        return mCategoryRepository.getAvailableCategories();
-    }
-
-    public void onUnitSelect(Unit unit) {
-        if (mProduct.getValue() != null) {
-            mProduct.getValue().setUnitID(unit.getUnitID());
-        }
-    }
-
-    public void onCategorySelect(Category category) {
-        if (mProduct.getValue() != null) {
-            mProduct.getValue().setCategoryID(category.getCategoryID());
-        }
-    }
+    }*/
 
     public void onChooseProductTemplate(ProductTemplate template) {
-        Product product = mProduct.getValue();
-        product.setTemplateID(template.getTemplateID());
+        mProduct.setTemplateID(template.getTemplateID());
 
-        product.setCategoryID(template.getCategoryID());
-        product.setUnitID(template.getUnitID());
+        mProduct.setCategoryID(template.getCategoryID());
+        mProduct.setUnitID(template.getUnitID());
+    }
 
-        mProduct.postValue(product);
-        mPropertyChangeRegistry.notifyChange(this, BR._all);
+    @Override
+    public UUID getCategoryID() {
+        return mProduct.getCategoryID();
+    }
+
+    @Override
+    public UUID getUnitID() {
+        return mProduct.getUnitID();
+    }
+
+    @Override
+    public void setUnit(Unit selectedUnit) {
+        mProduct.setUnitID(selectedUnit.getUnitID());
+    }
+
+    @Override
+    public void setCategory(Category selectedCategory) {
+        mProduct.setCategoryID(selectedCategory.getCategoryID());
     }
 }

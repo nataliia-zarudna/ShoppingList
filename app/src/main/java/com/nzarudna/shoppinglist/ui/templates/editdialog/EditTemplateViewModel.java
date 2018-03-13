@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class EditTemplateViewModel extends EditDialogViewModel<CategoryTemplateItem> {
+public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTemplateItem> {
 
     @Inject
     ProductTemplateRepository mTemplateRepository;
@@ -63,15 +63,17 @@ public class EditTemplateViewModel extends EditDialogViewModel<CategoryTemplateI
         mTemplateRepository.createTemplate(mTemplate);
     }
 
+    @Override
     public UUID getCategoryID() {
         return mTemplate.getCategoryID();
     }
 
+    @Override
     public UUID getUnitID() {
         return mTemplate.getUnitID();
     }
 
-    public LiveData<List<Unit>> getUnits() {
+    /*public LiveData<List<Unit>> getUnits() {
         return mUnitRepository.getAvailableUnits();
     }
 
@@ -95,12 +97,14 @@ public class EditTemplateViewModel extends EditDialogViewModel<CategoryTemplateI
             }
         }
         return -1;
-    }
+    }*/
 
+    @Override
     public void setUnit(Unit selectedUnit) {
         mTemplate.setUnitID(selectedUnit.getUnitID());
     }
 
+    @Override
     public void setCategory(Category selectedCategory) {
         mTemplate.setCategoryID(selectedCategory.getCategoryID());
     }

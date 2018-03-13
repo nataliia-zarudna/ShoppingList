@@ -30,12 +30,16 @@ import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
+import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
 import java.util.UUID;
 
@@ -85,8 +89,22 @@ public abstract class ProductListFragment
     }
 
     @Override
-    protected EditDialogViewModel<CategoryProductItem> getEditDialogViewModel() {
-        return null;
+    protected EditProductViewModel getEditDialogViewModel() {
+        return new EditProductViewModel();
+    }
+
+    @Override
+    protected EditProductDialogFragment getEditItemDialogFragment() {
+        EditProductDialogFragment editFragment = EditProductDialogFragment.newInstance();
+        editFragment.setViewModel(getEditDialogViewModel());
+        return editFragment;
+    }
+
+    @Override
+    protected EditProductDialogFragment getEditItemDialogFragment(CategoryProductItem item) {
+        EditProductDialogFragment editFragment = getEditItemDialogFragment();
+        editFragment.setItem(item);
+        return editFragment;
     }
 
     @Override
@@ -136,14 +154,14 @@ public abstract class ProductListFragment
                 @Override
                 public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
 
-                        if (mStartPosition == -1) {
-                            mStartPosition = viewHolder.getLayoutPosition();
-                            mTargetStartPosition = target.getLayoutPosition();
-                        }
-                        mTarget = target;
+                    if (mStartPosition == -1) {
+                        mStartPosition = viewHolder.getLayoutPosition();
+                        mTargetStartPosition = target.getLayoutPosition();
+                    }
+                    mTarget = target;
 
-                        mAdapter.notifyItemMoved(viewHolder.getLayoutPosition(), target.getLayoutPosition());
-                        return true;
+                    mAdapter.notifyItemMoved(viewHolder.getLayoutPosition(), target.getLayoutPosition());
+                    return true;
                 }
 
                 @Override
@@ -336,8 +354,8 @@ public abstract class ProductListFragment
     protected class CategoryProductViewHolder extends RecyclerItemViewHolder<CategoryProductItem, CategoryProductItemViewModel> {
 
         public CategoryProductViewHolder(Fragment fragment,
-                                      ViewDataBinding dataBinding,
-                                      @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryProductItem> observer) {
+                                         ViewDataBinding dataBinding,
+                                         @Nullable RecyclerItemViewModel.RecyclerItemViewModelObserver<CategoryProductItem> observer) {
             super(fragment, dataBinding, observer);
 
             getItemViewModel().setShoppingList(mViewModel.mShoppingList);

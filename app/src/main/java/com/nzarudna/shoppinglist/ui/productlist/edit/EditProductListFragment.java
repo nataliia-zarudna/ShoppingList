@@ -105,23 +105,7 @@ public class EditProductListFragment extends ProductListFragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_CREATE_FORM_TEMPLATE:
-                    break;
-                case REQUEST_CODE_NEW_FRAGMENT:
-                    Product newProduct = EditProductDialogFragment.getResultProduct(data);
-                    ((EditProductListViewModel) mViewModel).createProduct(newProduct, new ShoppingList.OnSaveProductCallback() {
-                        @Override
-                        public void onSaveProduct() {
-                            if (getActivity() != null) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getActivity(), R.string.save_item_success_msg, Toast.LENGTH_SHORT)
-                                                .show();
-                                    }
-                                });
-                            }
-                        }
-                    });
+                    Toast.makeText(getActivity(), R.string.save_item_success_msg, Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -150,7 +134,8 @@ public class EditProductListFragment extends ProductListFragment {
         mCreateNewSubItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditProductDialogFragment newProductDialog = EditProductDialogFragment.newInstance(mViewModel.getProductListID());
+                EditProductDialogFragment newProductDialog = EditProductDialogFragment.newInstance();
+                newProductDialog.setListID(mViewModel.getProductListID());
                 newProductDialog.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_NEW_FRAGMENT);
                 newProductDialog.show(getFragmentManager(), "EditProductDialogFragment");
             }

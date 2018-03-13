@@ -1,34 +1,26 @@
 package com.nzarudna.shoppinglist.ui.templates;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.ViewDataBinding;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
-import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
 
@@ -152,14 +144,16 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
     }
 
     @Override
-    protected BaseEditItemDialogFragment getEditItemDialogFragment() {
-        return EditTemplateDialogFragment.newInstance();
+    protected EditTemplateDialogFragment getEditItemDialogFragment() {
+        EditTemplateDialogFragment editFragment = EditTemplateDialogFragment.newInstance();
+        editFragment.setViewModel(getEditDialogViewModel());
+        return editFragment;
     }
 
     @Override
-    protected BaseEditItemDialogFragment getEditItemDialogFragment(CategoryTemplateItem item) {
-        EditTemplateDialogFragment editFragment = EditTemplateDialogFragment.newInstance();
-        editFragment.setArguments(item);
+    protected EditTemplateDialogFragment getEditItemDialogFragment(CategoryTemplateItem item) {
+        EditTemplateDialogFragment editFragment = getEditItemDialogFragment();
+        editFragment.setItem(item);
         return editFragment;
     }
 

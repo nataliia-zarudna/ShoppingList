@@ -26,7 +26,6 @@ import com.nzarudna.shoppinglist.R;
 
 public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDialogViewModel<T>> extends DialogFragment {
 
-    private static final String EXTRA_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
     private static final String ARG_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
 
     protected VM mViewModel;
@@ -35,9 +34,9 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
         return new BaseEditItemDialogFragment();
     }
 
-    public void setArguments(T template) {
+    public void setItem(T item) {
         Bundle args = new Bundle();
-        args.putParcelable(ARG_ITEM, template);
+        args.putParcelable(ARG_ITEM, item);
 
         this.setArguments(args);
     }

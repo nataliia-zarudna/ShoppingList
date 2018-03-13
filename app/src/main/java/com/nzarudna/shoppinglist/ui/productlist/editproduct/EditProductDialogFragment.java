@@ -1,34 +1,23 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
-import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.databinding.FragmentEditProductDialogBinding;
-import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
-import com.nzarudna.shoppinglist.model.unit.Unit;
-import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.BaseEditTemplateDialogFragment;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,115 +26,53 @@ import java.util.UUID;
  * Created by Nataliia on 26.02.2018.
  */
 
-public class EditProductDialogFragment extends DialogFragment {
+public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<CategoryProductItem, EditProductViewModel> {
 
     private static final String TAG = "EditProductDF";
 
-    private static final String ARG_PRODUCT = "productID";
     private static final String ARG_LIST_ID = "listID";
-    private static final String EXTRA_PRODUCT = "com.nzarudna.shoppinglist.ui.productlist.editproduct.product";
 
-    private EditProductViewModel mViewModel;
     private ProductNameAutocompleteAdapter mNameAutocompleteAdapter;
-    private ArrayAdapter<Unit> mUnitSpinnerAdapter;
-    private ArrayAdapter<Category> mCategorySpinnerAdapter;
-    private AppCompatSpinner mUnitSpinner;
-    private AppCompatSpinner mCategorySpinner;
-    private List<Unit> mUnits;
-    private List<Category> mCategoties;
 
-    public static EditProductDialogFragment newInstance(UUID listID) {
+    public static EditProductDialogFragment newInstance() {
+        return new EditProductDialogFragment();
+    }
+
+    public void setListID(UUID listID) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_LIST_ID, listID);
-        return newInstance(args);
+
+        this.setArguments(args);
     }
 
-    public static EditProductDialogFragment newInstance(Product product) {
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_PRODUCT, product);
-        return newInstance(args);
-    }
-
-    private static EditProductDialogFragment newInstance(Bundle args) {
-        EditProductDialogFragment instance = new EditProductDialogFragment();
-        instance.setArguments(args);
-        return instance;
-    }
-
-    public static Product getResultProduct(Intent resultIntent) {
-        return resultIntent.getParcelableExtra(EXTRA_PRODUCT);
+    @Override
+    protected EditProductViewModel getViewModel() {
+        EditProductViewModel viewModel = new EditProductViewModel();
+        ShoppingListApplication.getAppComponent().inject(viewModel);
+        return viewModel;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this).get(EditProductViewModel.class);
-        ShoppingListApplication.getAppComponent().inject(mViewModel);
-
-        Product product = null;
         UUID listID = null;
         if (getArguments() != null) {
-            product = getArguments().getParcelable(ARG_PRODUCT);
             listID = (UUID) getArguments().getSerializable(ARG_LIST_ID);
         }
-        mViewModel.setProductInfo(product, listID);
+        mViewModel.setListID(listID);
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sendResult(Activity.RESULT_OK, mViewModel.getProduct().getValue());
-                    }
-                })
-                .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setView(getContainerView())
-                .setTitle(mViewModel.getDialogTitle())
-                .create();
+    protected int getDialogFragmentResID() {
+        return R.layout.fragment_edit_product_dialog;
     }
 
-    private void sendResult(int resultCode, Product product) {
-        if (getTargetFragment() != null) {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra(EXTRA_PRODUCT, product);
-
-            getTargetFragment().onActivityResult(
-                    getTargetRequestCode(), resultCode, resultIntent);
-        }
-    }
-
-    private View getContainerView() {
-
-        FragmentEditProductDialogBinding binding = DataBindingUtil.inflate(getActivity().getLayoutInflater(),
-                R.layout.fragment_edit_product_dialog, null, false);
-        binding.setViewModel(mViewModel);
-
-        View dialogView = binding.getRoot();
+    @Override
+    protected View getCustomView() {
+        View dialogView = super.getCustomView();
 
         configNameEditView(dialogView);
-        configUnitSpinnerView(dialogView);
-        configCategorySpinnerView(dialogView);
-
-        mViewModel.getProduct().observe(this, new Observer<Product>() {
-            @Override
-            public void onChanged(@Nullable Product product) {
-                if (mCategoties != null) {
-                    updateSelectedCategory();
-                }
-                if (mUnits != null) {
-                    updateSelectedUnit();
-                }
-            }
-        });
 
         return dialogView;
     }
@@ -166,7 +93,7 @@ public class EditProductDialogFragment extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 loadNameAutocompleteValues(charSequence.toString());
-                mViewModel.setProductName(charSequence.toString());
+                mViewModel.setName(charSequence.toString());
             }
 
             @Override
@@ -182,90 +109,6 @@ public class EditProductDialogFragment extends DialogFragment {
                 mViewModel.onChooseProductTemplate(template);
             }
         });
-    }
-
-    private void configUnitSpinnerView(View dialogView) {
-
-        mUnitSpinner = dialogView.findViewById(R.id.unit);
-
-        mViewModel.getUnitList().observe(this, new Observer<List<Unit>>() {
-            @Override
-            public void onChanged(@Nullable List<Unit> units) {
-                mUnits = units;
-
-                if (mUnitSpinnerAdapter == null && units != null) {
-                    mUnitSpinnerAdapter
-                            = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
-                            units, UnitItemViewModel.class);
-                    mUnitSpinner.setAdapter(mUnitSpinnerAdapter);
-
-                    updateSelectedUnit();
-                }
-            }
-        });
-        mUnitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Unit unit = mUnitSpinnerAdapter.getItem(i);
-                mViewModel.onUnitSelect(unit);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }
-
-    private void updateSelectedUnit() {
-        UUID productUnitID = mViewModel.getProductUnitID();
-        for (int i = 0; i < mUnits.size(); i++) {
-            if (mUnits.get(i).getUnitID().equals(productUnitID)) {
-                mUnitSpinner.setSelection(i);
-            }
-        }
-    }
-
-    private void configCategorySpinnerView(View dialogView) {
-
-        mCategorySpinner = dialogView.findViewById(R.id.category);
-
-        mViewModel.getCategoryList().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(@Nullable List<Category> categories) {
-                mCategoties = categories;
-
-                if (mCategorySpinnerAdapter == null && categories != null) {
-                    mCategorySpinnerAdapter
-                            = new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list,
-                            categories, CategoryItemViewModel.class);
-                    mCategorySpinner.setAdapter(mCategorySpinnerAdapter);
-
-                    updateSelectedCategory();
-                }
-            }
-        });
-        mCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Category category = mCategorySpinnerAdapter.getItem(i);
-                mViewModel.onCategorySelect(category);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }
-
-    private void updateSelectedCategory() {
-        UUID productCategoryID = mViewModel.getProductCategoryID();
-        for (int i = 0; i < mCategoties.size(); i++) {
-            if (mCategoties.get(i).getCategoryID().equals(productCategoryID)) {
-                mCategorySpinner.setSelection(i);
-            }
-        }
     }
 
     private void loadNameAutocompleteValues(String filterValue) {

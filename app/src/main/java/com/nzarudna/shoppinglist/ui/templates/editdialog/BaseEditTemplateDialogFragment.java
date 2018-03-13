@@ -2,7 +2,6 @@ package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -13,7 +12,6 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
-import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.CategoryItemViewModel;
@@ -27,28 +25,13 @@ import java.util.List;
  * Created by Nataliia on 06.03.2018.
  */
 
-public class EditTemplateDialogFragment extends BaseEditTemplateDialogFragment<CategoryTemplateItem, EditTemplateViewModel> {
+public abstract class BaseEditTemplateDialogFragment<T extends Parcelable, VM extends BaseEditTemplateViewModel<T>>
+        extends BaseEditItemDialogFragment<T, VM> {
 
-    //private ViewModelArrayAdapter<Unit> mUnitAdapter;
-    //private ViewModelArrayAdapter<Category> mCategoryAdapter;
-
-    public static EditTemplateDialogFragment newInstance() {
-        return new EditTemplateDialogFragment();
-    }
-
-    /*@Override
-    protected EditTemplateViewModel getViewModel() {
-        EditTemplateViewModel viewModel = ViewModelProviders.of(this).get(EditTemplateViewModel.class);
-        ShoppingListApplication.getAppComponent().inject(viewModel);
-        return viewModel;
-    }*/
+    private ViewModelArrayAdapter<Unit> mUnitAdapter;
+    private ViewModelArrayAdapter<Category> mCategoryAdapter;
 
     @Override
-    protected int getDialogFragmentResID() {
-        return R.layout.fragment_edit_template_dialog;
-    }
-
-    /*@Override
     protected View getCustomView() {
 
         View fragmentView = super.getCustomView();
@@ -118,5 +101,5 @@ public class EditTemplateDialogFragment extends BaseEditTemplateDialogFragment<C
 
             }
         });
-    }*/
+    }
 }

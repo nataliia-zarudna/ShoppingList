@@ -13,7 +13,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +40,7 @@ public abstract class BaseRecyclerViewFragment
         RecyclerViewModel.RecyclerViewModelObserver, Observer<PagedList<T>> {
 
     protected static final int DEFAULT_PAGE_SIZE = 20;
-    private static final int REQUEST_CODE_EDIT_TEMPLATE = 1;
+    private static final int REQUEST_CODE_EDIT_ITEM = 1;
 
     protected LiveData<PagedList<T>> mItemsLiveData;
     protected VM mViewModel;
@@ -232,18 +231,18 @@ public abstract class BaseRecyclerViewFragment
 
     protected BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> getEditItemDialogFragment(T item) {
         BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> editDialog = getEditItemDialogFragment();
-        editDialog.setArguments(item);
+        editDialog.setItem(item);
         return editDialog;
     }
 
     private void showEditDialog(BaseEditItemDialogFragment<T, ? extends EditDialogViewModel<T>> dialog) {
-        dialog.setTargetFragment(this, REQUEST_CODE_EDIT_TEMPLATE);
-        dialog.show(getFragmentManager(), "EditTemplateDialogFragment");
+        dialog.setTargetFragment(this, REQUEST_CODE_EDIT_ITEM);
+        dialog.show(getFragmentManager(), "BaseEditItemDialogFragment");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_TEMPLATE) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_EDIT_ITEM) {
 
             Toast.makeText(getActivity(), R.string.save_item_success_msg, Toast.LENGTH_SHORT).show();
 
