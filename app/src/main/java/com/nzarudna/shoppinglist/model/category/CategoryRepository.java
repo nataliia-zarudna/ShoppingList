@@ -2,8 +2,13 @@ package com.nzarudna.shoppinglist.model.category;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 
@@ -30,21 +35,43 @@ public class CategoryRepository {
         mProductTemplateDao = productTemplateDao;
     }
 
-    public void create(final Category category) {
+    public void create(final Category category, final @Nullable AsyncResultListener listener) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                mCategoryDao.insert(category);
+                try {
+                    mCategoryDao.insert(category);
+
+                    if (listener != null) {
+                        listener.onSuccess();
+                    }
+                } catch (SQLiteConstraintException e) {
+                    //throw new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e);
+                    if (listener != null) {
+                        listener.onError(new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e));
+                    }
+                }
                 return null;
             }
         }.execute();
     }
 
-    public void update(final Category category) {
+    public void update(final Category category, final @Nullable AsyncResultListener listener) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                mCategoryDao.update(category);
+                try {
+                    mCategoryDao.update(category);
+
+                    if (listener != null) {
+                        listener.onSuccess();
+                    }
+                } catch (SQLiteConstraintException e) {
+                    //throw new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e);
+                    if (listener != null) {
+                        listener.onError(new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e));
+                    }
+                }
                 return null;
             }
         }.execute();

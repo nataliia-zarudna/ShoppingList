@@ -81,4 +81,14 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
         }
         return -1;
     }
+
+    @Override
+    public void saveItem() {
+
+        if (isNewCategorySelected()) {
+            //mCategoryRepository.create();
+        }
+
+        super.saveItem();
+    }
 }

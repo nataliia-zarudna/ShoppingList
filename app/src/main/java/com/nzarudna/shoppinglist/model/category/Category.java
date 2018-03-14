@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.model.category;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,7 +13,10 @@ import java.util.UUID;
 /**
  * Category of product
  */
-@Entity(tableName = "categories")
+@Entity(tableName = "categories",
+        indices = {
+                @Index(value = "name", unique = true)
+        })
 public class Category implements Parcelable {
 
     public static final String DEFAULT_CATEGORY_ID_STRING = "ffffffff-ffff-ffff-ffff-ffffffffffff";

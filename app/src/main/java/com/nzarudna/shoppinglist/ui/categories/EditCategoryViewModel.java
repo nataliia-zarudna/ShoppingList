@@ -36,11 +36,11 @@ public class EditCategoryViewModel extends EditDialogViewModel<Category> {
     protected void updateItem() {
         Log.d("magic", "mCategoryRepository updateItem " + mCategoryRepository.toString());
 
-        mCategoryRepository.update(mItem);
+        mCategoryRepository.update(mItem, this);
     }
 
     @Override
     protected void createItem() {
-        mCategoryRepository.create(mItem);
+        mCategoryRepository.create(mItem, this);
     }
 }
