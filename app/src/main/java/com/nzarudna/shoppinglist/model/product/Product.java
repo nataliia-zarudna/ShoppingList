@@ -106,7 +106,7 @@ public class Product implements Cloneable, Parcelable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = (name != null) ? name.trim() : null;
     }
 
     public UUID getCategoryID() {

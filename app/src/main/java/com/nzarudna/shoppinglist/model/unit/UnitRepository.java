@@ -55,8 +55,7 @@ public class UnitRepository {
             Unit unit = units[0];
 
             try {
-                String trimmedName = unit.getName();
-                unit.setName(trimmedName);
+
                 validateUnitName(mUnitDao, unit.getName());
 
                 if (mIsCreate) {

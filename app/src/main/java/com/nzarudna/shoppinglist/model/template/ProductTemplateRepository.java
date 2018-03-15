@@ -72,8 +72,6 @@ public class ProductTemplateRepository {
 
                 ProductTemplate template = templates[0];
 
-                String trimmedName = template.getName().trim();
-                template.setName(trimmedName);
                 validateName(mProductTemplateDao, template.getName());
 
                 if (mIsCreate) {

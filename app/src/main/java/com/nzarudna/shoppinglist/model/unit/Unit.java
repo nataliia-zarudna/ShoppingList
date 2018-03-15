@@ -57,9 +57,8 @@ public class Unit implements Parcelable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = (name != null) ? name.trim() : null;
     }
-
 
     @Override
     public boolean equals(Object o) {

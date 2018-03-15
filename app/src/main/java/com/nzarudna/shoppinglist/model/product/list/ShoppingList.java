@@ -6,7 +6,11 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
@@ -49,23 +53,31 @@ public class ShoppingList {
         return mListID;
     }
 
-    public void updateProductList(final ProductList productList) {
-        new AsyncTask<Void, Void, Void>() {
+    private static class UpdateListAsyncTask extends AsyncTask<ProductList, Void, Void> {
 
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductListDao.update(productList);
-                return null;
-            }
-        }.execute();
+        ProductListDao mProductListDao;
+
+        UpdateListAsyncTask(ProductListDao productListDao) {
+            mProductListDao = productListDao;
+        }
+
+        @Override
+        protected Void doInBackground(ProductList... productLists) {
+            mProductListDao.update(productLists[0]);
+            return null;
+        }
     }
 
-    public void addProduct(@NonNull final Product product, @Nullable OnSaveProductCallback onSaveProductCallback) {
-        insertProduct(product, onSaveProductCallback);
-        mProductTemplateRepository.createTemplateFromProduct(product);
+    public void updateProductList(ProductList productList) {
+        new UpdateListAsyncTask(mProductListDao).execute(productList);
     }
 
-    public void addProductFromTemplate(ProductTemplate template, @Nullable OnSaveProductCallback onSaveProductCallback) {
+    public void addProduct(@NonNull Product product, @Nullable AsyncResultListener listener) {
+        insertProduct(product, listener);
+        mProductTemplateRepository.createTemplateFromProduct(product, listener);
+    }
+
+    public void addProductFromTemplate(ProductTemplate template, @Nullable AsyncResultListener listener) {
 
         Product product = new Product();
         product.setName(template.getName());
@@ -73,36 +85,71 @@ public class ShoppingList {
         product.setCategoryID(template.getCategoryID());
         product.setTemplateID(template.getTemplateID());
 
-        insertProduct(product, onSaveProductCallback);
+        insertProduct(product, listener);
     }
 
-    private void insertProduct(final Product product, final @Nullable OnSaveProductCallback onSaveProductCallback) {
-        product.setListID(mListID);
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
+    private static class CreateAsyncTask extends AsyncTask<Product, Void, Void> {
 
-                ProductList productList = mProductListDao.findByIDSync(mListID);
+        ProductListDao mProductListDao;
+        ProductDao mProductDao;
+        AsyncResultListener mListener;
+
+        CreateAsyncTask(ProductListDao productListDao, ProductDao productDao, @Nullable AsyncResultListener listener) {
+            mProductListDao = productListDao;
+            mProductDao = productDao;
+            mListener = listener;
+        }
+
+        @Override
+        protected Void doInBackground(Product... products) {
+            Product product = products[0];
+
+            try {
+                validateName(mProductDao, product.getName(), product.getListID());
+
+                ProductList productList = mProductListDao.findByIDSync(product.getListID());
                 if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
-                    double maxProductOrder = mProductDao.getMaxProductOrderByListID(mListID);
+                    double maxProductOrder = mProductDao.getMaxProductOrderByListID(product.getListID());
                     product.setOrder(maxProductOrder + PRODUCT_ORDER_STEP);
                 }
 
                 mProductDao.insert(product);
 
-                if (onSaveProductCallback != null) {
-                    onSaveProductCallback.onSaveProduct();
+                if (mListener != null) {
+                    mListener.onAsyncSuccess();
                 }
-
-                return null;
+            } catch (NameIsEmptyException | UniqueNameConstraintException e) {
+                if (mListener != null) {
+                    mListener.onAsyncError(e);
+                }
             }
-        }.execute();
+
+            return null;
+        }
     }
 
-    public void updateProduct(@NonNull final Product product, @Nullable final OnSaveProductCallback onSaveProductCallback) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
+    private void insertProduct(Product product, @Nullable AsyncResultListener listener) {
+        product.setListID(mListID);
+        new CreateAsyncTask(mProductListDao, mProductDao, listener).execute(product);
+    }
+
+    private static class UpdateAsyncTask extends AsyncTask<Product, Void, Void> {
+
+        ProductDao mProductDao;
+        AsyncResultListener mListener;
+
+        UpdateAsyncTask(ProductDao productDao, @Nullable AsyncResultListener listener) {
+            mProductDao = productDao;
+            mListener = listener;
+        }
+
+        @Override
+        protected Void doInBackground(Product... products) {
+            Product product = products[0];
+
+            try {
+                validateName(mProductDao, product.getName(), product.getListID());
+
                 Product oldProduct = mProductDao.findByIDSync(product.getProductID());
                 if (!oldProduct.getName().equals(product.getName())
                         || oldProduct.getCategoryID() != product.getCategoryID()
@@ -112,12 +159,84 @@ public class ShoppingList {
 
                 mProductDao.update(product);
 
-                if (onSaveProductCallback != null) {
-                    onSaveProductCallback.onSaveProduct();
+                if (mListener != null) {
+                    mListener.onAsyncSuccess();
                 }
-                return null;
+            } catch (NameIsEmptyException | UniqueNameConstraintException e) {
+                if (mListener != null) {
+                    mListener.onAsyncError(e);
+                }
             }
-        }.execute();
+
+            return null;
+        }
+    }
+
+    public void updateProduct(@NonNull Product product, @Nullable AsyncResultListener listener) {
+        new UpdateAsyncTask(mProductDao, listener).execute(product);
+    }
+
+    private static void validateName(ProductDao productDao, String name, UUID listID) throws NameIsEmptyException, UniqueNameConstraintException {
+        ModelUtils.validateNameIsNotEmpty(name);
+
+        if (productDao.isProductsWithSameNameAndListExists(name, listID)) {
+            throw new UniqueNameConstraintException("Product with name '" + name + "' already exists in list " + listID);
+        }
+    }
+
+    private static class MoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
+
+        ProductListDao mProductListDao;
+        ProductDao mProductDao;
+
+        MoveProductAsyncTask(ProductDao productDao, ProductListDao productListDao) {
+            mProductDao = productDao;
+            mProductListDao = productListDao;
+        }
+
+        @Override
+        protected Void doInBackground(Product... products) {
+            Product product = products[0];
+            Product productAfter = products[1];
+            Product productBefore = products[2];
+
+            UUID listID = product.getListID();
+
+            ProductList productList = mProductListDao.findByIDSync(listID);
+            boolean resortPerformed = false;
+            if (productList.getSorting() != ProductList.SORT_PRODUCTS_BY_ORDER) {
+
+                if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_NAME) {
+                    mProductDao.updateProductOrdersByListIDSortByName(listID);
+                } else {
+                    mProductDao.updateProductOrdersByListIDSortByStatusAndName(listID);
+                }
+                productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+
+                //TODO: fix list status 2
+                productList.setStatus(ProductList.STATUS_ACTIVE);
+
+                mProductListDao.update(productList);
+            }
+
+            double newProductOrder;
+            if (productBefore == null) {
+                newProductOrder = mProductDao.getMinProductOrderByListID(listID) - PRODUCT_ORDER_STEP;
+            } else if (productAfter == null) {
+                newProductOrder = mProductDao.getMaxProductOrderByListID(listID) + PRODUCT_ORDER_STEP;
+            } else {
+                if (resortPerformed) {
+                    productAfter = mProductDao.findByIDSync(productAfter.getProductID());
+                    productBefore = mProductDao.findByIDSync(productBefore.getProductID());
+                }
+
+                newProductOrder = (productAfter.getOrder() + productBefore.getOrder()) / 2;
+            }
+            product.setOrder(newProductOrder);
+            mProductDao.update(product);
+
+            return null;
+        }
     }
 
     //TODO: change product after and before arguments order
@@ -126,81 +245,74 @@ public class ShoppingList {
             throw new ShoppingListException("Either productAfter or productBefore must not be null");
         }
 
-        new AsyncTask<Product, Void, Void>() {
-            @Override
-            protected Void doInBackground(Product... products) {
-                Product product = products[0];
-                Product productAfter = products[1];
-                Product productBefore = products[2];
-
-                ProductList productList = mProductListDao.findByIDSync(mListID);
-                boolean resortPerformed = false;
-                if (productList.getSorting() != ProductList.SORT_PRODUCTS_BY_ORDER) {
-
-                    if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_NAME) {
-                        mProductDao.updateProductOrdersByListIDSortByName(mListID);
-                    } else {
-                        mProductDao.updateProductOrdersByListIDSortByStatusAndName(mListID);
-                    }
-                    productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
-
-                    //TODO: fix list status 2
-                    productList.setStatus(ProductList.STATUS_ACTIVE);
-
-                    mProductListDao.update(productList);
-                }
-
-                double newProductOrder;
-                if (productBefore == null) {
-                    newProductOrder = mProductDao.getMinProductOrderByListID(mListID) - PRODUCT_ORDER_STEP;
-                } else if (productAfter == null) {
-                    newProductOrder = mProductDao.getMaxProductOrderByListID(mListID) + PRODUCT_ORDER_STEP;
-                } else {
-                    if (resortPerformed) {
-                        productAfter = mProductDao.findByIDSync(productAfter.getProductID());
-                        productBefore = mProductDao.findByIDSync(productBefore.getProductID());
-                    }
-
-                    newProductOrder = (productAfter.getOrder() + productBefore.getOrder()) / 2;
-                }
-                product.setOrder(newProductOrder);
-                mProductDao.update(product);
-
-                return null;
-            }
-        }.execute(product, productAfter, productBefore);
+        new MoveProductAsyncTask(mProductDao, mProductListDao)
+                .execute(product, productAfter, productBefore);
     }
 
-    public void removeProduct(final Product product) {
+    private static class RemoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductDao.delete(product);
-                return null;
-            }
-        }.execute();
+        ProductDao mProductDao;
+
+        RemoveProductAsyncTask(ProductDao productDao) {
+            mProductDao = productDao;
+        }
+
+        @Override
+        protected Void doInBackground(Product... products) {
+            mProductDao.delete(products[0]);
+            return null;
+        }
     }
 
-    public void removeProductsWithTemplate(final UUID templateID) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductDao.delete(templateID, mListID);
-                return null;
-            }
-        }.execute();
+    public void removeProduct(Product product) {
+        new RemoveProductAsyncTask(mProductDao).execute(product);
     }
 
-    public void removeProductsByStatus(@Product.ProductStatus final int status) {
+    private static class RemoveProductsByTemplateAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        ProductDao mProductDao;
+        UUID mTemplateID;
+        UUID mListID;
+
+        RemoveProductsByTemplateAsyncTask(ProductDao productDao, UUID templateID, UUID listID) {
+            mProductDao = productDao;
+            mTemplateID = templateID;
+            mListID = listID;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mProductDao.delete(mTemplateID, mListID);
+            return null;
+        }
+    }
+
+    public void removeProductsWithTemplate(UUID templateID) {
+        new RemoveProductsByTemplateAsyncTask(mProductDao, templateID, mListID).execute();
+    }
+
+    private static class RemoveProductsByStatusAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        ProductDao mProductDao;
+        int mStatus;
+        UUID mListID;
+
+        RemoveProductsByStatusAsyncTask(ProductDao productDao, int status, UUID listID) {
+            mProductDao = productDao;
+            mStatus = status;
+            mListID = listID;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mProductDao.delete(mStatus, mListID);
+            return null;
+        }
+    }
+
+    public void removeProductsByStatus(@Product.ProductStatus int status) {
         //TODO: add test
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductDao.delete(status, mListID);
-                return null;
-            }
-        }.execute();
+        new RemoveProductsByStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
@@ -233,37 +345,59 @@ public class ShoppingList {
         }
     }
 
-    private void saveSortingAndView(final int sorting, final boolean isGroupedView) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
+    private static class SaveSortingAndViewAsyncTask extends AsyncTask<Void, Void, Void> {
 
-                ProductList productList = mProductListDao.findByIDSync(mListID);
-                if (productList.getSorting() != sorting || productList.isGroupedView() != isGroupedView) {
-                    productList.setSorting(sorting);
-                    productList.setIsGroupedView(isGroupedView);
-                    mProductListDao.update(productList);
-                }
-                return null;
+        ProductListDao mProductListDao;
+        UUID mListID;
+        int mSorting;
+        boolean mIsGroupedView;
+
+        SaveSortingAndViewAsyncTask(ProductListDao productListDao, UUID listID, int sorting, boolean isGroupedView) {
+            mProductListDao = productListDao;
+            mSorting = sorting;
+            mIsGroupedView = isGroupedView;
+            mListID = listID;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            ProductList productList = mProductListDao.findByIDSync(mListID);
+            if (productList.getSorting() != mSorting || productList.isGroupedView() != mIsGroupedView) {
+                productList.setSorting(mSorting);
+                productList.setIsGroupedView(mIsGroupedView);
+                mProductListDao.update(productList);
             }
-        }.execute();
+            return null;
+        }
     }
 
-    public void updateProductsStatus(final int status) {
+    private void saveSortingAndView(@ProductList.ProductSorting int sorting, boolean isGroupedView) {
+        new SaveSortingAndViewAsyncTask(mProductListDao, mListID, sorting, isGroupedView).execute();
+    }
+
+    private static class UpdateProductStatusAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        ProductDao mProductDao;
+        int mStatus;
+        UUID mListID;
+
+        UpdateProductStatusAsyncTask(ProductDao productDao, int status, UUID listID) {
+            mProductDao = productDao;
+            mStatus = status;
+            mListID = listID;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mProductDao.updateStatus(mStatus, mListID);
+            return null;
+        }
+    }
+
+    public void updateProductsStatus(int status) {
         //TODO: add test
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-                mProductDao.updateStatus(status, mListID);
-
-                return null;
-            }
-        }.execute();
-    }
-
-    public interface OnSaveProductCallback {
-        void onSaveProduct();
+        new UpdateProductStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 }

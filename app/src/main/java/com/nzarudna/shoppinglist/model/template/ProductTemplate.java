@@ -85,7 +85,7 @@ public class ProductTemplate implements Parcelable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = (name != null) ? name.trim() : null;
     }
 
     public UUID getCategoryID() {
