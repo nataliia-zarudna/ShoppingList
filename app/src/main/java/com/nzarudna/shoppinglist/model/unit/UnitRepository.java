@@ -2,8 +2,13 @@ package com.nzarudna.shoppinglist.model.unit;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
-import android.arch.paging.PagedList;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
+
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 
 import java.util.List;
 
@@ -31,40 +36,84 @@ public class UnitRepository {
     }
 
     //TODO: add tests. start
-    public void createUnit(final Unit unit) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
 
-                mUnitDao.insert(unit);
+    private static class CreateUpdateAsyncTask extends AsyncTask<Unit, Void, Void> {
 
-                return null;
+        UnitDao mUnitDao;
+        AsyncResultListener mListener;
+        boolean mIsCreate;
+
+        CreateUpdateAsyncTask(UnitDao unitDao, @Nullable AsyncResultListener listener, boolean isCreate) {
+            mUnitDao = unitDao;
+            mListener = listener;
+            mIsCreate = isCreate;
+        }
+
+        @Override
+        protected Void doInBackground(Unit... units) {
+
+            Unit unit = units[0];
+
+            try {
+                String trimmedName = unit.getName();
+                unit.setName(trimmedName);
+                validateUnitName(mUnitDao, unit.getName());
+
+                if (mIsCreate) {
+                    mUnitDao.insert(unit);
+                } else {
+                    mUnitDao.update(unit);
+                }
+
+                if (mListener != null) {
+                    mListener.onAsyncSuccess();
+                }
+
+            } catch (NameIsEmptyException | UniqueNameConstraintException e) {
+                e.printStackTrace();
             }
-        }.execute();
+            return null;
+        }
     }
 
-    public void updateUnit(final Unit unit) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
+    public void createUnit(Unit unit, @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mUnitDao, listener, true).execute(unit);
+    }
 
-                mUnitDao.update(unit);
+    public void updateUnit(Unit unit, @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mUnitDao, listener, false).execute(unit);
+    }
 
-                return null;
-            }
-        }.execute();
+
+    private static void validateUnitName(UnitDao unitDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
+        ModelUtils.validateNameIsNotEmpty(name);
+
+        if (unitDao.isUnitsWithSameNameExists(name)) {
+            throw new UniqueNameConstraintException("Unit with name '" + name + "' already exists");
+        }
+    }
+
+
+
+    private static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
+
+        UnitDao mUnitDao;
+
+        RemoveAsyncTask(UnitDao unitDao) {
+            mUnitDao = unitDao;
+        }
+
+        @Override
+        protected Void doInBackground(Unit... units) {
+            Unit unit = units[0];
+            mUnitDao.delete(unit);
+
+            return null;
+        }
     }
 
     public void removeUnit(final Unit unit) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-                mUnitDao.delete(unit);
-
-                return null;
-            }
-        }.execute();
+        new RemoveAsyncTask(mUnitDao).execute(unit);
     }
 
     //TODO: add tests. end

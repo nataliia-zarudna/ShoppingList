@@ -53,7 +53,10 @@ public class CategoryRepository {
 
                 Category category = categories[0];
 
+                String trimmedName = category.getName().trim();
+                category.setName(trimmedName);
                 validateName(mCategoryDao, category.getName());
+
                 if (mIsCreate) {
                     mCategoryDao.insert(category);
                 } else {
@@ -73,20 +76,19 @@ public class CategoryRepository {
         }
     }
 
-    public void create(final Category category, final @Nullable AsyncResultListener listener) {
+    public void create(final Category category, @Nullable AsyncResultListener listener) {
         new CreateUpdateAsyncTask(mCategoryDao, listener, true).execute(category);
     }
 
-    public void update(final Category category, final @Nullable AsyncResultListener listener) {
-        new CreateUpdateAsyncTask(mCategoryDao, listener, false);
+    public void update(final Category category, @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mCategoryDao, listener, false).execute(category);
     }
 
     private static void validateName(CategoryDao categoryDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
-        name = name.trim();
         if (categoryDao.isCategoriesWithSameNameExists(name)) {
-            throw new UniqueNameConstraintException("Category name " + name + " is not unique");
+            throw new UniqueNameConstraintException("Category with name '" + name + "' already exists");
         }
     }
 
@@ -115,7 +117,7 @@ public class CategoryRepository {
         }
     }
 
-    public void remove(final Category category) {
+    public void remove(Category category) {
         new RemoveAsyncTask(mCategoryDao, mProductDao, mProductTemplateDao).execute(category);
     }
 

@@ -31,7 +31,7 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
 
     @Override
     protected CategoryTemplateItem createItemObject() {
-        mTemplate = new ProductTemplate("");
+        mTemplate = new ProductTemplate();
         return new CategoryTemplateItem(mTemplate);
     }
 

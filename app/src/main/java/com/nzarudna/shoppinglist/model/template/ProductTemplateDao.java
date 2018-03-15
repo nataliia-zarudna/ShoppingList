@@ -102,6 +102,10 @@ public interface ProductTemplateDao {
     @Update
     void update(ProductTemplate template);
 
+    //TODO: add test
+    @Query("SELECT 1 FROM product_templates WHERE lower(name) = lower(:name) LIMIT 1")
+    boolean isTemplatesWithSameNameExists(String name);
+
     @Query(value = "UPDATE product_templates " +
             "       SET category_id = '" + Category.DEFAULT_CATEGORY_ID_STRING + "'" +
             "       WHERE category_id = :categoryID")

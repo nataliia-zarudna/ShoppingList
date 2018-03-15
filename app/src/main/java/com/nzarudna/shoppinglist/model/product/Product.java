@@ -62,7 +62,6 @@ public class Product implements Cloneable, Parcelable {
     @ColumnInfo(name = "product_id")
     private UUID productID;
 
-    @NonNull
     private String name;
 
     @ColumnInfo(name = "category_id")
@@ -87,9 +86,8 @@ public class Product implements Cloneable, Parcelable {
 
     private double order;
 
-    public Product(@NonNull String name) {
+    public Product() {
         this.productID = UUID.randomUUID();
-        this.name = name;
         this.status = TO_BUY;
         this.categoryID = Category.DEFAULT_CATEGORY_ID;
     }
@@ -103,12 +101,11 @@ public class Product implements Cloneable, Parcelable {
         this.productID = productID;
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -195,7 +192,7 @@ public class Product implements Cloneable, Parcelable {
         if (status != product.status) return false;
         if (Double.compare(product.order, order) != 0) return false;
         if (!productID.equals(product.productID)) return false;
-        if (!name.equals(product.name)) return false;
+        if (name != null ? !name.equals(product.name) : product.name != null) return false;
         if (categoryID != null ? !categoryID.equals(product.categoryID) : product.categoryID != null)
             return false;
         if (listID != null ? !listID.equals(product.listID) : product.listID != null) return false;
@@ -210,7 +207,7 @@ public class Product implements Cloneable, Parcelable {
         int result;
         long temp;
         result = productID.hashCode();
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
         result = 31 * result + (listID != null ? listID.hashCode() : 0);
         result = 31 * result + (unitID != null ? unitID.hashCode() : 0);

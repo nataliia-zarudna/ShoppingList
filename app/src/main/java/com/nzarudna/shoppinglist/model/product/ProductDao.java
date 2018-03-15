@@ -91,6 +91,14 @@ public interface ProductDao {
     @Update
     void update(Product product);
 
+    //TODO: add test
+    @Query("SELECT 1 " +
+            "FROM products " +
+            "WHERE lower(name) = lower(:name) " +
+            "   AND list_id = :listID " +
+            "LIMIT 1")
+    boolean isProductsWithSameNameAndListExists(String name, UUID listID);
+
     @Query(value = "UPDATE products" +
             "       SET status = :status" +
             "       WHERE list_id = :listID")

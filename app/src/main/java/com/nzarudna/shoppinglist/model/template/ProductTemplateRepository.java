@@ -3,7 +3,15 @@ package com.nzarudna.shoppinglist.model.template;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.category.Category;
+import com.nzarudna.shoppinglist.model.category.CategoryDao;
+import com.nzarudna.shoppinglist.model.category.CategoryRepository;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 
@@ -29,52 +37,101 @@ public class ProductTemplateRepository {
         mProductDao = productDao;
     }
 
-    public void createTemplate(ProductTemplate template) {
-        insertTemplate(template);
+    public void createTemplate(ProductTemplate template, @Nullable AsyncResultListener listener) {
+        insertTemplate(template, listener);
     }
 
-    public void createTemplateFromProduct(Product product) {
+    public void createTemplateFromProduct(Product product, @Nullable AsyncResultListener listener) {
 
-        ProductTemplate template = new ProductTemplate(product.getName());
+        ProductTemplate template = new ProductTemplate();
+        template.setName(product.getName());
         template.setCategoryID(product.getCategoryID());
         template.setUnitID(product.getUnitID());
 
-        insertTemplate(template);
+        insertTemplate(template, listener);
     }
 
-    private void insertTemplate(final ProductTemplate template) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProductTemplateDao.insert(template);
-                return null;
+    private static class CreateUpdateAsyncTask extends AsyncTask<ProductTemplate, Void, Void> {
+
+        ProductTemplateDao mProductTemplateDao;
+        ProductDao mProductDao;
+        AsyncResultListener mListener;
+        boolean mIsCreate;
+
+        CreateUpdateAsyncTask(ProductTemplateDao productTemplateDao, ProductDao productDao,
+                              @Nullable AsyncResultListener listener, boolean isCreate) {
+            mProductTemplateDao = productTemplateDao;
+            mProductDao = productDao;
+            mListener = listener;
+            mIsCreate = isCreate;
+        }
+
+        @Override
+        protected Void doInBackground(ProductTemplate... templates) {
+            try {
+
+                ProductTemplate template = templates[0];
+
+                String trimmedName = template.getName().trim();
+                template.setName(trimmedName);
+                validateName(mProductTemplateDao, template.getName());
+
+                if (mIsCreate) {
+                    mProductTemplateDao.insert(template);
+                } else {
+                    mProductTemplateDao.update(template);
+                    mProductDao.clearTemplateIDs(template.getTemplateID());
+                }
+
+                if (mListener != null) {
+                    mListener.onAsyncSuccess();
+                }
+
+            } catch (NameIsEmptyException | UniqueNameConstraintException e) {
+                if (mListener != null) {
+                    mListener.onAsyncError(e);
+                }
             }
-        }.execute();
+            return null;
+        }
     }
 
-    public void updateTemplate(final ProductTemplate template) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-                mProductTemplateDao.update(template);
-                mProductDao.clearTemplateIDs(template.getTemplateID());
-
-                return null;
-            }
-        }.execute();
+    private void insertTemplate(ProductTemplate template, @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mProductTemplateDao, mProductDao, listener, true).execute(template);
     }
 
-    public void removeTemplate(final ProductTemplate template) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
+    public void updateTemplate(ProductTemplate template, @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mProductTemplateDao, mProductDao, listener, false).execute(template);
+    }
 
-                mProductTemplateDao.delete(template);
+    private static void validateName(ProductTemplateDao productTemplateDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
+        ModelUtils.validateNameIsNotEmpty(name);
 
-                return null;
-            }
-        }.execute();
+        if (productTemplateDao.isTemplatesWithSameNameExists(name)) {
+            throw new UniqueNameConstraintException("Template with name '" + name + "' already exists");
+        }
+    }
+
+    private static class RemoveAsyncTask extends AsyncTask<ProductTemplate, Void, Void> {
+
+        ProductTemplateDao mProductTemplateDao;
+
+        RemoveAsyncTask(ProductTemplateDao productTemplateDao) {
+            mProductTemplateDao = productTemplateDao;
+        }
+
+        @Override
+        protected Void doInBackground(ProductTemplate... templates) {
+            ProductTemplate template = templates[0];
+
+            mProductTemplateDao.delete(template);
+
+            return null;
+        }
+    }
+
+    public void remove(ProductTemplate template) {
+        new RemoveAsyncTask(mProductTemplateDao).execute(template);
     }
 
     public DataSource.Factory<Integer, CategoryTemplateItem> getTemplates(boolean isGroupedView) {

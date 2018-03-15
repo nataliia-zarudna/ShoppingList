@@ -28,7 +28,10 @@ import java.util.UUID;
                         childColumns = "unit_id",
                         onUpdate = ForeignKey.SET_NULL)
         },
-        indices = {@Index(value = "category_id")})
+        indices = {
+                @Index(value = "category_id"),
+                @Index(value = "name")
+        })
 public class ProductTemplate implements Parcelable {
 
     @PrimaryKey()
@@ -36,7 +39,6 @@ public class ProductTemplate implements Parcelable {
     @ColumnInfo(name = "template_id")
     private UUID templateID;
 
-    @NonNull
     private String name;
 
     @ColumnInfo(name = "category_id")
@@ -45,10 +47,8 @@ public class ProductTemplate implements Parcelable {
     @ColumnInfo(name = "unit_id")
     private UUID unitID;
 
-    //TODO: remove name from constructor params
-    public ProductTemplate(@NonNull String name) {
+    public ProductTemplate() {
         this.templateID = UUID.randomUUID();
-        this.name = name;
         categoryID = Category.DEFAULT_CATEGORY_ID;
     }
 
@@ -80,12 +80,11 @@ public class ProductTemplate implements Parcelable {
         this.templateID = templateID;
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -113,7 +112,7 @@ public class ProductTemplate implements Parcelable {
         ProductTemplate template = (ProductTemplate) o;
 
         if (!templateID.equals(template.templateID)) return false;
-        if (!name.equals(template.name)) return false;
+        if (name != null ? !name.equals(template.name) : template.name != null) return false;
         if (categoryID != null ? !categoryID.equals(template.categoryID) : template.categoryID != null)
             return false;
         return unitID != null ? unitID.equals(template.unitID) : template.unitID == null;
@@ -122,7 +121,7 @@ public class ProductTemplate implements Parcelable {
     @Override
     public int hashCode() {
         int result = templateID.hashCode();
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (categoryID != null ? categoryID.hashCode() : 0);
         result = 31 * result + (unitID != null ? unitID.hashCode() : 0);
         return result;

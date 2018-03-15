@@ -50,7 +50,7 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
 
     @Override
     protected CategoryProductItem createItemObject() {
-        mProduct = new Product("");
+        mProduct = new Product();
         return new CategoryProductItem(mProduct, null);
     }
 

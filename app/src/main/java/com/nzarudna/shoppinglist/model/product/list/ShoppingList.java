@@ -67,7 +67,8 @@ public class ShoppingList {
 
     public void addProductFromTemplate(ProductTemplate template, @Nullable OnSaveProductCallback onSaveProductCallback) {
 
-        Product product = new Product(template.getName());
+        Product product = new Product();
+        product.setName(template.getName());
         product.setListID(mListID);
         product.setCategoryID(template.getCategoryID());
         product.setTemplateID(template.getTemplateID());

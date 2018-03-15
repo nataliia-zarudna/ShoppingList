@@ -25,6 +25,9 @@ public interface UnitDao {
     @Update
     void update(Unit unit);
 
+    @Query("SELECT 1 FROM units WHERE lower(name) = lower(:name) LIMIT 1")
+    boolean isUnitsWithSameNameExists(String name);
+
     @Delete
     void delete(Unit unit);
 

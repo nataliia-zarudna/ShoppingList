@@ -19,7 +19,7 @@ public class EditUnitViewModel extends EditDialogViewModel<Unit> {
 
     @Override
     protected Unit createItemObject() {
-        return new Unit("");
+        return new Unit();
     }
 
     @Override

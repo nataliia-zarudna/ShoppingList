@@ -20,12 +20,10 @@ public class Unit implements Parcelable {
     @ColumnInfo(name = "unit_id")
     private UUID unitID;
 
-    @NonNull
     private String name;
 
-    public Unit(@NonNull String name) {
+    public Unit() {
         this.unitID = UUID.randomUUID();
-        this.name = name;
     }
 
     protected Unit(Parcel in) {
@@ -54,14 +52,14 @@ public class Unit implements Parcelable {
         this.unitID = unitID;
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -71,13 +69,13 @@ public class Unit implements Parcelable {
         Unit unit = (Unit) o;
 
         if (!unitID.equals(unit.unitID)) return false;
-        return name.equals(unit.name);
+        return name != null ? name.equals(unit.name) : unit.name == null;
     }
 
     @Override
     public int hashCode() {
         int result = unitID.hashCode();
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 
