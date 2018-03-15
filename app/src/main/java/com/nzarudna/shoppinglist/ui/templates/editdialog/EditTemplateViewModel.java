@@ -1,8 +1,7 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
-import android.arch.lifecycle.LiveData;
-
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
@@ -10,9 +9,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
-import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -60,12 +57,12 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
     }
 
     @Override
-    protected void updateItem() {
+    protected void updateItem(AsyncResultListener asyncResultListener) {
         mTemplateRepository.updateTemplate(mTemplate);
     }
 
     @Override
-    protected void createItem() {
+    protected void createItem(AsyncResultListener asyncResultListener) {
         mTemplateRepository.createTemplate(mTemplate);
     }
 

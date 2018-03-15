@@ -29,7 +29,7 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
     @Bindable
     private String mValidationMessage;
 
-    //private EditDialogViewModelObserver mEditDialogViewModelObserver;
+    private OnSaveItemListener mOnSaveItemListener;
 
     public void setItem(T item) {
         if (item != null) {
@@ -45,9 +45,9 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         return mValidationMessage;
     }
 
-    /*public void setEditDialogViewModelObserver(EditDialogViewModelObserver observer) {
-        this.mEditDialogViewModelObserver = observer;
-    }*/
+    public void setOnSaveItemListener(OnSaveItemListener observer) {
+        this.mOnSaveItemListener = observer;
+    }
 
     protected abstract T createItemObject();
 
@@ -61,23 +61,23 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
 
     public void saveItem(@Nullable OnSaveItemListener listener) {
         if (mIsNew) {
-            createItem(listener);
+            createItem(this);
         } else {
-            updateItem(listener);
+            updateItem(this);
         }
     }
 
     @Override
-    public void onSuccess(OnSaveItemListener listener) {
-        if (mValidationMessage == null && listener != null) {
-            listener.onSuccess();
+    public void onAsyncSuccess() {
+        if (mValidationMessage == null && mOnSaveItemListener != null) {
+            mOnSaveItemListener.onSuccess();
         }
     }
 
     protected abstract String getUniqueNameValidationMessage();
 
     @Override
-    public void onError(Exception e) {
+    public void onAsyncError(Exception e) {
         if (e instanceof NameIsEmptyException) {
             mValidationMessage = mResourceResolver.getString(R.string.name_is_empty_validation_message);
         } else if (e instanceof UniqueNameConstraintException) {
@@ -88,9 +88,9 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
-    protected abstract void updateItem(@Nullable OnSaveItemListener listener);
+    protected abstract void updateItem(AsyncResultListener asyncResultListener);
 
-    protected abstract void createItem(@Nullable OnSaveItemListener listener);
+    protected abstract void createItem(AsyncResultListener asyncResultListener);
 
     interface OnSaveItemListener {
         void onSuccess();

@@ -6,8 +6,8 @@ package com.nzarudna.shoppinglist.model;
 
 public interface AsyncResultListener {
 
-    void onSuccess();
+    void onAsyncSuccess();
 
-    void onError(Exception e);
+    void onAsyncError(Exception e);
 
 }

@@ -61,12 +61,12 @@ public class CategoryRepository {
                 }
 
                 if (mListener != null) {
-                    mListener.onSuccess();
+                    mListener.onAsyncSuccess();
                 }
 
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
                 if (mListener != null) {
-                    mListener.onError(e);
+                    mListener.onAsyncError(e);
                 }
             }
             return null;

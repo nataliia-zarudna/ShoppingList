@@ -1,31 +1,20 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Bindable;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
 
-import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
-import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
-import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.BaseEditTemplateViewModel;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,12 +70,12 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
     }
 
     @Override
-    protected void updateItem() {
+    protected void updateItem(AsyncResultListener asyncResultListener) {
         mShoppingList.updateProduct(mProduct, null);
     }
 
     @Override
-    protected void createItem() {
+    protected void createItem(AsyncResultListener asyncResultListener) {
         mShoppingList.addProduct(mProduct, null);
     }
 

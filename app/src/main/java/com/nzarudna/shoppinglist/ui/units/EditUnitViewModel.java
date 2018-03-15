@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.units;
 
 import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
@@ -37,12 +38,12 @@ public class EditUnitViewModel extends EditDialogViewModel<Unit> {
     }
 
     @Override
-    protected void updateItem() {
+    protected void updateItem(AsyncResultListener asyncResultListener) {
         mUnitRepository.updateUnit(mItem);
     }
 
     @Override
-    protected void createItem() {
+    protected void createItem(AsyncResultListener asyncResultListener) {
         mUnitRepository.createUnit(mItem);
     }
 }

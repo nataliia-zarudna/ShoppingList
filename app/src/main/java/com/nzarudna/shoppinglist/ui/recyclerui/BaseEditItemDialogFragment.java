@@ -90,7 +90,7 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
                             @Override
                             public void onSuccess() {
                                 sendResponse();
-                                dismiss();
+                                dialog.dismiss();
                             }
                         });
                     }
