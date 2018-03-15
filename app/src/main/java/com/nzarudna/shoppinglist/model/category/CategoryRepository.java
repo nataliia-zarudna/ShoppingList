@@ -35,7 +35,7 @@ public class CategoryRepository {
         mProductTemplateDao = productTemplateDao;
     }
 
-    private static class CreateUpdateAsyncTask extends AsyncTask<Category, Void, Void> {
+    private static class CreateUpdateAsyncTask extends AsyncTask<Category, Void, Exception> {
 
         CategoryDao mCategoryDao;
         AsyncResultListener mListener;
@@ -48,13 +48,11 @@ public class CategoryRepository {
         }
 
         @Override
-        protected Void doInBackground(Category... categories) {
+        protected Exception doInBackground(Category... categories) {
             try {
 
                 Category category = categories[0];
 
-                String trimmedName = category.getName().trim();
-                category.setName(trimmedName);
                 validateName(mCategoryDao, category.getName());
 
                 if (mIsCreate) {
@@ -62,17 +60,21 @@ public class CategoryRepository {
                 } else {
                     mCategoryDao.update(category);
                 }
-
-                if (mListener != null) {
-                    mListener.onAsyncSuccess();
-                }
-
+                return null;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                if (mListener != null) {
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Exception e) {
+            if (mListener != null) {
+                if (e == null) {
+                    mListener.onAsyncSuccess();
+                } else {
                     mListener.onAsyncError(e);
                 }
             }
-            return null;
         }
     }
 

@@ -88,7 +88,7 @@ public class ShoppingList {
         insertProduct(product, listener);
     }
 
-    private static class CreateAsyncTask extends AsyncTask<Product, Void, Void> {
+    private static class CreateAsyncTask extends AsyncTask<Product, Void, Exception> {
 
         ProductListDao mProductListDao;
         ProductDao mProductDao;
@@ -101,7 +101,7 @@ public class ShoppingList {
         }
 
         @Override
-        protected Void doInBackground(Product... products) {
+        protected Exception doInBackground(Product... products) {
             Product product = products[0];
 
             try {
@@ -115,16 +115,21 @@ public class ShoppingList {
 
                 mProductDao.insert(product);
 
-                if (mListener != null) {
-                    mListener.onAsyncSuccess();
-                }
+                return null;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                if (mListener != null) {
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Exception e) {
+            if (mListener != null) {
+                if (e == null) {
+                    mListener.onAsyncSuccess();
+                } else {
                     mListener.onAsyncError(e);
                 }
             }
-
-            return null;
         }
     }
 
@@ -133,7 +138,7 @@ public class ShoppingList {
         new CreateAsyncTask(mProductListDao, mProductDao, listener).execute(product);
     }
 
-    private static class UpdateAsyncTask extends AsyncTask<Product, Void, Void> {
+    private static class UpdateAsyncTask extends AsyncTask<Product, Void, Exception> {
 
         ProductDao mProductDao;
         AsyncResultListener mListener;
@@ -144,7 +149,7 @@ public class ShoppingList {
         }
 
         @Override
-        protected Void doInBackground(Product... products) {
+        protected Exception doInBackground(Product... products) {
             Product product = products[0];
 
             try {
@@ -159,16 +164,21 @@ public class ShoppingList {
 
                 mProductDao.update(product);
 
-                if (mListener != null) {
-                    mListener.onAsyncSuccess();
-                }
+                return null;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                if (mListener != null) {
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Exception e) {
+            if (mListener != null) {
+                if (e == null) {
+                    mListener.onAsyncSuccess();
+                } else {
                     mListener.onAsyncError(e);
                 }
             }
-
-            return null;
         }
     }
 

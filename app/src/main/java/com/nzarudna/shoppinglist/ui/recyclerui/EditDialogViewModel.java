@@ -60,6 +60,8 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
     }
 
     public void saveItem(@Nullable OnSaveItemListener listener) {
+        mOnSaveItemListener = listener;
+
         if (mIsNew) {
             createItem(this);
         } else {

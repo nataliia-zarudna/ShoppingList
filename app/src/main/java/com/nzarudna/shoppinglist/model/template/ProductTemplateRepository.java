@@ -51,7 +51,7 @@ public class ProductTemplateRepository {
         insertTemplate(template, listener);
     }
 
-    private static class CreateUpdateAsyncTask extends AsyncTask<ProductTemplate, Void, Void> {
+    private static class CreateUpdateAsyncTask extends AsyncTask<ProductTemplate, Void, Exception> {
 
         ProductTemplateDao mProductTemplateDao;
         ProductDao mProductDao;
@@ -67,9 +67,8 @@ public class ProductTemplateRepository {
         }
 
         @Override
-        protected Void doInBackground(ProductTemplate... templates) {
+        protected Exception doInBackground(ProductTemplate... templates) {
             try {
-
                 ProductTemplate template = templates[0];
 
                 validateName(mProductTemplateDao, template.getName());
@@ -80,17 +79,22 @@ public class ProductTemplateRepository {
                     mProductTemplateDao.update(template);
                     mProductDao.clearTemplateIDs(template.getTemplateID());
                 }
-
-                if (mListener != null) {
-                    mListener.onAsyncSuccess();
-                }
+                return null;
 
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                if (mListener != null) {
+                return e;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Exception e) {
+            if (mListener != null) {
+                if (e == null) {
+                    mListener.onAsyncSuccess();
+                } else {
                     mListener.onAsyncError(e);
                 }
             }
-            return null;
         }
     }
 

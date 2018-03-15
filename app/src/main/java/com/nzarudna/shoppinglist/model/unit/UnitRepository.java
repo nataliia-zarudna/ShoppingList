@@ -37,7 +37,7 @@ public class UnitRepository {
 
     //TODO: add tests. start
 
-    private static class CreateUpdateAsyncTask extends AsyncTask<Unit, Void, Void> {
+    private static class CreateUpdateAsyncTask extends AsyncTask<Unit, Void, Exception> {
 
         UnitDao mUnitDao;
         AsyncResultListener mListener;
@@ -50,10 +50,8 @@ public class UnitRepository {
         }
 
         @Override
-        protected Void doInBackground(Unit... units) {
-
+        protected Exception doInBackground(Unit... units) {
             Unit unit = units[0];
-
             try {
 
                 validateUnitName(mUnitDao, unit.getName());
@@ -64,14 +62,21 @@ public class UnitRepository {
                     mUnitDao.update(unit);
                 }
 
-                if (mListener != null) {
-                    mListener.onAsyncSuccess();
-                }
-
+                return null;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                e.printStackTrace();
+                return e;
             }
-            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Exception exception) {
+            if (mListener != null) {
+                if (exception == null) {
+                    mListener.onAsyncSuccess();
+                } else {
+                    mListener.onAsyncError(exception);
+                }
+            }
         }
     }
 
@@ -91,8 +96,6 @@ public class UnitRepository {
             throw new UniqueNameConstraintException("Unit with name '" + name + "' already exists");
         }
     }
-
-
 
     private static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
 

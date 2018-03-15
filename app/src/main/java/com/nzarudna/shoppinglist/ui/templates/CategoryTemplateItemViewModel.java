@@ -40,7 +40,7 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
     @Override
     public void removeItem() {
         ProductTemplate template = getItem().getTemplate();
-        mTemplateRepository.removeTemplate(template);
+        mTemplateRepository.remove(template);
     }
 
     private boolean isTemplateItem() {

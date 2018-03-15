@@ -39,11 +39,11 @@ public class EditUnitViewModel extends EditDialogViewModel<Unit> {
 
     @Override
     protected void updateItem(AsyncResultListener asyncResultListener) {
-        mUnitRepository.updateUnit(mItem);
+        mUnitRepository.updateUnit(mItem, asyncResultListener);
     }
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mUnitRepository.createUnit(mItem);
+        mUnitRepository.createUnit(mItem, asyncResultListener);
     }
 }

@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
@@ -21,43 +22,10 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
     ProductListRepository mProductListRepository;
 
     private ShoppingList mShoppingList;
-    //protected CategoryProductItemViewModelObserver mObserver;
-    //private int mCurrentPosition;
-
-    //@Bindable
-    //protected CategoryProductItem mCategoryProductItem;
-
-    //public abstract void onProductClick();
 
     public void setShoppingList(ShoppingList shoppingList) {
         this.mShoppingList = shoppingList;
     }
-
-    /*public void setCategoryProductItem(CategoryProductItem categoryProductItem) {
-        this.mCategoryProductItem = categoryProductItem;
-
-        mPropertyChangeRegistry.notifyChange(this, BR._all);
-    }*/
-
-   /* public void setObserver(CategoryProductItemViewModelObserver observer) {
-        this.mObserver = observer;
-    }*/
-
-    /*public void setCurrentPosition(int currentPosition) {
-        this.mCurrentPosition = currentPosition;
-    }*/
-
-    /*public String getProductName() {
-        if (mCategoryProductItem != null) {
-            String name = mCategoryProductItem.getProduct().getName();
-            if (mCategoryProductItem.getProduct().getStatus() == Product.BOUGHT) {
-                return "<u>" + name + "</u>";
-            }
-            return name;
-        } else {
-            return "";
-        }
-    }*/
 
     @Override
     public String getItemName() {
@@ -83,13 +51,8 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
 
     @Override
     public void removeItem() {
-        //checkIsProductType();
         mShoppingList.removeProduct(mItem.getProduct());
     }
-
-    /*public String getCategoryName() {
-        return (mCategoryProductItem != null) ? mCategoryProductItem.getCategory().getName() : "";
-    }*/
 
     public String getProductCount() {
         if (mItem != null) {
@@ -121,13 +84,6 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
         return mItem.getProduct().getStatus() == Product.ABSENT;
     }
 
-    /*public boolean onProductLongClick() {
-        if (mObserver != null) {
-            mObserver.showItemContextMenu(mItem
-        }
-        return true;
-    }*/
-
     public Product getProduct() throws ShoppingListException {
         checkIsProductType();
         return mItem.getProduct();
@@ -141,10 +97,15 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
     protected void updateProductStatus(int newStatus) {
         Product product = mItem.getProduct();
         product.setStatus(newStatus);
-        mShoppingList.updateProduct(product, new ShoppingList.OnSaveProductCallback() {
+        mShoppingList.updateProduct(product, new AsyncResultListener() {
             @Override
-            public void onSaveProduct() {
+            public void onAsyncSuccess() {
                 mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
     }
@@ -160,35 +121,10 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
         }
     }
 
-    /*public void onMenuButtonClick() {
-        if (mObserver != null) {
-            mObserver.showContextMenu(mCurrentPosition);
-        }
-    }
-
-    public void onUpdateProductDone(Product updatedProduct) {
-        mShoppingList.updateProduct(updatedProduct, new ShoppingList.OnSaveProductCallback() {
-            @Override
-            public void onSaveProduct() {
-                if (mObserver != null) {
-                    mObserver.showSuccessSaveMessage();
-                }
-            }
-        });
-    }*/
-
     public void onMoveItem(CategoryProductItemViewModel prevViewModel, CategoryProductItemViewModel nextViewModel) throws ShoppingListException {
 
         Product prevProduct = (prevViewModel != null) ? prevViewModel.getProduct() : null;
         Product nextProduct = (nextViewModel != null) ? nextViewModel.getProduct() : null;
         mShoppingList.moveProduct(mItem.getProduct(), nextProduct, prevProduct);
     }
-
-    /*public interface CategoryProductItemViewModelObserver {
-        void showContextMenu(int productPosition);
-
-        void showSuccessSaveMessage();
-
-        void openEditProductDialog(Product product);
-    }*/
 }
