@@ -6,7 +6,7 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
-import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;

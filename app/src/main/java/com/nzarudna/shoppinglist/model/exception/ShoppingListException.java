@@ -1,4 +1,4 @@
-package com.nzarudna.shoppinglist.model;
+package com.nzarudna.shoppinglist.model.exception;
 
 /**
  * Exception in model logic

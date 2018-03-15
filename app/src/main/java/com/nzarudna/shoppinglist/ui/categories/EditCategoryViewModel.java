@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.categories;
 
 import android.util.Log;
 
+import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
@@ -19,7 +20,7 @@ public class EditCategoryViewModel extends EditDialogViewModel<Category> {
 
     @Override
     protected Category createItemObject() {
-        return new Category("");
+        return new Category();
     }
 
     @Override
@@ -30,6 +31,11 @@ public class EditCategoryViewModel extends EditDialogViewModel<Category> {
     @Override
     public void setName(String name) {
         mItem.setName(name);
+    }
+
+    @Override
+    protected String getUniqueNameValidationMessage() {
+        return mResourceResolver.getString(R.string.category_unique_name_validation_message);
     }
 
     @Override

@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
@@ -65,15 +66,9 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getContext())
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(mViewModel.getDialogTitle())
-                .setPositiveButton(R.string.save_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mViewModel.saveItem();
-                        sendResponse();
-                    }
-                })
+                .setPositiveButton(R.string.save_btn, null)
                 .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -82,6 +77,28 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
                 })
                 .setView(getCustomView())
                 .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mViewModel.saveItem(new EditDialogViewModel.OnSaveItemListener() {
+                            @Override
+                            public void onSuccess() {
+                                sendResponse();
+                                dismiss();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        return dialog;
     }
 
     @LayoutRes

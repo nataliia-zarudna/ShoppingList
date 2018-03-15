@@ -9,6 +9,7 @@ import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -72,6 +73,11 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
     @Override
     public void setName(String name) {
         mProduct.setName(name);
+    }
+
+    @Override
+    protected String getUniqueNameValidationMessage() {
+        return mResourceResolver.getString(R.string.product_unique_name_validation_message);
     }
 
     @Override

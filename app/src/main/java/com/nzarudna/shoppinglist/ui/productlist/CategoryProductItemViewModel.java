@@ -1,18 +1,12 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Bindable;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
-
 import com.nzarudna.shoppinglist.BR;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
-import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
 
 import javax.inject.Inject;

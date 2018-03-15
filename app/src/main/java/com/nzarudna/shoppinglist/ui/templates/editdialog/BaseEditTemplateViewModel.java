@@ -82,7 +82,7 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
         return -1;
     }
 
-    @Override
+    /*@Override
     public void saveItem() {
 
         if (isNewCategorySelected()) {
@@ -90,5 +90,5 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
         }
 
         super.saveItem();
-    }
+    }*/
 }

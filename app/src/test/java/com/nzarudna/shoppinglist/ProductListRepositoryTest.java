@@ -13,7 +13,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 
 import org.junit.Before;

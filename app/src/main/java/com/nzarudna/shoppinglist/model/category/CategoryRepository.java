@@ -2,13 +2,13 @@ package com.nzarudna.shoppinglist.model.category;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
-import com.nzarudna.shoppinglist.model.UniqueNameConstraintException;
+import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 
@@ -35,60 +35,88 @@ public class CategoryRepository {
         mProductTemplateDao = productTemplateDao;
     }
 
-    public void create(final Category category, final @Nullable AsyncResultListener listener) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    mCategoryDao.insert(category);
+    private static class CreateUpdateAsyncTask extends AsyncTask<Category, Void, Void> {
 
-                    if (listener != null) {
-                        listener.onSuccess();
-                    }
-                } catch (SQLiteConstraintException e) {
-                    //throw new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e);
-                    if (listener != null) {
-                        listener.onError(new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e));
-                    }
+        CategoryDao mCategoryDao;
+        AsyncResultListener mListener;
+        boolean mIsCreate;
+
+        CreateUpdateAsyncTask(CategoryDao categoryDao, @Nullable AsyncResultListener listener, boolean isCreate) {
+            mCategoryDao = categoryDao;
+            mListener = listener;
+            mIsCreate = isCreate;
+        }
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+            try {
+
+                Category category = categories[0];
+
+                validateName(mCategoryDao, category.getName());
+                if (mIsCreate) {
+                    mCategoryDao.insert(category);
+                } else {
+                    mCategoryDao.update(category);
                 }
-                return null;
+
+                if (mListener != null) {
+                    mListener.onSuccess();
+                }
+
+            } catch (NameIsEmptyException | UniqueNameConstraintException e) {
+                if (mListener != null) {
+                    mListener.onError(e);
+                }
             }
-        }.execute();
+            return null;
+        }
+    }
+
+    public void create(final Category category, final @Nullable AsyncResultListener listener) {
+        new CreateUpdateAsyncTask(mCategoryDao, listener, true).execute(category);
     }
 
     public void update(final Category category, final @Nullable AsyncResultListener listener) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    mCategoryDao.update(category);
+        new CreateUpdateAsyncTask(mCategoryDao, listener, false);
+    }
 
-                    if (listener != null) {
-                        listener.onSuccess();
-                    }
-                } catch (SQLiteConstraintException e) {
-                    //throw new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e);
-                    if (listener != null) {
-                        listener.onError(new UniqueNameConstraintException("Category with name " + category.getName() + " already excists", e));
-                    }
-                }
-                return null;
-            }
-        }.execute();
+    private static void validateName(CategoryDao categoryDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
+        ModelUtils.validateNameIsNotEmpty(name);
+
+        name = name.trim();
+        if (categoryDao.isCategoriesWithSameNameExists(name)) {
+            throw new UniqueNameConstraintException("Category name " + name + " is not unique");
+        }
+    }
+
+    private static class RemoveAsyncTask extends AsyncTask<Category, Void, Void> {
+
+        CategoryDao mCategoryDao;
+        ProductDao mProductDao;
+        ProductTemplateDao mProductTemplateDao;
+
+        RemoveAsyncTask(CategoryDao categoryDao, ProductDao productDao, ProductTemplateDao productTemplateDao) {
+            mCategoryDao = categoryDao;
+            mProductDao = productDao;
+            mProductTemplateDao = productTemplateDao;
+        }
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+            Category category = categories[0];
+
+            mProductDao.setDefaultCategoryID(category.getCategoryID());
+            mProductTemplateDao.setDefaultCategoryID(category.getCategoryID());
+
+            mCategoryDao.delete(category);
+
+            return null;
+        }
     }
 
     public void remove(final Category category) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-                mProductDao.setDefaultCategoryID(category.getCategoryID());
-                mProductTemplateDao.setDefaultCategoryID(category.getCategoryID());
-
-                mCategoryDao.delete(category);
-                return null;
-            }
-        }.execute();
+        new RemoveAsyncTask(mCategoryDao, mProductDao, mProductTemplateDao).execute(category);
     }
 
     public DataSource.Factory<Integer, Category> getAllCategories() {

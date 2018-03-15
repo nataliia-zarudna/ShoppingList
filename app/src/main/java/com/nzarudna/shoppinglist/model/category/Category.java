@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 @Entity(tableName = "categories",
         indices = {
-                @Index(value = "name", unique = true)
+                @Index(value = "name")
         })
 public class Category implements Parcelable {
 
@@ -27,12 +27,10 @@ public class Category implements Parcelable {
     @ColumnInfo(name = "category_id")
     private UUID categoryID;
 
-    @NonNull
     private String name;
 
-    public Category(@NonNull String name) {
+    public Category() {
         categoryID = UUID.randomUUID();
-        this.name = name;
     }
 
     protected Category(Parcel in) {
@@ -61,13 +59,12 @@ public class Category implements Parcelable {
         this.categoryID = categoryID;
     }
 
-    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(@NonNull String name) {
-        this.name = name;
+    public void setName(String name) {
+        this.name = (name != null) ? name.trim() : null;
     }
 
     @Override
@@ -78,13 +75,13 @@ public class Category implements Parcelable {
         Category category = (Category) o;
 
         if (!categoryID.equals(category.categoryID)) return false;
-        return name.equals(category.name);
+        return name != null ? name.equals(category.name) : category.name == null;
     }
 
     @Override
     public int hashCode() {
         int result = categoryID.hashCode();
-        result = 31 * result + name.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 

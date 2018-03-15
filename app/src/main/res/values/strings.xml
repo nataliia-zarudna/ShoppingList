@@ -56,6 +56,12 @@
     <string name="categories_activity_label">Categories</string>
     <string name="units_activity_label">Units</string>
     <string name="archive_activity_label">Archive</string>
+    <string name="name_is_empty_validation_message">Name is empty</string>
+    <string name="product_unique_name_validation_message">Product with same name already exists within its list</string>
+    <string name="template_unique_name_validation_message">Template with same name already exists</string>
+    <string name="unit_unique_name_validation_message">Unit with same name already exists</string>
+    <string name="category_unique_name_validation_message">Category with same name already exists</string>
+    <string name="error_occurd_message">Something unexpected has happened</string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>

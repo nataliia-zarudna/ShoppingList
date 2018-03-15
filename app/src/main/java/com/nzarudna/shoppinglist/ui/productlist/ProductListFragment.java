@@ -14,32 +14,26 @@ import android.support.v7.recyclerview.extensions.DiffCallback;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.model.ShoppingListException;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
-import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
-import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
-import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
 
 import java.util.UUID;
 

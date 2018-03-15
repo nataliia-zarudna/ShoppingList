@@ -1,6 +1,5 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit;
 
-import com.nzarudna.shoppinglist.model.ShoppingListException;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 
 /**

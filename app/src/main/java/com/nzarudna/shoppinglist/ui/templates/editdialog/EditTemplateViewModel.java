@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import android.arch.lifecycle.LiveData;
 
+import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
@@ -54,6 +55,11 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
     }
 
     @Override
+    protected String getUniqueNameValidationMessage() {
+        return mResourceResolver.getString(R.string.template_unique_name_validation_message);
+    }
+
+    @Override
     protected void updateItem() {
         mTemplateRepository.updateTemplate(mTemplate);
     }
@@ -72,32 +78,6 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
     public UUID getUnitID() {
         return mTemplate.getUnitID();
     }
-
-    /*public LiveData<List<Unit>> getUnits() {
-        return mUnitRepository.getAvailableUnits();
-    }
-
-    public int getTemplateUnitIndex(List<Unit> units) {
-        for (int i = 0; i < units.size(); i++) {
-            if (units.get(i).getUnitID().equals(mTemplate.getUnitID())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public LiveData<List<Category>> getCategories() {
-        return mCategoryRepository.getAvailableCategories();
-    }
-
-    public int getTemplateCategoryIndex(List<Category> categories) {
-        for (int i = 0; i < categories.size(); i++) {
-            if (categories.get(i).getCategoryID().equals(mTemplate.getCategoryID())) {
-                return i;
-            }
-        }
-        return -1;
-    }*/
 
     @Override
     public void setUnit(Unit selectedUnit) {
