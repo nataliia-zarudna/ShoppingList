@@ -94,7 +94,7 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
 
     protected abstract void createItem(AsyncResultListener asyncResultListener);
 
-    interface OnSaveItemListener {
+    public interface OnSaveItemListener {
         void onSuccess();
     }
 }

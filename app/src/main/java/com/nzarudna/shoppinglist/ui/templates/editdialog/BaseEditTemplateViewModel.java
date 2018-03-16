@@ -2,8 +2,10 @@ package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import android.arch.lifecycle.LiveData;
 import android.databinding.Bindable;
+import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -27,8 +29,6 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
     CategoryRepository mCategoryRepository;
 
     @Bindable
-    private boolean mIsNewCategorySelected;
-
     private String mCategoryName;
 
     public void setCategoryName(String categoryName) {
@@ -40,12 +40,12 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
     }
 
     public void toggleIsNewCategorySelected() {
-        this.mIsNewCategorySelected = !mIsNewCategorySelected;
+        this.mCategoryName = null;
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
-    public boolean isNewCategorySelected() {
-        return mIsNewCategorySelected;
+    private boolean isNewCategorySelected() {
+        return mCategoryName == null;
     }
 
     public abstract UUID getCategoryID();
@@ -82,13 +82,23 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
         return -1;
     }
 
-    /*@Override
-    public void saveItem() {
+    @Override
+    public void saveItem(@Nullable final OnSaveItemListener listener) {
 
         if (isNewCategorySelected()) {
-            //mCategoryRepository.create();
-        }
+            Category category = new Category();
+            category.setName(mCategoryName);
+            mCategoryRepository.create(category, new AsyncResultListener<Category>() {
+                @Override
+                public void onAsyncSuccess(Category category) {
+                    BaseEditTemplateViewModel.super.saveItem(listener);
+                }
 
-        super.saveItem();
-    }*/
+                @Override
+                public void onAsyncError(Exception e) {
+
+                }
+            });
+        }
+    }
 }
