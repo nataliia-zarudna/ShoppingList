@@ -7,6 +7,7 @@ import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
@@ -22,8 +23,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 19.01.2018.
  */
 
-public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStatistics>
-        implements ProductListRepository.OnProductListCreateListener {
+public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStatistics> implements AsyncResultListener<ProductList> {
 
     @Inject
     ProductListRepository mProductListRepository;
@@ -70,7 +70,7 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
     }
 
     public void onSwipeProductListItem(UUID productListID) {
-        mProductListRepository.archiveList(productListID);
+        mProductListRepository.updateListStatus(productListID, ProductList.STATUS_ARCHIVED);
     }
 
     public void onClickCreateListBtn() {
@@ -81,15 +81,20 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
         mProductListRepository.copyList(etalonListID, this);
     }
 
+    public LiveData<List<ProductList>> getAllLists() {
+        return mProductListRepository.getAllLists();
+    }
+
     @Override
-    public void onCreateNewList(UUID productListID) {
+    public void onAsyncSuccess(ProductList productList) {
         if (mProductListViewModelObserver != null) {
-            mProductListViewModelObserver.startEditProductListActivity(productListID);
+            mProductListViewModelObserver.startEditProductListActivity(productList.getListID());
         }
     }
 
-    public LiveData<List<ProductList>> getAllLists() {
-        return mProductListRepository.getAllLists();
+    @Override
+    public void onAsyncError(Exception e) {
+
     }
 
     public interface ProductListViewModelObserver {

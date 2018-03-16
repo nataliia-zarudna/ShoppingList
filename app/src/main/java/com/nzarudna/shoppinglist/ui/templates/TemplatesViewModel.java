@@ -7,6 +7,8 @@ import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
@@ -59,18 +61,24 @@ public class TemplatesViewModel extends RecyclerViewModel<CategoryTemplateItem> 
     }
 
     public void createProductList() {
-        mProductListRepository.createNewList(new ProductListRepository.OnProductListCreateListener() {
-            @Override
-            public void onCreateNewList(UUID productListID) {
+        mProductListRepository.createNewList(new AsyncResultListener<ProductList>() {
 
-                ShoppingList shoppingList = mProductListRepository.getShoppingList(productListID);
+            @Override
+            public void onAsyncSuccess(ProductList productList) {
+
+                ShoppingList shoppingList = mProductListRepository.getShoppingList(productList.getListID());
                 for (CategoryTemplateItem item : mSelectedItems) {
                     shoppingList.addProductFromTemplate(item.getTemplate(), null);
                 }
 
                 if (mTemplateViewObserver != null) {
-                    mTemplateViewObserver.onCreateProductList(productListID);
+                    mTemplateViewObserver.onCreateProductList(productList.getListID());
                 }
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
     }

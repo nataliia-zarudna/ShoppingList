@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
 import com.nzarudna.shoppinglist.model.ModelUtils;
 import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
@@ -37,20 +38,19 @@ public class UnitRepository {
 
     //TODO: add tests. start
 
-    private static class CreateUpdateAsyncTask extends AsyncTask<Unit, Void, Exception> {
+    static class CreateUpdateAsyncTask extends ListenedAsyncTask<Unit, Unit> {
 
+        @Inject
         UnitDao mUnitDao;
-        AsyncResultListener mListener;
         boolean mIsCreate;
 
-        CreateUpdateAsyncTask(UnitDao unitDao, @Nullable AsyncResultListener listener, boolean isCreate) {
-            mUnitDao = unitDao;
-            mListener = listener;
+        CreateUpdateAsyncTask(@Nullable AsyncResultListener<Unit> listener, boolean isCreate) {
+            super(listener);
             mIsCreate = isCreate;
         }
 
         @Override
-        protected Exception doInBackground(Unit... units) {
+        protected Unit doInBackground(Unit... units) {
             Unit unit = units[0];
             try {
 
@@ -62,30 +62,20 @@ public class UnitRepository {
                     mUnitDao.update(unit);
                 }
 
-                return null;
+                return unit;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                return e;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Exception exception) {
-            if (mListener != null) {
-                if (exception == null) {
-                    mListener.onAsyncSuccess();
-                } else {
-                    mListener.onAsyncError(exception);
-                }
+                mResultException = e;
+                return null;
             }
         }
     }
 
-    public void createUnit(Unit unit, @Nullable AsyncResultListener listener) {
-        new CreateUpdateAsyncTask(mUnitDao, listener, true).execute(unit);
+    public void createUnit(Unit unit, @Nullable AsyncResultListener<Unit> listener) {
+        new CreateUpdateAsyncTask(listener, true).execute(unit);
     }
 
-    public void updateUnit(Unit unit, @Nullable AsyncResultListener listener) {
-        new CreateUpdateAsyncTask(mUnitDao, listener, false).execute(unit);
+    public void updateUnit(Unit unit, @Nullable AsyncResultListener<Unit> listener) {
+        new CreateUpdateAsyncTask(listener, false).execute(unit);
     }
 
 
@@ -97,13 +87,10 @@ public class UnitRepository {
         }
     }
 
-    private static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
+    static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
 
+        @Inject
         UnitDao mUnitDao;
-
-        RemoveAsyncTask(UnitDao unitDao) {
-            mUnitDao = unitDao;
-        }
 
         @Override
         protected Void doInBackground(Unit... units) {
@@ -115,7 +102,7 @@ public class UnitRepository {
     }
 
     public void removeUnit(final Unit unit) {
-        new RemoveAsyncTask(mUnitDao).execute(unit);
+        new RemoveAsyncTask().execute(unit);
     }
 
     //TODO: add tests. end

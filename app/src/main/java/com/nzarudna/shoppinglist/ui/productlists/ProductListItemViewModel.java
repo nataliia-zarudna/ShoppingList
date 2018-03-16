@@ -1,9 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlists;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.util.Log;
-
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
@@ -55,11 +52,11 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
     }
 
     /*public void onSwipeProductListItem() {
-        mProductListRepository.archiveList(mItem.getListID());
+        mProductListRepository.updateListStatus(mItem.getListID());
     }*/
 
     public void onArchiveMenuItemSelected() {
-        mProductListRepository.archiveList(mItem.getListID());
+        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ARCHIVED);
     }
 
     public interface ProductListItemViewModelObserver {

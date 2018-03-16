@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
 import com.nzarudna.shoppinglist.model.ModelUtils;
 import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
@@ -35,20 +36,19 @@ public class CategoryRepository {
         mProductTemplateDao = productTemplateDao;
     }
 
-    private static class CreateUpdateAsyncTask extends AsyncTask<Category, Void, Exception> {
+    static class CreateUpdateAsyncTask extends ListenedAsyncTask<Category, Category> {
 
+        @Inject
         CategoryDao mCategoryDao;
-        AsyncResultListener mListener;
         boolean mIsCreate;
 
-        CreateUpdateAsyncTask(CategoryDao categoryDao, @Nullable AsyncResultListener listener, boolean isCreate) {
-            mCategoryDao = categoryDao;
-            mListener = listener;
+        CreateUpdateAsyncTask(@Nullable AsyncResultListener<Category> listener, boolean isCreate) {
+            super(listener);
             mIsCreate = isCreate;
         }
 
         @Override
-        protected Exception doInBackground(Category... categories) {
+        protected Category doInBackground(Category... categories) {
             try {
 
                 Category category = categories[0];
@@ -60,30 +60,20 @@ public class CategoryRepository {
                 } else {
                     mCategoryDao.update(category);
                 }
-                return null;
+                return category;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
-                return e;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Exception e) {
-            if (mListener != null) {
-                if (e == null) {
-                    mListener.onAsyncSuccess();
-                } else {
-                    mListener.onAsyncError(e);
-                }
+                mResultException = e;
+                return null;
             }
         }
     }
 
-    public void create(final Category category, @Nullable AsyncResultListener listener) {
-        new CreateUpdateAsyncTask(mCategoryDao, listener, true).execute(category);
+    public void create(final Category category, @Nullable AsyncResultListener<Category> listener) {
+        new CreateUpdateAsyncTask(listener, true).execute(category);
     }
 
-    public void update(final Category category, @Nullable AsyncResultListener listener) {
-        new CreateUpdateAsyncTask(mCategoryDao, listener, false).execute(category);
+    public void update(final Category category, @Nullable AsyncResultListener<Category> listener) {
+        new CreateUpdateAsyncTask(listener, false).execute(category);
     }
 
     private static void validateName(CategoryDao categoryDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
@@ -94,17 +84,14 @@ public class CategoryRepository {
         }
     }
 
-    private static class RemoveAsyncTask extends AsyncTask<Category, Void, Void> {
+    static class RemoveAsyncTask extends AsyncTask<Category, Void, Void> {
 
+        @Inject
         CategoryDao mCategoryDao;
+        @Inject
         ProductDao mProductDao;
+        @Inject
         ProductTemplateDao mProductTemplateDao;
-
-        RemoveAsyncTask(CategoryDao categoryDao, ProductDao productDao, ProductTemplateDao productTemplateDao) {
-            mCategoryDao = categoryDao;
-            mProductDao = productDao;
-            mProductTemplateDao = productTemplateDao;
-        }
 
         @Override
         protected Void doInBackground(Category... categories) {
@@ -120,7 +107,7 @@ public class CategoryRepository {
     }
 
     public void remove(Category category) {
-        new RemoveAsyncTask(mCategoryDao, mProductDao, mProductTemplateDao).execute(category);
+        new RemoveAsyncTask().execute(category);
     }
 
     public DataSource.Factory<Integer, Category> getAllCategories() {

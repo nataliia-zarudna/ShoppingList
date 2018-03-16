@@ -17,7 +17,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 06.03.2018.
  */
 
-public abstract class EditDialogViewModel<T> extends ObservableViewModel implements AsyncResultListener {
+public abstract class EditDialogViewModel<T> extends ObservableViewModel implements AsyncResultListener<Void> {
 
     @Inject
     protected ResourceResolver mResourceResolver;
@@ -70,7 +70,7 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
     }
 
     @Override
-    public void onAsyncSuccess() {
+    public void onAsyncSuccess(Void v) {
         if (mValidationMessage == null && mOnSaveItemListener != null) {
             mOnSaveItemListener.onSuccess();
         }

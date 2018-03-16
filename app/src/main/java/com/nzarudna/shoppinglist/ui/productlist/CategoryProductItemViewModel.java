@@ -97,9 +97,9 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
     protected void updateProductStatus(int newStatus) {
         Product product = mItem.getProduct();
         product.setStatus(newStatus);
-        mShoppingList.updateProduct(product, new AsyncResultListener() {
+        mShoppingList.updateProduct(product, new AsyncResultListener<Product>() {
             @Override
-            public void onAsyncSuccess() {
+            public void onAsyncSuccess(Product resultProduct) {
                 mPropertyChangeRegistry.notifyChange(CategoryProductItemViewModel.this, BR._all);
             }
 
