@@ -1,7 +1,6 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -9,15 +8,12 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 
 import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
-import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.CategoryItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.UnitItemViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
-import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 
 import java.util.List;
 

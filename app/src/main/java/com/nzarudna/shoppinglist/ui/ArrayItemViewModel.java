@@ -1,6 +1,5 @@
 package com.nzarudna.shoppinglist.ui;
 
-import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import com.nzarudna.shoppinglist.BR;

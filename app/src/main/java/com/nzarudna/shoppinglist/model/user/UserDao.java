@@ -8,8 +8,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.nzarudna.shoppinglist.model.user.User;
-
 import java.util.UUID;
 
 /**

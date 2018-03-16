@@ -10,7 +10,6 @@ import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
-import com.nzarudna.shoppinglist.utils.DateUtils;
 import com.nzarudna.shoppinglist.model.user.User;
 
 import java.lang.annotation.Retention;

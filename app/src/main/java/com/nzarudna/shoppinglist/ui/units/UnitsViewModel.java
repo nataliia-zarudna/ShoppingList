@@ -9,8 +9,6 @@ import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 /**

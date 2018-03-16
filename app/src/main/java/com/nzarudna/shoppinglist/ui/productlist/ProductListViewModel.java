@@ -7,12 +7,12 @@ import android.arch.paging.PagedList;
 import android.databinding.Bindable;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import java.util.UUID;
