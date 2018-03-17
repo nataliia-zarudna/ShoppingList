@@ -49,16 +49,16 @@ public class ProductTemplateRepository {
         insertTemplate(template, listener);
     }
 
-    static class CreateUpdateAsyncTask extends ListenedAsyncTask<ProductTemplate, ProductTemplate> {
+    private static class CreateUpdateAsyncTask extends ListenedAsyncTask<ProductTemplate, ProductTemplate> {
 
-        @Inject
         ProductTemplateDao mProductTemplateDao;
-        @Inject
         ProductDao mProductDao;
         boolean mIsCreate;
 
-        CreateUpdateAsyncTask(@Nullable AsyncResultListener<ProductTemplate> listener, boolean isCreate) {
+        CreateUpdateAsyncTask(ProductTemplateDao productTemplateDao, ProductDao productDao, @Nullable AsyncResultListener<ProductTemplate> listener, boolean isCreate) {
             super(listener);
+            mProductTemplateDao = productTemplateDao;
+            mProductDao = productDao;
             mIsCreate = isCreate;
         }
 
@@ -85,11 +85,11 @@ public class ProductTemplateRepository {
     }
 
     private void insertTemplate(ProductTemplate template, @Nullable AsyncResultListener<ProductTemplate> listener) {
-        new CreateUpdateAsyncTask(listener, true).execute(template);
+        new CreateUpdateAsyncTask(mProductTemplateDao, mProductDao, listener, true).execute(template);
     }
 
     public void updateTemplate(ProductTemplate template, @Nullable AsyncResultListener<ProductTemplate> listener) {
-        new CreateUpdateAsyncTask(listener, false).execute(template);
+        new CreateUpdateAsyncTask(mProductTemplateDao, mProductDao, listener, false).execute(template);
     }
 
     private static void validateName(ProductTemplateDao productTemplateDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
@@ -102,8 +102,11 @@ public class ProductTemplateRepository {
 
     static class RemoveAsyncTask extends AsyncTask<ProductTemplate, Void, Void> {
 
-        @Inject
         ProductTemplateDao mProductTemplateDao;
+
+        public RemoveAsyncTask(ProductTemplateDao productTemplateDao) {
+            this.mProductTemplateDao = productTemplateDao;
+        }
 
         @Override
         protected Void doInBackground(ProductTemplate... templates) {
@@ -116,7 +119,7 @@ public class ProductTemplateRepository {
     }
 
     public void remove(ProductTemplate template) {
-        new RemoveAsyncTask().execute(template);
+        new RemoveAsyncTask(mProductTemplateDao).execute(template);
     }
 
     public DataSource.Factory<Integer, CategoryTemplateItem> getTemplates(boolean isGroupedView) {

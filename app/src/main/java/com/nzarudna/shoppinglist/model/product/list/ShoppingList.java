@@ -20,8 +20,6 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 
 /**
@@ -91,15 +89,16 @@ public class ShoppingList {
         insertProduct(product, listener);
     }
 
-    static class CreateProductAsyncTask extends ListenedAsyncTask<Product, Product> {
+    private static class CreateProductAsyncTask extends ListenedAsyncTask<Product, Product> {
 
-        @Inject
         ProductListDao mProductListDao;
-        @Inject
         ProductDao mProductDao;
 
-        CreateProductAsyncTask(@Nullable AsyncResultListener<Product> listener) {
+        public CreateProductAsyncTask(ProductListDao productListDao, ProductDao productDao,
+                                      @Nullable AsyncResultListener<Product> listener) {
             super(listener);
+            this.mProductListDao = productListDao;
+            this.mProductDao = productDao;
         }
 
         @Override
@@ -127,16 +126,16 @@ public class ShoppingList {
 
     private void insertProduct(Product product, @Nullable AsyncResultListener<Product> listener) {
         product.setListID(mListID);
-        new CreateProductAsyncTask(listener).execute(product);
+        new CreateProductAsyncTask(mProductListDao, mProductDao, listener).execute(product);
     }
 
-    static class UpdateProductAsyncTask extends ListenedAsyncTask<Product, Product> {
+    private static class UpdateProductAsyncTask extends ListenedAsyncTask<Product, Product> {
 
-        @Inject
         ProductDao mProductDao;
 
-        UpdateProductAsyncTask(@Nullable AsyncResultListener<Product> listener) {
+        UpdateProductAsyncTask(ProductDao productDao, @Nullable AsyncResultListener<Product> listener) {
             super(listener);
+            mProductDao = productDao;
         }
 
         @Override
@@ -164,7 +163,7 @@ public class ShoppingList {
     }
 
     public void updateProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
-        new UpdateProductAsyncTask(listener).execute(product);
+        new UpdateProductAsyncTask(mProductDao, listener).execute(product);
     }
 
     private static void validateName(ProductDao productDao, String name, UUID listID) throws NameIsEmptyException, UniqueNameConstraintException {
@@ -175,12 +174,15 @@ public class ShoppingList {
         }
     }
 
-    static class MoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
+    private static class MoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
 
-        @Inject
         ProductListDao mProductListDao;
-        @Inject
         ProductDao mProductDao;
+
+        public MoveProductAsyncTask(ProductListDao productListDao, ProductDao productDao) {
+            this.mProductListDao = productListDao;
+            this.mProductDao = productDao;
+        }
 
         @Override
         protected Void doInBackground(Product... products) {
@@ -233,13 +235,16 @@ public class ShoppingList {
             throw new ShoppingListException("Either productAfter or productBefore must not be null");
         }
 
-        new MoveProductAsyncTask().execute(product, productAfter, productBefore);
+        new MoveProductAsyncTask(mProductListDao, mProductDao).execute(product, productAfter, productBefore);
     }
 
-    static class RemoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
+    private static class RemoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
 
-        @Inject
         ProductDao mProductDao;
+
+        RemoveProductAsyncTask(ProductDao productDao) {
+            this.mProductDao = productDao;
+        }
 
         @Override
         protected Void doInBackground(Product... products) {
@@ -249,17 +254,17 @@ public class ShoppingList {
     }
 
     public void removeProduct(Product product) {
-        new RemoveProductAsyncTask().execute(product);
+        new RemoveProductAsyncTask(mProductDao).execute(product);
     }
 
-    static class RemoveProductsByTemplateAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class RemoveProductsByTemplateAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        @Inject
         ProductDao mProductDao;
         UUID mTemplateID;
         UUID mListID;
 
-        RemoveProductsByTemplateAsyncTask(UUID templateID, UUID listID) {
+        RemoveProductsByTemplateAsyncTask(ProductDao productDao, UUID templateID, UUID listID) {
+            mProductDao = productDao;
             mTemplateID = templateID;
             mListID = listID;
         }
@@ -272,17 +277,17 @@ public class ShoppingList {
     }
 
     public void removeProductsWithTemplate(UUID templateID) {
-        new RemoveProductsByTemplateAsyncTask(templateID, mListID).execute();
+        new RemoveProductsByTemplateAsyncTask(mProductDao, templateID, mListID).execute();
     }
 
-    static class RemoveProductsByStatusAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class RemoveProductsByStatusAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        @Inject
         ProductDao mProductDao;
         int mStatus;
         UUID mListID;
 
-        RemoveProductsByStatusAsyncTask(int status, UUID listID) {
+        RemoveProductsByStatusAsyncTask(ProductDao productDao, int status, UUID listID) {
+            mProductDao = productDao;
             mStatus = status;
             mListID = listID;
         }
@@ -296,7 +301,7 @@ public class ShoppingList {
 
     public void removeProductsByStatus(@Product.ProductStatus int status) {
         //TODO: add test
-        new RemoveProductsByStatusAsyncTask(status, mListID).execute();
+        new RemoveProductsByStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
@@ -329,16 +334,15 @@ public class ShoppingList {
         }
     }
 
-    static class SaveSortingAndViewAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class SaveSortingAndViewAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        @Inject
         ProductListDao mProductListDao;
-
         UUID mListID;
         int mSorting;
         boolean mIsGroupedView;
 
-        SaveSortingAndViewAsyncTask(UUID listID, int sorting, boolean isGroupedView) {
+        SaveSortingAndViewAsyncTask(ProductListDao productListDao, UUID listID, int sorting, boolean isGroupedView) {
+            mProductListDao = productListDao;
             mSorting = sorting;
             mIsGroupedView = isGroupedView;
             mListID = listID;
@@ -358,18 +362,17 @@ public class ShoppingList {
     }
 
     private void saveSortingAndView(@ProductList.ProductSorting int sorting, boolean isGroupedView) {
-        new SaveSortingAndViewAsyncTask(mListID, sorting, isGroupedView).execute();
+        new SaveSortingAndViewAsyncTask(mProductListDao, mListID, sorting, isGroupedView).execute();
     }
 
     static class UpdateProductStatusAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        @Inject
         ProductDao mProductDao;
-
         int mStatus;
         UUID mListID;
 
-        UpdateProductStatusAsyncTask(int status, UUID listID) {
+        UpdateProductStatusAsyncTask(ProductDao productDao, int status, UUID listID) {
+            mProductDao = productDao;
             mStatus = status;
             mListID = listID;
         }
@@ -384,6 +387,6 @@ public class ShoppingList {
     public void updateProductsStatus(int status) {
         //TODO: add test
 
-        new UpdateProductStatusAsyncTask(status, mListID).execute();
+        new UpdateProductStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 }

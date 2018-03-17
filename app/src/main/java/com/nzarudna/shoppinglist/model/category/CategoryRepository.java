@@ -36,14 +36,14 @@ public class CategoryRepository {
         mProductTemplateDao = productTemplateDao;
     }
 
-    static class CreateUpdateAsyncTask extends ListenedAsyncTask<Category, Category> {
+    private static class CreateUpdateAsyncTask extends ListenedAsyncTask<Category, Category> {
 
-        @Inject
         CategoryDao mCategoryDao;
         boolean mIsCreate;
 
-        CreateUpdateAsyncTask(@Nullable AsyncResultListener<Category> listener, boolean isCreate) {
+        CreateUpdateAsyncTask(CategoryDao categoryDao, @Nullable AsyncResultListener<Category> listener, boolean isCreate) {
             super(listener);
+            mCategoryDao = categoryDao;
             mIsCreate = isCreate;
         }
 
@@ -69,11 +69,11 @@ public class CategoryRepository {
     }
 
     public void create(final Category category, @Nullable AsyncResultListener<Category> listener) {
-        new CreateUpdateAsyncTask(listener, true).execute(category);
+        new CreateUpdateAsyncTask(mCategoryDao, listener, true).execute(category);
     }
 
     public void update(final Category category, @Nullable AsyncResultListener<Category> listener) {
-        new CreateUpdateAsyncTask(listener, false).execute(category);
+        new CreateUpdateAsyncTask(mCategoryDao, listener, false).execute(category);
     }
 
     private static void validateName(CategoryDao categoryDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
@@ -84,14 +84,17 @@ public class CategoryRepository {
         }
     }
 
-    static class RemoveAsyncTask extends AsyncTask<Category, Void, Void> {
+    private static class RemoveAsyncTask extends AsyncTask<Category, Void, Void> {
 
-        @Inject
         CategoryDao mCategoryDao;
-        @Inject
         ProductDao mProductDao;
-        @Inject
         ProductTemplateDao mProductTemplateDao;
+
+        RemoveAsyncTask(CategoryDao categoryDao, ProductDao productDao, ProductTemplateDao productTemplateDao) {
+            this.mCategoryDao = categoryDao;
+            this.mProductDao = productDao;
+            this.mProductTemplateDao = productTemplateDao;
+        }
 
         @Override
         protected Void doInBackground(Category... categories) {
@@ -107,7 +110,7 @@ public class CategoryRepository {
     }
 
     public void remove(Category category) {
-        new RemoveAsyncTask().execute(category);
+        new RemoveAsyncTask(mCategoryDao, mProductDao, mProductTemplateDao).execute(category);
     }
 
     public DataSource.Factory<Integer, Category> getAllCategories() {

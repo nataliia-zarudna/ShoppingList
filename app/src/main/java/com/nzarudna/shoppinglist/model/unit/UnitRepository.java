@@ -38,14 +38,14 @@ public class UnitRepository {
 
     //TODO: add tests. start
 
-    static class CreateUpdateAsyncTask extends ListenedAsyncTask<Unit, Unit> {
+    private static class CreateUpdateAsyncTask extends ListenedAsyncTask<Unit, Unit> {
 
-        @Inject
         UnitDao mUnitDao;
         boolean mIsCreate;
 
-        CreateUpdateAsyncTask(@Nullable AsyncResultListener<Unit> listener, boolean isCreate) {
+        CreateUpdateAsyncTask(UnitDao unitDao, @Nullable AsyncResultListener<Unit> listener, boolean isCreate) {
             super(listener);
+            mUnitDao = unitDao;
             mIsCreate = isCreate;
         }
 
@@ -71,11 +71,11 @@ public class UnitRepository {
     }
 
     public void createUnit(Unit unit, @Nullable AsyncResultListener<Unit> listener) {
-        new CreateUpdateAsyncTask(listener, true).execute(unit);
+        new CreateUpdateAsyncTask(mUnitDao, listener, true).execute(unit);
     }
 
     public void updateUnit(Unit unit, @Nullable AsyncResultListener<Unit> listener) {
-        new CreateUpdateAsyncTask(listener, false).execute(unit);
+        new CreateUpdateAsyncTask(mUnitDao, listener, false).execute(unit);
     }
 
 
@@ -87,10 +87,13 @@ public class UnitRepository {
         }
     }
 
-    static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
+    private static class RemoveAsyncTask extends AsyncTask<Unit, Void, Void> {
 
-        @Inject
         UnitDao mUnitDao;
+
+        RemoveAsyncTask(UnitDao unitDao) {
+            mUnitDao = unitDao;
+        }
 
         @Override
         protected Void doInBackground(Unit... units) {
@@ -102,7 +105,7 @@ public class UnitRepository {
     }
 
     public void removeUnit(final Unit unit) {
-        new RemoveAsyncTask().execute(unit);
+        new RemoveAsyncTask(mUnitDao).execute(unit);
     }
 
     //TODO: add tests. end

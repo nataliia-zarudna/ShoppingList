@@ -39,31 +39,40 @@ public class ProductListRepository {
     private ProductListDao mProductListDao;
     private ProductDao mProductDao;
     private ProductTemplateRepository mProductTemplateRepository;
+    private UserRepository mUserRepository;
+    private ResourceResolver mResourceResolver;
+    private SharedPreferences mSharedPreferences;
 
     @Inject
     public ProductListRepository(ProductListDao productListDao, ProductDao productDao,
-                                 ProductTemplateRepository productTemplateRepository) {
-        mProductListDao = productListDao;
-        mProductDao = productDao;
-        mProductTemplateRepository = productTemplateRepository;
+                                 ProductTemplateRepository productTemplateRepository,
+                                 UserRepository userRepository, ResourceResolver resourceResolver,
+                                 SharedPreferences sharedPreferences) {
+        this.mProductListDao = productListDao;
+        this.mProductDao = productDao;
+        this.mProductTemplateRepository = productTemplateRepository;
+        this.mUserRepository = userRepository;
+        this.mResourceResolver = resourceResolver;
+        this.mSharedPreferences = sharedPreferences;
     }
 
-    static class CreateListAsyncTask extends ListenedAsyncTask<Void, ProductList> {
+    private static class CreateListAsyncTask extends ListenedAsyncTask<Void, ProductList> {
 
-        @Inject
         UserRepository mUserRepository;
-        @Inject
         ResourceResolver mResourceResolver;
-        @Inject
         SharedPreferences mSharedPreferences;
-        @Inject
         ProductListDao mProductListDao;
 
         AsyncResultListener mListener;
 
-        CreateListAsyncTask(@Nullable AsyncResultListener<ProductList> listener) {
+        CreateListAsyncTask(UserRepository userRepository, ResourceResolver resourceResolver,
+                            SharedPreferences sharedPreferences, ProductListDao productListDao,
+                            @Nullable AsyncResultListener<ProductList> listener) {
             super(listener);
-            mListener = listener;
+            this.mUserRepository = userRepository;
+            this.mResourceResolver = resourceResolver;
+            this.mSharedPreferences = sharedPreferences;
+            this.mProductListDao = productListDao;
         }
 
         @Override
@@ -76,27 +85,30 @@ public class ProductListRepository {
     }
 
     public void createNewList(@Nullable AsyncResultListener<ProductList> listener) {
-        new CreateListAsyncTask(listener).execute();
+        new CreateListAsyncTask(mUserRepository, mResourceResolver, mSharedPreferences, mProductListDao, listener).execute();
     }
 
-    static class CreateFromTemplatesAsyncTask extends ListenedAsyncTask<Void, ProductList> {
+    private static class CreateFromTemplatesAsyncTask extends ListenedAsyncTask<Void, ProductList> {
 
-        @Inject
         ProductListRepository mProductListRepository;
-        @Inject
         ProductListDao mProductListDao;
-        @Inject
         UserRepository mUserRepository;
-        @Inject
         ResourceResolver mResourceResolver;
-        @Inject
         SharedPreferences mSharedPreferences;
 
         List<ProductTemplate> mTemplates;
 
-        CreateFromTemplatesAsyncTask(List<ProductTemplate> templates, @Nullable AsyncResultListener<ProductList> listener) {
+        public CreateFromTemplatesAsyncTask(ProductListRepository productListRepository,
+                                            ProductListDao productListDao, UserRepository userRepository,
+                                            ResourceResolver resourceResolver, SharedPreferences sharedPreferences,
+                                            List<ProductTemplate> templates, @Nullable AsyncResultListener<ProductList> listener) {
             super(listener);
-            mTemplates = templates;
+            this.mProductListRepository = productListRepository;
+            this.mProductListDao = productListDao;
+            this.mUserRepository = userRepository;
+            this.mResourceResolver = resourceResolver;
+            this.mSharedPreferences = sharedPreferences;
+            this.mTemplates = templates;
         }
 
         @Override
@@ -116,27 +128,31 @@ public class ProductListRepository {
 
     //TODO: add test
     public void createNewList(List<ProductTemplate> templates, @Nullable AsyncResultListener<ProductList> listener) {
-        new CreateFromTemplatesAsyncTask(templates, listener).execute();
+        new CreateFromTemplatesAsyncTask(this, mProductListDao, mUserRepository,
+                mResourceResolver, mSharedPreferences, templates, listener).execute();
     }
 
-    static class CopyListAsyncTask extends ListenedAsyncTask<Void, ProductList> {
+    private static class CopyListAsyncTask extends ListenedAsyncTask<Void, ProductList> {
 
-        @Inject
         ProductDao mProductDao;
-        @Inject
         ProductListDao mProductListDao;
-        @Inject
         UserRepository mUserRepository;
-        @Inject
         ResourceResolver mResourceResolver;
-        @Inject
         SharedPreferences mSharedPreferences;
 
         UUID mEtalonListID;
 
-        CopyListAsyncTask(UUID etalonListID, @Nullable AsyncResultListener<ProductList> listener) {
+        public CopyListAsyncTask(ProductDao productDao, ProductListDao productListDao,
+                                 UserRepository userRepository, ResourceResolver resourceResolver,
+                                 SharedPreferences sharedPreferences, UUID etalonListID,
+                                 @Nullable AsyncResultListener<ProductList> listener) {
             super(listener);
-            mEtalonListID = etalonListID;
+            this.mProductDao = productDao;
+            this.mProductListDao = productListDao;
+            this.mUserRepository = userRepository;
+            this.mResourceResolver = resourceResolver;
+            this.mSharedPreferences = sharedPreferences;
+            this.mEtalonListID = etalonListID;
         }
 
         @Override
@@ -157,7 +173,8 @@ public class ProductListRepository {
     }
 
     public void copyList(UUID etalonListID, @Nullable AsyncResultListener<ProductList> listener) {
-        new CopyListAsyncTask(etalonListID, listener).execute();
+        new CopyListAsyncTask(mProductDao, mProductListDao, mUserRepository, mResourceResolver,
+                mSharedPreferences, etalonListID, listener).execute();
     }
 
     private static ProductList createProductList(UserRepository userRepository, ResourceResolver mResourceResolver,
@@ -199,15 +216,15 @@ public class ProductListRepository {
     }
 
 
-    static class UpdateListStatusAsyncTask extends AsyncTask<UUID, Void, Void> {
+    private static class UpdateListStatusAsyncTask extends AsyncTask<UUID, Void, Void> {
 
-        @Inject
         ProductListDao mProductListDao;
 
         @ProductList.ProductListStatus
         int mStatus;
 
-        public UpdateListStatusAsyncTask(int status) {
+        UpdateListStatusAsyncTask(ProductListDao productListDao, int status) {
+            this.mProductListDao = productListDao;
             this.mStatus = status;
         }
 
@@ -225,14 +242,17 @@ public class ProductListRepository {
 
     //TODO: add test start
     public void updateListStatus(UUID productListID, @ProductList.ProductListStatus int status) {
-        new UpdateListStatusAsyncTask(status).execute(productListID);
+        new UpdateListStatusAsyncTask(mProductListDao, status).execute(productListID);
     }
     //TODO: add test end
 
     static class RemoveListAsyncTask extends AsyncTask<UUID, Void, Void> {
 
-        @Inject
         ProductListDao mProductListDao;
+
+        RemoveListAsyncTask(ProductListDao productListDao) {
+            this.mProductListDao = productListDao;
+        }
 
         @Override
         protected Void doInBackground(UUID... params) {
@@ -243,7 +263,7 @@ public class ProductListRepository {
     }
 
     public void removeList(UUID productListID) {
-        new RemoveListAsyncTask().execute(productListID);
+        new RemoveListAsyncTask(mProductListDao).execute(productListID);
     }
 
     public ShoppingList getShoppingList(UUID productListID) {
