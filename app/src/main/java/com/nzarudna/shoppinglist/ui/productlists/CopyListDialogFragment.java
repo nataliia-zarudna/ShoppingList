@@ -23,7 +23,9 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.databinding.ItemTextListBinding;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.ui.ViewModelArrayAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +52,14 @@ public class CopyListDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final ProductListAdapter listAdapter = new ProductListAdapter(mViewModel.getAllLists());
+        final ViewModelArrayAdapter<ProductList> listAdapter =
+                new ViewModelArrayAdapter<ProductList>(getActivity(), R.layout.item_base_list, new ArrayList(), CopyListItemViewModel.class);
+        mViewModel.getAllLists().observe(this, new Observer<List<ProductList>>() {
+            @Override
+            public void onChanged(@Nullable List<ProductList> productLists) {
+                listAdapter.set
+            }
+        });
 
         return new AlertDialog.Builder(getActivity())
                 .setAdapter(listAdapter, new DialogInterface.OnClickListener() {
@@ -67,11 +76,22 @@ public class CopyListDialogFragment extends DialogFragment {
                 }).create();
     }
 
+    private void getAdapter() {
+        final ViewModelArrayAdapter<ProductList> listAdapter =
+                new ViewModelArrayAdapter<ProductList>(getActivity(), R.layout.item_base_list, new ArrayList(), CopyListItemViewModel.class);
+        mViewModel.getAllLists().observe(this, new Observer<List<ProductList>>() {
+            @Override
+            public void onChanged(@Nullable List<ProductList> productLists) {
+                listAdapter.set
+            }
+        });
+    }
+
     public static UUID getListID(Intent data) {
         return (UUID) data.getSerializableExtra(EXTRA_LIST_ID);
     }
 
-    public class ProductListAdapter extends BaseAdapter {
+    /*private class ProductListAdapter extends BaseAdapter {
 
         private List<ProductList> mProductList;
 
@@ -87,7 +107,7 @@ public class CopyListDialogFragment extends DialogFragment {
 
         @Override
         public int getCount() {
-            return mProductList != null ? mProductList.size() : 0;
+            return gitmProductList != null ? mProductList.size() : 0;
         }
 
         @Override
@@ -137,9 +157,5 @@ public class CopyListDialogFragment extends DialogFragment {
                 return mList.getName();
             }
         }
-    }
-
-    public interface OnSelectListListener {
-        void onSelect(UUID listID);
-    }
+    }*/
 }
