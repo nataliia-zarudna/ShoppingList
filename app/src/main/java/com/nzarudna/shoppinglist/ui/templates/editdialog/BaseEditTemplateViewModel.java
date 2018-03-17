@@ -8,6 +8,8 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
@@ -55,7 +57,7 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
 
     public abstract void setUnit(Unit selectedUnit);
 
-    public abstract void setCategory(Category selectedCategory);
+    public abstract void setCategoryID(UUID categoryID);
 
     public LiveData<List<Unit>> getUnits() {
         return mUnitRepository.getAvailableUnits();
@@ -87,18 +89,25 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
     public void saveItem(@Nullable final OnSaveItemListener listener) {
 
         if (isNewCategorySelected()) {
-            Category category = new Category();
+            final Category category = new Category();
             category.setName(mCategoryName);
             mCategoryRepository.create(category, new AsyncResultListener<Category>() {
                 @Override
                 public void onAsyncSuccess(Category category) {
-                    setCategory(category);
+                    setCategoryID(category.getCategoryID());
                     BaseEditTemplateViewModel.super.saveItem(listener);
                 }
 
                 @Override
                 public void onAsyncError(Exception e) {
-
+                    if (e instanceof NameIsEmptyException) {
+                        setCategoryID(Category.DEFAULT_CATEGORY_ID);
+                        BaseEditTemplateViewModel.super.saveItem(listener);
+                    } else if (e instanceof UniqueNameConstraintException) {
+                        UUID categoryID = ((UniqueNameConstraintException) e).getDuplicateEntityID();
+                        setCategoryID(categoryID);
+                        BaseEditTemplateViewModel.super.saveItem(listener);
+                    }
                 }
             });
         } else {

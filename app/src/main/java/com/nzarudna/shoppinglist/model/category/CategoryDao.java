@@ -33,8 +33,8 @@ public interface CategoryDao {
     LiveData<Category> findByID(UUID categoryID);
 
     //TODO: add test
-    @Query("SELECT 1 FROM categories WHERE lower(name) = lower(:name) LIMIT 1")
-    boolean isCategoriesWithSameNameExists(String name);
+    @Query("SELECT category_id FROM categories WHERE lower(name) = lower(:name) LIMIT 1")
+    UUID findBySimilarName(String name);
 
     @Query("SELECT * FROM categories WHERE category_id <> '" + Category.DEFAULT_CATEGORY_ID_STRING + "'")
     DataSource.Factory<Integer, Category> findAll();

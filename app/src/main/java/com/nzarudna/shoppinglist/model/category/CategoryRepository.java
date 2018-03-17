@@ -14,6 +14,7 @@ import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -79,8 +80,11 @@ public class CategoryRepository {
     private static void validateName(CategoryDao categoryDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
-        if (categoryDao.isCategoriesWithSameNameExists(name)) {
-            throw new UniqueNameConstraintException("Category with name '" + name + "' already exists");
+        UUID duplicateCategoryID = categoryDao.findBySimilarName(name);
+        if (duplicateCategoryID != null) {
+            UniqueNameConstraintException e = new UniqueNameConstraintException("Category with name '" + name + "' already exists");
+            e.setDuplicateEntityID(duplicateCategoryID);
+            throw e;
         }
     }
 

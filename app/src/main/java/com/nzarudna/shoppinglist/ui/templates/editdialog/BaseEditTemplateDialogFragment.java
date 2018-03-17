@@ -89,7 +89,7 @@ public abstract class BaseEditTemplateDialogFragment<T extends Parcelable, VM ex
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 Category category = mCategoryAdapter.getItem(position);
-                mViewModel.setCategory(category);
+                mViewModel.setCategoryID(category.getCategoryID());
             }
 
             @Override

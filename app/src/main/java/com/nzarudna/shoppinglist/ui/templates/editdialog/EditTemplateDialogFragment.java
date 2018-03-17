@@ -90,7 +90,7 @@ public class EditTemplateDialogFragment extends BaseEditTemplateDialogFragment<C
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 Category category = mCategoryAdapter.getItem(position);
-                mViewModel.setCategory(category);
+                mViewModel.setCategoryID(category);
             }
 
             @Override

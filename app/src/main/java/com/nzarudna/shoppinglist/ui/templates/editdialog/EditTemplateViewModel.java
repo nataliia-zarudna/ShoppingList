@@ -82,7 +82,7 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
     }
 
     @Override
-    public void setCategory(Category selectedCategory) {
-        mTemplate.setCategoryID(selectedCategory.getCategoryID());
+    public void setCategoryID(UUID categoryID) {
+        mTemplate.setCategoryID(categoryID);
     }
 }

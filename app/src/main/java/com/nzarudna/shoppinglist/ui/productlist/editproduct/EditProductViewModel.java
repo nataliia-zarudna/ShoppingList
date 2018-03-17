@@ -120,7 +120,7 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
     }
 
     @Override
-    public void setCategory(Category selectedCategory) {
-        mProduct.setCategoryID(selectedCategory.getCategoryID());
+    public void setCategoryID(UUID categoryID) {
+        mProduct.setCategoryID(categoryID);
     }
 }
