@@ -32,6 +32,7 @@ public class FABsAlertDialog extends AlertDialog {
         public Builder(@NonNull Context context) {
             super(context);
             fabs = new ArrayList<>();
+            setView(R.layout.dialog_fabs);
         }
 
         public AlertDialog.Builder addFAB(@StringRes int titleResID, @DrawableRes int iconResID,

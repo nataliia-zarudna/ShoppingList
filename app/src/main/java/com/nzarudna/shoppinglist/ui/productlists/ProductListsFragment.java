@@ -22,6 +22,8 @@ import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.ui.fabdialog.FABsAlertDialog;
+import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
 import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
@@ -81,6 +83,14 @@ public class ProductListsFragment
         mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                new FABsAlertDialog.Builder(getActivity())//.addFAB()
+                .create().show();
+            }
+        });
+
+        /*mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 int subItemsVisibility = (mCreateNewSubItem.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
 
                 mCreateNewSubItem.setVisibility(subItemsVisibility);
@@ -104,7 +114,7 @@ public class ProductListsFragment
                 copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
                 copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
             }
-        });
+        });*/
     }
 
     @Override
