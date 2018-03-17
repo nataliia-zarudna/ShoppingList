@@ -71,25 +71,17 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
 
     @Override
     protected void updateItem(AsyncResultListener asyncResultListener) {
-        mShoppingList.updateProduct(mProduct, null);
+        mShoppingList.updateProduct(mProduct, asyncResultListener);
     }
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mShoppingList.addProduct(mProduct, null);
+        mShoppingList.addProduct(mProduct, asyncResultListener);
     }
 
     public LiveData<List<ProductTemplate>> getNameAutocompleteList(String filterValue) {
         return mTemplateRepository.getTemplatesByNameLike(filterValue, mProduct.getListID());
     }
-
-    /*public String getProductName() {
-        return mProduct != null ? mProduct.getValue().getName() : "";
-    }
-
-    public void setProductName(String productName) {
-        mProduct.getValue().setName(productName);
-    }*/
 
     public String getProductCount() {
         if (mProduct != null && mProduct.getCount() > 0) {
@@ -104,14 +96,6 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
         double count = !countStr.isEmpty() ? Double.valueOf(countStr) : 0;
         mProduct.setCount(count);
     }
-
-    /*public UUID getProductCategoryID() {
-        return mProduct != null ? mProduct.getValue().getCategoryID() : null;
-    }
-
-    public UUID getProductUnitID() {
-        return mProduct != null ? mProduct.getValue().getUnitID() : null;
-    }*/
 
     public void onChooseProductTemplate(ProductTemplate template) {
         mProduct.setTemplateID(template.getTemplateID());

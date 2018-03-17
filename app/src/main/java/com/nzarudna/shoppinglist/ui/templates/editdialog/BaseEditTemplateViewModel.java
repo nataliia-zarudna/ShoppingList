@@ -40,12 +40,13 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
     }
 
     public void toggleIsNewCategorySelected() {
-        this.mCategoryName = null;
+        this.mCategoryName = (mCategoryName == null) ? "" : null;
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
-    private boolean isNewCategorySelected() {
-        return mCategoryName == null;
+    @Bindable
+    public boolean isNewCategorySelected() {
+        return mCategoryName != null;
     }
 
     public abstract UUID getCategoryID();
@@ -91,6 +92,7 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
             mCategoryRepository.create(category, new AsyncResultListener<Category>() {
                 @Override
                 public void onAsyncSuccess(Category category) {
+                    setCategory(category);
                     BaseEditTemplateViewModel.super.saveItem(listener);
                 }
 
@@ -99,6 +101,8 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
 
                 }
             });
+        } else {
+            super.saveItem(listener);
         }
     }
 }
