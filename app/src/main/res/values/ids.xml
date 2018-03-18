@@ -2,4 +2,8 @@
 <resources>
     <item name="tag_product_list_id" type="id" />
     <item name="menu_item_edit_list" type="id" />
+    <item name="fab_copy_list" type="id" />
+    <item name="fab_new_list" type="id" />
+    <item name="fab_create_from_template" type="id" />
+    <item name="fab_new_product" type="id" />
 </resources>

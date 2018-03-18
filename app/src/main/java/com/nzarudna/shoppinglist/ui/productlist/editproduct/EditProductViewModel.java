@@ -4,7 +4,6 @@ import android.arch.lifecycle.LiveData;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;

@@ -11,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
+import com.nzarudna.shoppinglist.ui.fabdialog.FABsDialog;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
@@ -38,10 +38,6 @@ public class EditProductListFragment extends ProductListFragment {
     private View mToolbarView;
     private View mFragmentView;
     private ImageButton mShowCreationMenuBtn;
-    private ImageButton mCreateNewSubItem;
-    private ImageButton mCreateFromTemplateSubItem;
-    private TextView mCreateNewSubItemTitle;
-    private TextView mCreateFromTemplateSubItemTitle;
 
     public static EditProductListFragment getInstance(UUID productListID) {
         EditProductListFragment instance = new EditProductListFragment();
@@ -78,10 +74,6 @@ public class EditProductListFragment extends ProductListFragment {
         }
 
         mShowCreationMenuBtn = mFragmentView.findViewById(R.id.show_create_product_menu);
-        mCreateNewSubItem = mFragmentView.findViewById(R.id.btn_new_product);
-        mCreateFromTemplateSubItem = mFragmentView.findViewById(R.id.btn_create_from_template);
-        mCreateNewSubItemTitle = mFragmentView.findViewById(R.id.new_product_title);
-        mCreateFromTemplateSubItemTitle = mFragmentView.findViewById(R.id.btn_create_from_template_title);
         configCreationMenu();
 
         return mFragmentView;
@@ -120,30 +112,26 @@ public class EditProductListFragment extends ProductListFragment {
         mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int subItemsVisibility = (mCreateNewSubItem.getVisibility() == View.GONE) ? View.VISIBLE : View.GONE;
-
-                mCreateNewSubItem.setVisibility(subItemsVisibility);
-                mCreateFromTemplateSubItem.setVisibility(subItemsVisibility);
-                mCreateNewSubItemTitle.setVisibility(subItemsVisibility);
-                mCreateFromTemplateSubItemTitle.setVisibility(subItemsVisibility);
-            }
-        });
-
-        mCreateNewSubItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditProductDialogFragment newProductDialog = EditProductDialogFragment.newInstance();
-                newProductDialog.setListID(mViewModel.getProductListID());
-                newProductDialog.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_NEW_FRAGMENT);
-                newProductDialog.show(getFragmentManager(), "EditProductDialogFragment");
-            }
-        });
-
-        mCreateFromTemplateSubItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = ChooseTemplateActivity.newIntent(getActivity(), mViewModel.getProductListID());
-                startActivity(intent);
+                FABsDialog.newInstance()
+                        .addFAB(R.id.fab_create_from_template, R.string.create_product_from_template_title, R.drawable.ic_content_copy_black,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = ChooseTemplateActivity.newIntent(getActivity(), mViewModel.getProductListID());
+                                        startActivity(intent);
+                                    }
+                                })
+                        .addFAB(R.id.fab_new_product, R.string.new_product_title, R.drawable.ic_add_black,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        EditProductDialogFragment newProductDialog = EditProductDialogFragment.newInstance();
+                                        newProductDialog.setListID(mViewModel.getProductListID());
+                                        newProductDialog.setTargetFragment(EditProductListFragment.this, REQUEST_CODE_NEW_FRAGMENT);
+                                        newProductDialog.show(getFragmentManager(), "EditProductDialogFragment");
+                                    }
+                                })
+                        .show(getFragmentManager(), "FABsDialog");
             }
         });
     }

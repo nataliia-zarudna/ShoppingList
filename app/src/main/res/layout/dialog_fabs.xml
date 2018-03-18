@@ -8,37 +8,12 @@
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/show_create_list_menu"
+        android:id="@+id/fabs_menu_btn"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
-
-
-
-    <!--android.support.design.widget.FloatingActionButton
-        android:id="@+id/btn_new_list"
-        android:layout_width="@dimen/fab_size_mini"
-        android:layout_height="@dimen/fab_size_mini"
-        android:layout_margin="@dimen/fab_margin_mini"
-        android:src="@drawable/ic_add_black"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/btn_copy_list"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:visibility="visible" />
-
-    <TextView
-        android:id="@+id/new_list_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin_mini"
-        android:text="@string/new_list_title"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/btn_new_list"
-        app:layout_constraintRight_toLeftOf="@id/btn_new_list"
-        app:layout_constraintTop_toTopOf="@id/btn_new_list"
-        tools:visibility="visible" /-->
 
 </android.support.constraint.ConstraintLayout>

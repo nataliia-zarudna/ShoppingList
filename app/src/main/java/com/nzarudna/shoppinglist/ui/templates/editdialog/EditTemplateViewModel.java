@@ -2,7 +2,6 @@ package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
