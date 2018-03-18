@@ -236,12 +236,6 @@ public abstract class ProductListFragment
     }
 
     @Override
-    public void onChanged(@Nullable PagedList<CategoryProductItem> categoryProductItems) {
-        mAdapter.setList(categoryProductItems);
-        mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.product_list_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);

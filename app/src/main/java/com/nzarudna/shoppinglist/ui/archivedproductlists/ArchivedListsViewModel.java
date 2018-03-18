@@ -53,4 +53,9 @@ public class ArchivedListsViewModel extends RecyclerViewModel<ProductList> {
             return null;
         }
     }
+
+    @Override
+    public boolean canCreateNewItem() {
+        return false;
+    }
 }

@@ -101,11 +101,6 @@ public class ChooseTemplateFragment
     }
 
     @Override
-    protected int getLayoutResID() {
-        return R.layout.fragment_recycler_view;
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 

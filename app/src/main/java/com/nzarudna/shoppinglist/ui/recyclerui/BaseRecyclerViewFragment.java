@@ -98,11 +98,12 @@ public abstract class BaseRecyclerViewFragment
     @Override
     public void onChanged(@Nullable PagedList<T> items) {
         mAdapter.setList(items);
+        mViewModel.onItemsLoad(items.isEmpty());
     }
 
     @LayoutRes
     protected int getLayoutResID() {
-        return R.layout.fragment_recycler_view_with_fab;
+        return R.layout.fragment_recycler_view;
     }
 
     @LayoutRes

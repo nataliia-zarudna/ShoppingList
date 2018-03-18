@@ -51,15 +51,10 @@ public class ProductListsFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragmentView = super.onCreateView(inflater, container, savedInstanceState);
 
-        mShowCreationMenuBtn = fragmentView.findViewById(R.id.show_create_list_menu);
+        mShowCreationMenuBtn = fragmentView.findViewById(R.id.fab);
         configCreationMenu();
 
         return fragmentView;
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.fragment_product_lists;
     }
 
     @Override

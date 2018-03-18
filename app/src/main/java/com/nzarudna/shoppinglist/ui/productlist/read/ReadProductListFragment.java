@@ -33,11 +33,6 @@ public class ReadProductListFragment extends ProductListFragment {
     }
 
     @Override
-    protected int getLayoutResID() {
-        return R.layout.fragment_recycler_view;
-    }
-
-    @Override
     protected int getProductItemLayoutID() {
         return R.layout.item_product_product_list;
     }

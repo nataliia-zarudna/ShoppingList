@@ -7,4 +7,9 @@ import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
  */
 
 public class ReadProductListViewModel extends ProductListViewModel {
+
+    @Override
+    public boolean canCreateNewItem() {
+        return false;
+    }
 }

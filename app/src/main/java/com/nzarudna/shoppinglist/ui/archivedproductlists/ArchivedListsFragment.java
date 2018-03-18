@@ -30,11 +30,6 @@ public class ArchivedListsFragment
     }
 
     @Override
-    protected int getLayoutResID() {
-        return R.layout.fragment_recycler_view;
-    }
-
-    @Override
     protected ArchivedListsViewModel getFragmentViewModel() {
         ArchivedListsViewModel viewModel = ViewModelProviders.of(this).get(ArchivedListsViewModel.class);
         ShoppingListApplication.getAppComponent().inject(viewModel);

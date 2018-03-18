@@ -63,4 +63,8 @@ public class ChooseTemplateViewModel extends RecyclerViewModel<CategoryTemplateI
         return new LivePagedListBuilder<>(templatesDSFactory, pageSize).build();
     }
 
+    @Override
+    public boolean canCreateNewItem() {
+        return false;
+    }
 }
