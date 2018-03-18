@@ -44,7 +44,7 @@ public class TestUtils {
         Context context = InstrumentationRegistry.getContext();
         AppDatabase appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
 
-        insertDefaultCategory(appDatabase.categoryDao());
+        //insertDefaultCategory(appDatabase.categoryDao());
 
         return appDatabase;
     }
@@ -138,14 +138,14 @@ public class TestUtils {
 
     public static UUID insertCategory(CategoryDao categoryDao) {
 
-        Category category = new Category("Some name");
+        Category category = new Category();
         categoryDao.insert(category);
         return category.getCategoryID();
     }
 
     private static void insertDefaultCategory(CategoryDao categoryDao) {
 
-        Category defaultCategory = new Category("Some category");
+        Category defaultCategory = new Category();
         defaultCategory.setCategoryID(Category.DEFAULT_CATEGORY_ID);
         categoryDao.insert(defaultCategory);
     }
@@ -156,7 +156,7 @@ public class TestUtils {
 
     public static UUID insertProduct(ProductDao productDao, UUID listID, @Product.ProductStatus int status) {
 
-        Product product = new Product("Some name");
+        Product product = new Product();
         product.setListID(listID);
         product.setStatus(status);
 
@@ -166,7 +166,7 @@ public class TestUtils {
 
     public static UUID insertProductTemplate(ProductTemplateDao productTemplateDao) {
 
-        ProductTemplate template = new ProductTemplate("Some name");
+        ProductTemplate template = new ProductTemplate();
         productTemplateDao.insert(template);
         return template.getTemplateID();
     }

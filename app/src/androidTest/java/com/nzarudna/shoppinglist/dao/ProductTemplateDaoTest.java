@@ -109,11 +109,13 @@ public class ProductTemplateDaoTest {
     @Test
     public void setDefaultCategoryID() {
 
-        ProductTemplate template_1 = new ProductTemplate("Some name");
+        ProductTemplate template_1 = new ProductTemplate();
+        template_1.setName("Some name");
         template_1.setCategoryID(mLesserCategoryID);
         mSubjectDao.insert(template_1);
 
-        ProductTemplate template_2 = new ProductTemplate("Some name");
+        ProductTemplate template_2 = new ProductTemplate();
+        template_2.setName("Some name");
         template_2.setCategoryID(mGreaterCategoryID);
         mSubjectDao.insert(template_2);
 
@@ -132,7 +134,8 @@ public class ProductTemplateDaoTest {
         ProductTemplate template = insertTemplate();
 
         UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product = new Product("Some name");
+        Product product = new Product();
+        product.setName("Some name");
         product.setListID(listID);
         product.setTemplateID(template.getTemplateID());
         mProductDao.insert(product);
@@ -230,7 +233,8 @@ public class ProductTemplateDaoTest {
 
         UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
         for (int i = 0; i < 2; i++) {
-            Product product = new Product("Some prod");
+            Product product = new Product();
+            product.setName("Some prod");
             product.setListID(listID);
             product.setTemplateID(templates.get(i).getTemplateID());
             mProductDao.insert(product);
@@ -268,7 +272,8 @@ public class ProductTemplateDaoTest {
 
         UUID listID = TestUtils.insertProductsList(mProductListDao, mUser_1);
         for (int i = 0; i < 2; i++) {
-            Product product = new Product("Some prod");
+            Product product = new Product();
+            product.setName("Some prod");
             product.setListID(listID);
             product.setTemplateID(templates.get(i + 1).getTemplateID());
             mProductDao.insert(product);
@@ -307,9 +312,9 @@ public class ProductTemplateDaoTest {
 
         insertTemplates(templates);
 
-        DataSource.Factory<Integer, ProductTemplate> templateFactory =
+        LiveData<List<ProductTemplate>> resultListLiveData =
                 mSubjectDao.findAllByNameLike("BcD", UUID.randomUUID());
-        PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
+        List<ProductTemplate> resultList = TestUtils.getLiveDataValueSync(resultListLiveData);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();
         expectedTemplates.add(templates.get(3));
@@ -332,20 +337,22 @@ public class ProductTemplateDaoTest {
         insertTemplates(templates);
 
         UUID productListID_1 = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product_1 = new Product("Some name");
+        Product product_1 = new Product();
+        product_1.setName("Some name");
         product_1.setListID(productListID_1);
         product_1.setTemplateID(templates.get(1).getTemplateID());
         mProductDao.insert(product_1);
 
         UUID productListID_2 = TestUtils.insertProductsList(mProductListDao, mUser_1);
-        Product product_2 = new Product("Some name");
+        Product product_2 = new Product();
+        product_2.setName("Some name");
         product_2.setListID(productListID_2);
         product_2.setTemplateID(templates.get(3).getTemplateID());
         mProductDao.insert(product_2);
 
-        DataSource.Factory<Integer, ProductTemplate> templateFactory =
-                mSubjectDao.findAllByNameLike("bcd", productListID_1);
-        PagedList<ProductTemplate> resultList = TestUtils.getPagedListSync(templateFactory);
+        LiveData<List<ProductTemplate>> resultListLiveData =
+                mSubjectDao.findAllByNameLike("bcd", UUID.randomUUID());
+        List<ProductTemplate> resultList = TestUtils.getLiveDataValueSync(resultListLiveData);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();
         expectedTemplates.add(templates.get(2));
@@ -360,7 +367,7 @@ public class ProductTemplateDaoTest {
     }
 
     private ProductTemplate createTemplate() throws InterruptedException {
-        return new ProductTemplate("Some name");
+        return new ProductTemplate();
     }
 
     public List<ProductTemplate> createTemplates(int count) throws InterruptedException {

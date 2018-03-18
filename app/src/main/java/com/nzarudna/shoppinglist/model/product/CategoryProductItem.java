@@ -40,6 +40,10 @@ public class CategoryProductItem implements Parcelable {
     public CategoryProductItem() {
     }
 
+    public CategoryProductItem(Product product) {
+        this(product, null);
+    }
+
     public CategoryProductItem(Product product, Unit unit) {
         this.product = product;
         this.unit = unit;

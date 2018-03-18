@@ -32,7 +32,6 @@ public interface CategoryDao {
     @Query("SELECT * FROM categories WHERE category_id = :categoryID")
     LiveData<Category> findByID(UUID categoryID);
 
-    //TODO: add test
     @Query("SELECT category_id FROM categories WHERE lower(name) = lower(:name) LIMIT 1")
     UUID findBySimilarName(String name);
 

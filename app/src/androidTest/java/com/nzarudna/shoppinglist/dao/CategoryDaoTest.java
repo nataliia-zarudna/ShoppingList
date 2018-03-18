@@ -46,16 +46,8 @@ public class CategoryDaoTest {
     @Test
     public void create() {
 
-        Category category = new Category("New name");
-
-        mSubjectDao.insert(category);
-    }
-
-    @Test(expected = SQLiteConstraintException.class)
-    public void constrainedExceptionOnCreateWithNullName() {
-
-        Category category = new Category("New name");
-        category.setName(null);
+        Category category = new Category();
+        category.setName("New name");
 
         mSubjectDao.insert(category);
     }
@@ -63,7 +55,8 @@ public class CategoryDaoTest {
     @Test
     public void createAndRead() throws InterruptedException {
 
-        Category category = new Category("New name");
+        Category category = new Category();
+        category.setName("New name");
 
         mSubjectDao.insert(category);
 
@@ -93,12 +86,14 @@ public class CategoryDaoTest {
         UUID userID = TestUtils.insertUser(mAppDatabase.userDao());
         UUID listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
 
-        Product product = new Product("Some name");
+        Product product = new Product();
+        product.setName("Some name");
         product.setListID(listID);
         product.setCategoryID(category.getCategoryID());
         mAppDatabase.productDao().insert(product);
 
-        ProductTemplate template = new ProductTemplate("Some template");
+        ProductTemplate template = new ProductTemplate();
+        template.setName("Some template");
         template.setCategoryID(category.getCategoryID());
         mAppDatabase.productTemplateDao().insert(template);
 
@@ -125,6 +120,41 @@ public class CategoryDaoTest {
     }
 
     @Test
+    public void findAllLiveData() throws InterruptedException {
+
+        List<Category> createdCategories = createCategories(3);
+
+        LiveData<List<Category>> foundCategoriesLiveData = mSubjectDao.findAllLiveData();
+        List<Category> actualCategories = TestUtils.getLiveDataValueSync(foundCategoriesLiveData);
+
+        TestUtils.assertEquals(createdCategories, actualCategories);
+    }
+
+    @Test
+    public void findBySimilarName() throws InterruptedException {
+
+        Category category_1 = createCategory("category 1");
+        Category category_2 = createCategory("CaTeGoRy");
+        Category category_3 = createCategory("something");
+
+        UUID foundCategoryID = mSubjectDao.findBySimilarName("category");
+
+        assertEquals(category_2.getCategoryID(), foundCategoryID);
+    }
+
+    @Test
+    public void findBySimilarName_emptyResult() throws InterruptedException {
+
+        Category category_1 = createCategory("category 1");
+        Category category_2 = createCategory("CaTeGoRy123");
+        Category category_3 = createCategory("something");
+
+        UUID foundCategoryID = mSubjectDao.findBySimilarName("category");
+
+        assertNull(foundCategoryID);
+    }
+
+    @Test
     public void findAllWithStatistics() throws InterruptedException {
 
         List<Category> categories = createCategories(3);
@@ -132,12 +162,14 @@ public class CategoryDaoTest {
         UUID userID = TestUtils.insertUser(mAppDatabase.userDao());
         UUID listID = TestUtils.insertProductsList(mAppDatabase.productListDao(), userID);
 
-        Product product = new Product("Some product");
+        Product product = new Product();
+        product.setName("Some product");
         product.setListID(listID);
         product.setCategoryID(categories.get(1).getCategoryID());
         mAppDatabase.productDao().insert(product);
 
-        ProductTemplate template = new ProductTemplate("Some template");
+        ProductTemplate template = new ProductTemplate();
+        template.setName("Some template");
         template.setCategoryID(categories.get(2).getCategoryID());
         mAppDatabase.productTemplateDao().insert(template);
 
@@ -163,7 +195,8 @@ public class CategoryDaoTest {
     }
 
     private Category createCategory(String name) throws InterruptedException {
-        Category category = new Category(name);
+        Category category = new Category();
+        category.setName(name);
         mSubjectDao.insert(category);
         return category;
     }

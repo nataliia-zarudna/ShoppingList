@@ -96,7 +96,8 @@ public class ProductDaoTest {
     @Test
     public void createAndRead() throws InterruptedException {
 
-        Product product = new Product("new name");
+        Product product = new Product();
+        product.setName("new name");
         product.setListID(mProductsListID_1);
         product.setCategoryID(mLesserCategoryID);
         product.setComment("comments");
@@ -168,12 +169,14 @@ public class ProductDaoTest {
     @Test
     public void setDefaultCategoryID() {
 
-        Product product_1 = new Product("Some name");
+        Product product_1 = new Product();
+        product_1.setName("Some name");
         product_1.setListID(mProductsListID_1);
         product_1.setCategoryID(mLesserCategoryID);
         mSubjectDao.insert(product_1);
 
-        Product product_2 = new Product("Some name");
+        Product product_2 = new Product();
+        product_2.setName("Some name");
         product_2.setListID(mProductsListID_1);
         product_2.setCategoryID(mGreaterCategoryID);
         mSubjectDao.insert(product_2);
@@ -194,7 +197,8 @@ public class ProductDaoTest {
 
         UUID listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
 
-        Product product_1 = new Product("Some name");
+        Product product_1 = new Product();
+        product_1.setName("Some name");
         product_1.setListID(listID_1);
         product_1.setTemplateID(templateID);
         mSubjectDao.insert(product_1);
@@ -202,7 +206,8 @@ public class ProductDaoTest {
         UUID productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
 
         UUID listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
-        Product product_3 = new Product("Some name");
+        Product product_3 = new Product();
+        product_3.setName("Some name");
         product_3.setListID(listID_2);
         product_3.setTemplateID(templateID);
         mSubjectDao.insert(product_3);
@@ -221,7 +226,8 @@ public class ProductDaoTest {
 
         UUID listID_1 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
 
-        Product product_1 = new Product("Some name");
+        Product product_1 = new Product();
+        product_1.setName("Some name");
         product_1.setListID(listID_1);
         product_1.setStatus(Product.BOUGHT);
         mSubjectDao.insert(product_1);
@@ -229,7 +235,8 @@ public class ProductDaoTest {
         UUID productID_2 = TestUtils.insertProduct(mSubjectDao, listID_1);
 
         UUID listID_2 = TestUtils.insertProductsList(mProductListDao, mUserID_1);
-        Product product_3 = new Product("Some name");
+        Product product_3 = new Product();
+        product_3.setName("Some name");
         product_3.setListID(listID_2);
         product_3.setStatus(Product.BOUGHT);
         mSubjectDao.insert(product_3);
@@ -562,19 +569,23 @@ public class ProductDaoTest {
         UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product("Product 2");
+        Product product1 = new Product();
+        product1.setName("Product 2");
         product1.setListID(listID);
         products.add(product1);
 
-        Product product2 = new Product("Product 1");
+        Product product2 = new Product();
+        product2.setName("Product 1");
         product2.setListID(listID);
         products.add(product2);
 
-        Product product3 = new Product("Product 4");
+        Product product3 = new Product();
+        product3.setName("Product 4");
         product3.setListID(listID);
         products.add(product3);
 
-        Product product4 = new Product("Product 3");
+        Product product4 = new Product();
+        product4.setName("Product 3");
         product4.setListID(listID);
         products.add(product4);
 
@@ -604,22 +615,26 @@ public class ProductDaoTest {
         UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product("Product 2");
+        Product product1 = new Product();
+        product1.setName("Product 2");
         product1.setListID(listID);
         product1.setStatus(Product.ABSENT);
         products.add(product1);
 
-        Product product2 = new Product("Product 1");
+        Product product2 = new Product();
+        product2.setName("Product 1");
         product2.setListID(listID);
         product2.setStatus(Product.ABSENT);
         products.add(product2);
 
-        Product product3 = new Product("Product 4");
+        Product product3 = new Product();
+        product3.setName("Product 4");
         product3.setListID(listID);
         product3.setStatus(Product.TO_BUY);
         products.add(product3);
 
-        Product product4 = new Product("Product 3");
+        Product product4 = new Product();
+        product4.setName("Product 3");
         product4.setListID(listID);
         product4.setStatus(Product.BOUGHT);
         products.add(product4);
@@ -650,22 +665,26 @@ public class ProductDaoTest {
         UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product("Product 2");
+        Product product1 = new Product();
+        product1.setName("Product 2");
         product1.setListID(listID);
         product1.setStatus(Product.TO_BUY);
         products.add(product1);
 
-        Product product2 = new Product("Product 1");
+        Product product2 = new Product();
+        product2.setName("Product 1");
         product2.setListID(listID);
         product2.setStatus(Product.TO_BUY);
         products.add(product2);
 
-        Product product3 = new Product("Product 4");
+        Product product3 = new Product();
+        product3.setName("Product 4");
         product3.setListID(listID);
         product3.setStatus(Product.TO_BUY);
         products.add(product3);
 
-        Product product4 = new Product("Product 3");
+        Product product4 = new Product();
+        product4.setName("Product 3");
         product4.setListID(listID);
         product4.setStatus(Product.TO_BUY);
         products.add(product4);
@@ -695,22 +714,26 @@ public class ProductDaoTest {
         UUID listID = mProductsListID_1;
 
         List<Product> products = new ArrayList<>();
-        Product product1 = new Product("Product 1");
+        Product product1 = new Product();
+        product1.setName("Product 1");
         product1.setListID(listID);
         product1.setStatus(Product.TO_BUY);
         products.add(product1);
 
-        Product product2 = new Product("Product 2");
+        Product product2 = new Product();
+        product2.setName("Product 2");
         product2.setListID(listID);
         product2.setStatus(Product.BOUGHT);
         products.add(product2);
 
-        Product product3 = new Product("Product 3");
+        Product product3 = new Product();
+        product3.setName("Product 3");
         product3.setListID(listID);
         product3.setStatus(Product.ABSENT);
         products.add(product3);
 
-        Product product4 = new Product("Product 4");
+        Product product4 = new Product();
+        product4.setName("Product 4");
         product4.setListID(listID);
         product4.setStatus(Product.ABSENT);
         products.add(product4);
@@ -761,7 +784,8 @@ public class ProductDaoTest {
     }
 
     private Product createProduct(String name) throws InterruptedException {
-        Product product = new Product(name);
+        Product product = new Product();
+        product.setName(name);
         product.setListID(mProductsListID_1);
         return product;
     }

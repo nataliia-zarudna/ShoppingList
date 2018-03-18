@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.dao;
 
+import android.arch.lifecycle.LiveData;
+
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -33,7 +35,7 @@ public class UnitDaoTest {
     }
 
     @Test
-    public void findAll() {
+    public void findAll() throws InterruptedException {
 
         List<Unit> expectedUnits = new ArrayList<>();
 
@@ -49,7 +51,8 @@ public class UnitDaoTest {
                                 "                VALUES('" + unitID + "', '" + name + "')")
                         .executeInsert();
 
-                Unit unit = new Unit(name);
+                Unit unit = new Unit();
+                unit.setName(name);
                 unit.setUnitID(unitID);
                 expectedUnits.add(unit);
             }
@@ -58,7 +61,8 @@ public class UnitDaoTest {
             mDatabase.endTransaction();
         }
 
-        List<Unit> foundUnits = mSubject.findAll();
+        LiveData<List<Unit>> foundUnitsLiveData = mSubject.findAll();
+        List<Unit> foundUnits = TestUtils.getLiveDataValueSync(foundUnitsLiveData);
 
         TestUtils.assertEquals(expectedUnits, foundUnits);
     }
