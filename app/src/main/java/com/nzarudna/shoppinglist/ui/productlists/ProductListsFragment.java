@@ -40,53 +40,13 @@ public class ProductListsFragment
 
     private static final int REQUEST_CODE_LIST_TO_COPY = 1;
 
-    private FloatingActionButton mShowCreationMenuBtn;
-
     public static Fragment getInstance() {
         return new ProductListsFragment();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View fragmentView = super.onCreateView(inflater, container, savedInstanceState);
-
-        mShowCreationMenuBtn = fragmentView.findViewById(R.id.fab);
-        configCreationMenu();
-
-        return fragmentView;
     }
 
     @Override
     protected int getItemLayoutResID() {
         return R.layout.item_product_list;
-    }
-
-    private void configCreationMenu() {
-
-        mShowCreationMenuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FABsDialog.newInstance()
-                        .addFAB(R.id.fab_copy_list, R.string.copy_list_title, R.drawable.ic_content_copy_black,
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
-                                        copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
-                                        copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
-                                    }
-                                })
-                        .addFAB(R.id.fab_new_list, R.string.new_list_title, R.drawable.ic_add_black,
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        mViewModel.onClickCreateListBtn();
-                                    }
-                                })
-                        .show(getFragmentManager(), "FABsDialog");
-            }
-        });
     }
 
     @Override
@@ -189,6 +149,28 @@ public class ProductListsFragment
     public void startEditProductListActivity(UUID productListID) {
         Intent intent = EditProductListActivity.newIntent(getActivity(), productListID);
         startActivity(intent);
+    }
+
+    @Override
+    public void showFABMenu() {
+        FABsDialog.newInstance()
+                .addFAB(R.id.fab_copy_list, R.string.copy_list_title, R.drawable.ic_content_copy_black,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
+                                copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
+                                copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
+                            }
+                        })
+                .addFAB(R.id.fab_new_list, R.string.new_list_title, R.drawable.ic_add_black,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mViewModel.onClickCreateListBtn();
+                            }
+                        })
+                .show(getFragmentManager(), "FABsDialog");
     }
 
     @Override

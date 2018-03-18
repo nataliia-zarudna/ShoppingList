@@ -29,7 +29,7 @@ public class ReadProductListFragment extends ProductListFragment {
 
     @Override
     protected Class<? extends ProductListViewModel> getViewModelClass() {
-        return EditProductListViewModel.class;
+        return ReadProductListViewModel.class;
     }
 
     @Override

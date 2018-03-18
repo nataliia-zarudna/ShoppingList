@@ -45,7 +45,7 @@
             android:layout_marginEnd="@dimen/fab_margin"
             android:onClick="@{() -> viewModel.onFABClick()}"
             android:src="@drawable/ic_add_black"
-            android:visibility="@{viewModel.canCreateNewItem() ? View.GONE : View.VISIBLE}"
+            android:visibility="@{viewModel.canCreateNewItem() ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 

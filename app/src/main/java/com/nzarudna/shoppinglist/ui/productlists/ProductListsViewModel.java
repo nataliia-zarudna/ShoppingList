@@ -97,8 +97,17 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
 
     }
 
+    @Override
+    public void onFABClick() {
+        if (mProductListViewModelObserver != null) {
+            mProductListViewModelObserver.showFABMenu();
+        }
+    }
+
     public interface ProductListViewModelObserver {
 
         void startEditProductListActivity(UUID productListID);
+
+        void showFABMenu();
     }
 }

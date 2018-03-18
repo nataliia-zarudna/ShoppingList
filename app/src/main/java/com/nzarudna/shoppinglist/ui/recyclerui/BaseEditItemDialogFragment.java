@@ -75,6 +75,7 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
                         dismiss();
                     }
                 })
+                .setNeutralButton(R.string.save_and_next_button, null)
                 .setView(getCustomView())
                 .create();
 
@@ -91,6 +92,21 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
                             public void onSuccess() {
                                 sendResponse();
                                 dialog.dismiss();
+                            }
+                        });
+                    }
+                });
+
+                Button nextButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+                nextButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mViewModel.saveItem(new EditDialogViewModel.OnSaveItemListener() {
+                            @Override
+                            public void onSuccess() {
+                                sendResponse();
+                                //mViewModel = getViewModel();
+                                mViewModel.setItem(null);
                             }
                         });
                     }

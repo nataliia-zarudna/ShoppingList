@@ -37,6 +37,7 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         } else {
             this.mItem = createItemObject();
             mIsNew = true;
+            mValidationMessage = null;
         }
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }

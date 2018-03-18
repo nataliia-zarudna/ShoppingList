@@ -64,6 +64,7 @@
     <string name="error_occurd_message">Something unexpected has happened</string>
     <string name="restore_menu_item">Restore</string>
     <string name="list_is_empty_title">You have no items here</string>
+    <string name="save_and_next_button"><![CDATA[Save&New]]></string>
 
     <string-array name="sort_product_lists_values">
         <item name="sort_by_name">Alphabetically</item>
