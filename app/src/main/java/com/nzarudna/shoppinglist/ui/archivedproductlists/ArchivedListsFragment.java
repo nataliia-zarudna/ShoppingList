@@ -88,6 +88,21 @@ public class ArchivedListsFragment
     }
 
     @Override
+    protected int getItemContextMenuResID() {
+        return R.menu.archived_list_item_context_menu;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.restore_menu_item:
+                getCurrentItemViewModel().restoreItem();
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
     protected DiffCallback<ProductList> getDiffCallback() {
         return new DiffCallback<ProductList>() {
             @Override

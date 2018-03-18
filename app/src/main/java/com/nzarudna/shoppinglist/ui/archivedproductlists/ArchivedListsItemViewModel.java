@@ -38,6 +38,10 @@ public class ArchivedListsItemViewModel extends RecyclerItemViewModel<ProductLis
         }
     }
 
+    public void restoreItem() {
+        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ACTIVE);
+    }
+
     public interface ArchivedListsItemViewModelObserver {
         void openReadProductListFragment(ProductList productList);
     }
