@@ -15,6 +15,7 @@ import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 
 import org.junit.After;
@@ -30,9 +31,11 @@ import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -47,6 +50,7 @@ public class ProductDaoTest {
     private CategoryDao mCategoryDao;
     private ProductListDao mProductListDao;
     private ProductTemplateDao mProductTemplateDao;
+    private UnitDao mUnitDao;
 
     private UUID mUserID_1;
     private UUID mProductsListID_1;
@@ -55,6 +59,8 @@ public class ProductDaoTest {
     private UUID mGreaterCategoryID;
     private UUID mTemplateID_1;
     private UUID mTemplateID_2;
+    private UUID mUnitID_1;
+    private UUID mUnitID_2;
 
     @Before
     public void createDB() {
@@ -75,10 +81,15 @@ public class ProductDaoTest {
         UUID categoryID_2 = TestUtils.insertCategory(mCategoryDao);
         mLesserCategoryID = TestUtils.getLesserUUIDByString(categoryID_1, categoryID_2);
         mGreaterCategoryID = TestUtils.getGreaterUUIDByString(categoryID_1, categoryID_2);
+        TestUtils.insertDefaultCategory(mCategoryDao);
 
         mProductTemplateDao = mDatabase.productTemplateDao();
         mTemplateID_1 = TestUtils.insertProductTemplate(mProductTemplateDao);
         mTemplateID_2 = TestUtils.insertProductTemplate(mProductTemplateDao);
+
+        mUnitDao = mDatabase.unitDao();
+        mUnitID_1 = TestUtils.insertUnit(mUnitDao);
+        mUnitID_2 = TestUtils.insertUnit(mUnitDao);
     }
 
     @After
@@ -102,7 +113,7 @@ public class ProductDaoTest {
         product.setCategoryID(mLesserCategoryID);
         product.setComment("comments");
         product.setCount(5);
-        //TODO: add units
+        product.setUnitID(mUnitID_1);
 
         mSubjectDao.insert(product);
 
@@ -119,15 +130,6 @@ public class ProductDaoTest {
 
         assertThat(product.getStatus(), is(Product.TO_BUY));
         assertThat(product.getCategoryID(), is(Category.DEFAULT_CATEGORY_ID));
-    }
-
-    @Test(expected = SQLiteConstraintException.class)
-    public void constrainedException_OnCreateWith_NullName() throws InterruptedException {
-
-        Product product = createProduct();
-        product.setName(null);
-
-        mSubjectDao.insert(product);
     }
 
     @Test(expected = SQLiteConstraintException.class)
@@ -246,6 +248,30 @@ public class ProductDaoTest {
         assertNull(mSubjectDao.findByIDSync(product_1.getProductID()));
         assertNotNull(mSubjectDao.findByIDSync(productID_2));
         assertNotNull(mSubjectDao.findByIDSync(product_3.getProductID()));
+    }
+
+    @Test
+    public void checkExistenceBySimilarName() throws InterruptedException {
+
+        insertProduct("product 1", mProductsListID_1);
+        insertProduct("product", mProductsListID_2);
+        insertProduct("PROducT", mProductsListID_1);
+
+        boolean isExists = mSubjectDao.isProductsWithSameNameAndListExists("product", mProductsListID_1);
+
+        assertTrue(isExists);
+    }
+
+    @Test
+    public void checkExistenceBySimilarName_emptyResult() throws InterruptedException {
+
+        createProduct("product 1", mProductsListID_1);
+        createProduct("product", mProductsListID_2);
+        createProduct("PROducT123", mProductsListID_1);
+
+        boolean isExists = mSubjectDao.isProductsWithSameNameAndListExists("product", mProductsListID_1);
+
+        assertFalse(isExists);
     }
 
     @Test
@@ -784,9 +810,13 @@ public class ProductDaoTest {
     }
 
     private Product createProduct(String name) throws InterruptedException {
+        return createProduct(name, mProductsListID_1);
+    }
+
+    private Product createProduct(String name, UUID listID) throws InterruptedException {
         Product product = new Product();
         product.setName(name);
-        product.setListID(mProductsListID_1);
+        product.setListID(listID);
         return product;
     }
 
@@ -799,9 +829,21 @@ public class ProductDaoTest {
         return products;
     }
 
+    private Product insertProduct(String name, UUID listID) throws InterruptedException {
+        Product product = createProduct(name, listID);
+        return insertProduct(product);
+    }
+
     private Product insertProduct() throws InterruptedException {
         Product product = createProduct();
 
+        mSubjectDao.insert(product);
+        LiveData<Product> createdProduct = mSubjectDao.findByID(product.getProductID());
+
+        return TestUtils.getLiveDataValueSync(createdProduct);
+    }
+
+    private Product insertProduct(Product product) throws InterruptedException {
         mSubjectDao.insert(product);
         LiveData<Product> createdProduct = mSubjectDao.findByID(product.getProductID());
 

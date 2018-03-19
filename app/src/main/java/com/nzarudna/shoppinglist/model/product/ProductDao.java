@@ -91,7 +91,6 @@ public interface ProductDao {
     @Update
     void update(Product product);
 
-    //TODO: add test
     @Query("SELECT 1 " +
             "FROM products " +
             "WHERE lower(name) = lower(:name) " +

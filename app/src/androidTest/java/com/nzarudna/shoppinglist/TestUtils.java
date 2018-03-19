@@ -19,6 +19,8 @@ import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+import com.nzarudna.shoppinglist.model.unit.Unit;
+import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 
@@ -43,9 +45,6 @@ public class TestUtils {
 
         Context context = InstrumentationRegistry.getContext();
         AppDatabase appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
-
-        //insertDefaultCategory(appDatabase.categoryDao());
-
         return appDatabase;
     }
 
@@ -143,7 +142,7 @@ public class TestUtils {
         return category.getCategoryID();
     }
 
-    private static void insertDefaultCategory(CategoryDao categoryDao) {
+    public static void insertDefaultCategory(CategoryDao categoryDao) {
 
         Category defaultCategory = new Category();
         defaultCategory.setCategoryID(Category.DEFAULT_CATEGORY_ID);
@@ -169,6 +168,13 @@ public class TestUtils {
         ProductTemplate template = new ProductTemplate();
         productTemplateDao.insert(template);
         return template.getTemplateID();
+    }
+
+    public static UUID insertUnit(UnitDao unitDao) {
+
+        Unit unit = new Unit();
+        unitDao.insert(unit);
+        return unit.getUnitID();
     }
 
     public static UUID getLesserUUIDByString(UUID id1, UUID id2) {

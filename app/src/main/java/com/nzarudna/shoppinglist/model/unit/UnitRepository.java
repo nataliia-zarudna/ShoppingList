@@ -29,11 +29,11 @@ public class UnitRepository {
     }
 
     public LiveData<List<Unit>> getAvailableUnits() {
-        return mUnitDao.findAll();
+        return mUnitDao.findAllLiveData();
     }
 
     public DataSource.Factory<Integer, Unit> getAllUnits() {
-        return mUnitDao.findAllDataSource();
+        return mUnitDao.findAll();
     }
 
     //TODO: add tests. start

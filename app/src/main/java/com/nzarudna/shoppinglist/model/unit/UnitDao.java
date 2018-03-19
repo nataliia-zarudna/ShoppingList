@@ -16,8 +16,6 @@ import java.util.List;
 @Dao
 public interface UnitDao {
 
-    //TODO: add tests. start
-
     @Insert
     void insert(Unit unit);
 
@@ -30,12 +28,9 @@ public interface UnitDao {
     @Delete
     void delete(Unit unit);
 
-    //TODO: add tests. end
+    @Query(value = "SELECT * FROM units")
+    LiveData<List<Unit>> findAllLiveData();
 
     @Query(value = "SELECT * FROM units")
-    LiveData<List<Unit>> findAll();
-
-    @Query(value = "SELECT * FROM units")
-    DataSource.Factory<Integer, Unit> findAllDataSource();
-
+    DataSource.Factory<Integer, Unit> findAll();
 }
