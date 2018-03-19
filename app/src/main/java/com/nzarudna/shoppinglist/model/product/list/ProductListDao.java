@@ -76,7 +76,6 @@ public interface ProductListDao {
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByAssignedAndName(
             @ProductList.ProductListStatus int status);
 
-    //TODO: add tests start
     @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY name")
     DataSource.Factory<Integer, ProductList> findByStatusSortByName(
             @ProductList.ProductListStatus int status);
@@ -84,9 +83,7 @@ public interface ProductListDao {
     @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findStatusSortByModifiedAtDesc(
             @ProductList.ProductListStatus int status);
-    //TODO: add tests end
 
-    //TODO: fix test
     @Query(value = "SELECT * FROM product_lists ORDER BY modified_at DESC")
     LiveData<List<ProductList>> findAllSortByModifiedAtDesc();
 

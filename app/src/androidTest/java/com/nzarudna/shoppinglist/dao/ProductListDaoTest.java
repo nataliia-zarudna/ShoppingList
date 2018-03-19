@@ -61,6 +61,8 @@ public class ProductListDaoTest {
         UUID userID_2 = TestUtils.insertUser(userDao);
         mLesserUserID = TestUtils.getLesserUUIDByString(userID_1, userID_2);
         mGreaterUserID = TestUtils.getGreaterUUIDByString(userID_1, userID_2);
+
+        TestUtils.insertDefaultCategory(mDatabase.categoryDao());
     }
 
     @After
@@ -520,6 +522,66 @@ public class ProductListDaoTest {
         PagedList<ProductList> foundProductList = TestUtils.getPagedListSync(foundLists);
 
         TestUtils.assertEquals(activeLists, foundProductList);
+    }
+
+    @Test
+    public void findByStatusSortByName() throws InterruptedException {
+
+        List<ProductList> lists = TestUtils.createProductsLists(4, mLesserUserID);
+        lists.get(0).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(0).setName("#1");
+
+        lists.get(1).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(1).setName("#3");
+
+        lists.get(2).setStatus(ProductList.STATUS_ARCHIVED);
+
+        lists.get(3).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(3).setName("#2");
+
+        TestUtils.insertProductsLists(mSubjectDao, lists);
+
+
+        List<ProductList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+        activeLists.add(lists.get(1));
+
+        DataSource.Factory<Integer, ProductList> foundLists =
+                mSubjectDao.findByStatusSortByName(ProductList.STATUS_ACTIVE);
+        PagedList<ProductList> foundProductsList = TestUtils.getPagedListSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
+    }
+
+    @Test
+    public void findStatusSortByModifiedAtDesc() throws InterruptedException {
+
+        List<ProductList> lists = TestUtils.createProductsLists(4, mLesserUserID);
+        lists.get(0).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(0).setModifiedAt(new Date(3000));
+
+        lists.get(1).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(1).setModifiedAt(new Date(1000));
+
+        lists.get(2).setStatus(ProductList.STATUS_ARCHIVED);
+
+        lists.get(3).setStatus(ProductList.STATUS_ACTIVE);
+        lists.get(3).setModifiedAt(new Date(2000));
+
+        TestUtils.insertProductsLists(mSubjectDao, lists);
+
+
+        List<ProductList> activeLists = new ArrayList<>();
+        activeLists.add(lists.get(0));
+        activeLists.add(lists.get(3));
+        activeLists.add(lists.get(1));
+
+        DataSource.Factory<Integer, ProductList> foundLists =
+                mSubjectDao.findStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
+        PagedList<ProductList> foundProductsList = TestUtils.getPagedListSync(foundLists);
+
+        TestUtils.assertEquals(activeLists, foundProductsList);
     }
 
     private ProductList createProductListWithNotNullParams() {
