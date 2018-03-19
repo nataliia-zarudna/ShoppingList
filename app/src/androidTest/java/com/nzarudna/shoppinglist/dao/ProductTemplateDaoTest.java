@@ -3,7 +3,6 @@ package com.nzarudna.shoppinglist.dao;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.paging.PagedList;
-import android.database.sqlite.SQLiteConstraintException;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
@@ -29,9 +28,11 @@ import java.util.UUID;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Product List Dao methods
@@ -65,19 +66,21 @@ public class ProductTemplateDaoTest {
         UUID categoryID_2 = TestUtils.insertCategory(mCategoryDao);
         mLesserCategoryID = TestUtils.getLesserUUIDByString(categoryID_1, categoryID_2);
         mGreaterCategoryID = TestUtils.getGreaterUUIDByString(categoryID_1, categoryID_2);
+
+        TestUtils.insertDefaultCategory(mCategoryDao);
     }
 
     @Test
     public void create() throws InterruptedException {
 
-        ProductTemplate template = createTemplate();
+        ProductTemplate template = new ProductTemplate();
         mSubjectDao.insert(template);
     }
 
     @Test
     public void createAndRead() throws InterruptedException {
 
-        ProductTemplate template = createTemplate();
+        ProductTemplate template = new ProductTemplate();
         template.setName("new name");
         template.setCategoryID(mLesserCategoryID);
 
@@ -92,18 +95,9 @@ public class ProductTemplateDaoTest {
     @Test
     public void create_withDefaultParams() throws InterruptedException {
 
-        ProductTemplate template = createTemplate();
+        ProductTemplate template = new ProductTemplate();
 
         assertThat(template.getCategoryID(), equalTo(Category.DEFAULT_CATEGORY_ID));
-    }
-
-    @Test(expected = SQLiteConstraintException.class)
-    public void constrainedExceptionOnCreateWithNullName() throws InterruptedException {
-
-        ProductTemplate template = createTemplate();
-        template.setName(null);
-
-        mSubjectDao.insert(template);
     }
 
     @Test
@@ -145,6 +139,30 @@ public class ProductTemplateDaoTest {
         Product foundProduct = mProductDao.findByIDSync(product.getProductID());
         assertNotNull(foundProduct);
         assertNull(foundProduct.getTemplateID());
+    }
+
+    @Test
+    public void checkExistenceBySimilarName() throws InterruptedException {
+
+        insertTemplate("template 1");
+        insertTemplate("TemPlATE");
+        insertTemplate("template");
+
+        boolean isExists = mSubjectDao.isTemplatesWithSameNameExists("template");
+
+        assertTrue(isExists);
+    }
+
+    @Test
+    public void checkExistenceBySimilarName_emptyResult() throws InterruptedException {
+
+        insertTemplate("template 1");
+        insertTemplate("123TemPlATE");
+        insertTemplate("template123");
+
+        boolean isExists = mSubjectDao.isTemplatesWithSameNameExists("template");
+
+        assertFalse(isExists);
     }
 
     @Test
@@ -338,20 +356,18 @@ public class ProductTemplateDaoTest {
 
         UUID productListID_1 = TestUtils.insertProductsList(mProductListDao, mUser_1);
         Product product_1 = new Product();
-        product_1.setName("Some name");
         product_1.setListID(productListID_1);
         product_1.setTemplateID(templates.get(1).getTemplateID());
         mProductDao.insert(product_1);
 
         UUID productListID_2 = TestUtils.insertProductsList(mProductListDao, mUser_1);
         Product product_2 = new Product();
-        product_2.setName("Some name");
         product_2.setListID(productListID_2);
         product_2.setTemplateID(templates.get(3).getTemplateID());
         mProductDao.insert(product_2);
 
         LiveData<List<ProductTemplate>> resultListLiveData =
-                mSubjectDao.findAllByNameLike("bcd", UUID.randomUUID());
+                mSubjectDao.findAllByNameLike("bcd", productListID_1);
         List<ProductTemplate> resultList = TestUtils.getLiveDataValueSync(resultListLiveData);
 
         List<ProductTemplate> expectedTemplates = new ArrayList<>();
@@ -366,21 +382,27 @@ public class ProductTemplateDaoTest {
         mDatabase.close();
     }
 
-    private ProductTemplate createTemplate() throws InterruptedException {
-        return new ProductTemplate();
-    }
-
     public List<ProductTemplate> createTemplates(int count) throws InterruptedException {
 
         List<ProductTemplate> templates = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            templates.add(createTemplate());
+            templates.add(new ProductTemplate());
         }
         return templates;
     }
 
+    private ProductTemplate insertTemplate(String name) throws InterruptedException {
+        ProductTemplate template = new ProductTemplate();
+        template.setName(name);
+
+        return insertTemplate(template);
+    }
+
     private ProductTemplate insertTemplate() throws InterruptedException {
-        ProductTemplate template = createTemplate();
+        return insertTemplate(new ProductTemplate());
+    }
+
+    private ProductTemplate insertTemplate(ProductTemplate template) throws InterruptedException {
 
         mSubjectDao.insert(template);
         LiveData<ProductTemplate> createdTemplate = mSubjectDao.findByID(template.getTemplateID());

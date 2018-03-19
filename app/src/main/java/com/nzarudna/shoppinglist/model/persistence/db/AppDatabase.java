@@ -161,15 +161,6 @@ public abstract class AppDatabase extends RoomDatabase {
         return (int) db.insert("categories", OnConflictStrategy.IGNORE, contentValues);
     }
 
-    @VisibleForTesting
-    public static synchronized AppDatabase switchToInMemory(Context context) {
-        sInstance = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
-
-        insertDefaultCatefory(sInstance.mDatabase, context);
-
-        return sInstance;
-    }
-
     public abstract ProductDao productDao();
 
     public abstract ProductListDao productListDao();
