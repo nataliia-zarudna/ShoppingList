@@ -4,9 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
+import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
@@ -36,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,12 +93,17 @@ public class ProductListRepositoryTest {
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createNewList(new ProductListRepository.OnProductListCreateListener() {
+        mSubject.createNewList(new AsyncResultListener<ProductList>() {
             @Override
-            public void onCreate(UUID productListID) {
+            public void onAsyncSuccess(ProductList productList) {
 
-                assertNotNull(productListID);
+                assertNotNull(productList);
                 countDownLatch.countDown();
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
 
@@ -118,12 +126,17 @@ public class ProductListRepositoryTest {
         expectedProductList.setIsGroupedView(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createNewList(new ProductListRepository.OnProductListCreateListener() {
+        mSubject.createNewList(new AsyncResultListener<ProductList>() {
             @Override
-            public void onCreate(UUID productListID) {
+            public void onAsyncSuccess(ProductList productList) {
 
-                assertNotNull(productListID);
+                assertNotNull(productList);
                 countDownLatch.countDown();
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
 
@@ -152,12 +165,17 @@ public class ProductListRepositoryTest {
         expectedList.setStatus(ProductList.STATUS_ACTIVE);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.copyList(etalonListID, new ProductListRepository.OnProductListCreateListener() {
-            @Override
-            public void onCreate(UUID productListID) {
+        mSubject.copyList(etalonListID, new AsyncResultListener<ProductList>() {
 
-                assertNotNull(productListID);
+            @Override
+            public void onAsyncSuccess(ProductList productList) {
+                assertNotNull(productList);
                 countDownLatch.countDown();
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
         countDownLatch.await();
@@ -175,7 +193,8 @@ public class ProductListRepositoryTest {
 
         List<Product> etalonProducts = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            Product etalonProduct = new Product("Custom name");
+            Product etalonProduct = new Product();
+            etalonProduct.setName("Custom name");
             etalonProduct.setStatus(Product.BOUGHT);
             etalonProduct.setComment("Some comments");
             etalonProduct.setCategoryID(UUID.randomUUID());
@@ -190,10 +209,15 @@ public class ProductListRepositoryTest {
         when(mProductDao.findByListIDSync(etalonListID)).thenReturn(etalonProducts);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.copyList(etalonListID, new ProductListRepository.OnProductListCreateListener() {
+        mSubject.copyList(etalonListID, new AsyncResultListener<ProductList>() {
             @Override
-            public void onCreate(UUID productListID) {
+            public void onAsyncSuccess(ProductList productList) {
                 countDownLatch.countDown();
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
             }
         });
         countDownLatch.await(3000, TimeUnit.MILLISECONDS);
@@ -207,10 +231,68 @@ public class ProductListRepositoryTest {
         }
     }
 
-    @Test(expected = ShoppingListException.class)
-    public void copyList_testException_OnNonexistentList() throws InterruptedException, ShoppingListException {
+    @Test
+    public void createList_fromTemplates() throws InterruptedException {
 
-        mSubject.copyList(UUID.randomUUID(), null);
+        List<ProductTemplate> templates = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            ProductTemplate template = new ProductTemplate();
+            template.setName("temp #" + i);
+            template.setCategoryID(UUID.randomUUID());
+            template.setUnitID(UUID.randomUUID());
+            templates.add(template);
+        }
+
+        final ProductList expectedProductList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
+        expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_NAME);
+        when(mProductListDao.findByIDSync(any(UUID.class))).thenReturn(expectedProductList);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final List<ProductList> resultList = new ArrayList<>();
+        mSubject.createNewList(templates, new AsyncResultListener<ProductList>() {
+            @Override
+            public void onAsyncSuccess(ProductList productList) {
+                resultList.add(productList);
+
+                assertNotNull(productList);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+
+            }
+        });
+        countDownLatch.await();
+
+        expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+        verify(mProductListDao).insert(
+                argThat(AssertUtils.getArgumentMatcher(expectedProductList)));
+
+        for (ProductTemplate template : templates) {
+
+            Product product = new Product();
+            product.setName(template.getName());
+            product.setListID(resultList.get(0).getListID());
+            product.setCategoryID(template.getCategoryID());
+            product.setUnitID(template.getUnitID());
+            product.setTemplateID(template.getTemplateID());
+
+            verify(mProductDao).insert(argThat(AssertUtils.getArgumentMatcher(product)));
+        }
+    }
+
+    @Test
+    public void updateListStatus() {
+
+        ProductList productList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
+        when(mProductListDao.findByIDSync(productList.getListID())).thenReturn(productList);
+
+        mSubject.updateListStatus(productList.getListID(), ProductList.STATUS_ARCHIVED);
+
+        productList.setStatus(ProductList.STATUS_ARCHIVED);
+
+        verify(mProductListDao).update(productList);
     }
 
     @Test
@@ -228,7 +310,6 @@ public class ProductListRepositoryTest {
         UUID listID = UUID.randomUUID();
         LiveData<ProductList> productsListLiveData = Mockito.mock(LiveData.class);
         when(mProductListDao.findByID(listID)).thenReturn(productsListLiveData);
-        when(mProductListDao.findByIDSync(listID)).thenReturn(new ProductList("Some name", UUID.randomUUID()));
 
         ShoppingList shoppingList = mSubject.getShoppingList(listID);
 
@@ -237,18 +318,10 @@ public class ProductListRepositoryTest {
     }
 
     @Test
-    public void getList_testNull_onNonexistentList() {
-
-        ShoppingList shoppingList = mSubject.getShoppingList(UUID.randomUUID());
-
-        assertNull(shoppingList);
-    }
-
-    @Test
     public void getLists_testNull_onNonexistentStatus() throws ShoppingListException {
 
         DataSource.Factory<Integer, ProductListWithStatistics> lists =
-                mSubject.getLists(99, SORT_LISTS_BY_NAME);
+                mSubject.getListsWithStatistics(99, SORT_LISTS_BY_NAME);
 
         assertNull(lists);
     }
@@ -256,13 +329,13 @@ public class ProductListRepositoryTest {
     @Test(expected = ShoppingListException.class)
     public void getLists_testException_onNonexistentSorting() throws ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, 99);
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, 99);
     }
 
     @Test
     public void findActiveSortByName() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_NAME);
 
         verify(mProductListDao).findWithStatisticsByStatusSortByName(ProductList.STATUS_ACTIVE);
     }
@@ -270,7 +343,7 @@ public class ProductListRepositoryTest {
     @Test
     public void findActiveSortByCreatedAtDesc() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_AT);
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_AT);
 
         verify(mProductListDao).findWithStatisticsByStatusSortByCreatedAtDesc(ProductList.STATUS_ACTIVE);
     }
@@ -278,7 +351,7 @@ public class ProductListRepositoryTest {
     @Test
     public void findActiveSortByCreatedByAndName() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_BY);
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_CREATED_BY);
 
         verify(mProductListDao).findWithStatisticsByStatusSortByCreatedByAndName(ProductList.STATUS_ACTIVE);
     }
@@ -286,9 +359,25 @@ public class ProductListRepositoryTest {
     @Test
     public void findActiveSortByModifiedAtDesc() throws InterruptedException, ShoppingListException {
 
-        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_MODIFIED_AT);
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_MODIFIED_AT);
 
         verify(mProductListDao).findWithStatisticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ACTIVE);
+    }
+
+    @Test
+    public void findActiveSortByAssignedAndName() throws InterruptedException, ShoppingListException {
+
+        mSubject.getListsWithStatistics(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
+
+        verify(mProductListDao).findWithStatisticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
+    }
+
+    @Test
+    public void findArchivedSortByName() throws InterruptedException, ShoppingListException {
+
+        mSubject.getLists(ProductList.STATUS_ARCHIVED, SORT_LISTS_BY_NAME);
+
+        verify(mProductListDao).findByStatusSortByName(ProductList.STATUS_ARCHIVED);
     }
 
     @Test
@@ -296,15 +385,7 @@ public class ProductListRepositoryTest {
 
         mSubject.getLists(ProductList.STATUS_ARCHIVED, SORT_LISTS_BY_MODIFIED_AT);
 
-        verify(mProductListDao).findWithStatisticsByStatusSortByModifiedAtDesc(ProductList.STATUS_ARCHIVED);
-    }
-
-    @Test
-    public void findActiveSortByAssignedAndName() throws InterruptedException, ShoppingListException {
-
-        mSubject.getLists(ProductList.STATUS_ACTIVE, SORT_LISTS_BY_ASSIGNED);
-
-        verify(mProductListDao).findWithStatisticsByStatusSortByAssignedAndName(ProductList.STATUS_ACTIVE);
+        verify(mProductListDao).findStatusSortByModifiedAtDesc(ProductList.STATUS_ARCHIVED);
     }
 
     @Test

@@ -85,6 +85,7 @@ public class ShoppingList {
         product.setListID(mListID);
         product.setCategoryID(template.getCategoryID());
         product.setTemplateID(template.getTemplateID());
+        product.setUnitID(template.getUnitID());
 
         insertProduct(product, listener);
     }

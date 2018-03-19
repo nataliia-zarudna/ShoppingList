@@ -126,7 +126,6 @@ public class ProductListRepository {
         }
     }
 
-    //TODO: add test
     public void createNewList(List<ProductTemplate> templates, @Nullable AsyncResultListener<ProductList> listener) {
         new CreateFromTemplatesAsyncTask(this, mProductListDao, mUserRepository,
                 mResourceResolver, mSharedPreferences, templates, listener).execute();
@@ -240,11 +239,9 @@ public class ProductListRepository {
         }
     }
 
-    //TODO: add test start
     public void updateListStatus(UUID productListID, @ProductList.ProductListStatus int status) {
         new UpdateListStatusAsyncTask(mProductListDao, status).execute(productListID);
     }
-    //TODO: add test end
 
     static class RemoveListAsyncTask extends AsyncTask<UUID, Void, Void> {
 
@@ -310,7 +307,6 @@ public class ProductListRepository {
     }
 
     public LiveData<List<ProductList>> getAllLists() {
-        //TODO: add test
         return mProductListDao.findAllSortByModifiedAtDesc();
     }
 
