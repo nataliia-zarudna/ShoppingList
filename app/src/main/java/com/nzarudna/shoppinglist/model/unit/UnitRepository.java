@@ -28,14 +28,6 @@ public class UnitRepository {
         this.mUnitDao = unitDao;
     }
 
-    public LiveData<List<Unit>> getAvailableUnits() {
-        return mUnitDao.findAllLiveData();
-    }
-
-    public DataSource.Factory<Integer, Unit> getAllUnits() {
-        return mUnitDao.findAll();
-    }
-
     //TODO: add tests. start
 
     private static class CreateUpdateAsyncTask extends ListenedAsyncTask<Unit, Unit> {
@@ -106,6 +98,14 @@ public class UnitRepository {
 
     public void removeUnit(final Unit unit) {
         new RemoveAsyncTask(mUnitDao).execute(unit);
+    }
+
+    public LiveData<List<Unit>> getAvailableUnits() {
+        return mUnitDao.findAllLiveData();
+    }
+
+    public DataSource.Factory<Integer, Unit> getAllUnits() {
+        return mUnitDao.findAll();
     }
 
     //TODO: add tests. end
