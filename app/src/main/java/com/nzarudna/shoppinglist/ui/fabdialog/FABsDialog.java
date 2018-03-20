@@ -93,6 +93,13 @@ public class FABsDialog extends DialogFragment {
                     dismiss();
                 }
             });
+            fabTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    fab.mOnClickListener.onClick(view);
+                    dismiss();
+                }
+            });
 
             rootConstraintsView.addView(fabView);
 
