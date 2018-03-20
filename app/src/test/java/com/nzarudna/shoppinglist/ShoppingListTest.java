@@ -1,6 +1,8 @@
 package com.nzarudna.shoppinglist;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.product.Product;
@@ -109,6 +111,80 @@ public class ShoppingListTest {
         verify(mProductTemplateRepository).createTemplateFromProduct(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)),
                 any(AsyncResultListener.class));
+    }
+
+    @Test
+    public void create_nullNameError() throws InterruptedException {
+
+        final Product newProduct = new Product();
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof NameIsEmptyException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void create_emptyNameError() throws InterruptedException {
+
+        final Product newProduct = new Product();
+        newProduct.setName("   ");
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof NameIsEmptyException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void create_duplicateNameError() throws InterruptedException {
+
+        String name = "some name";
+        when(mProductDao.isProductsWithSameNameAndListExists(name, MOCKED_PRODUCTS_LIST_ID)).thenReturn(true);
+
+        final Product newProduct = new Product();
+        newProduct.setName(name);
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof UniqueNameConstraintException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
     }
 
     @Test
@@ -264,6 +340,80 @@ public class ShoppingListTest {
         countDownLatch.await(3000, TimeUnit.MILLISECONDS);
 
         verify(mProductDao).update(product);
+    }
+
+    @Test
+    public void update_nullNameError() throws InterruptedException {
+
+        final Product newProduct = new Product();
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof NameIsEmptyException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void update_emptyNameError() throws InterruptedException {
+
+        final Product newProduct = new Product();
+        newProduct.setName("   ");
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof NameIsEmptyException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    public void update_duplicateNameError() throws InterruptedException {
+
+        String name = "some name";
+        when(mProductDao.isProductsWithSameNameAndListExists(name, MOCKED_PRODUCTS_LIST_ID)).thenReturn(true);
+
+        final Product newProduct = new Product();
+        newProduct.setName(name);
+
+        final CountDownLatch countDown = new CountDownLatch(1);
+        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
+            @Override
+            public void onAsyncSuccess(Product product) {
+
+            }
+
+            @Override
+            public void onAsyncError(Exception e) {
+                countDown.countDown();
+
+                assertTrue(e instanceof UniqueNameConstraintException);
+            }
+        });
+
+        countDown.await(3000, TimeUnit.MILLISECONDS);
     }
 
     @Test

@@ -41,9 +41,7 @@ public class CategoryRepositoryTest {
 
     @Before
     public void setUp() {
-
         mSubject = new CategoryRepository(mCategoryDao, mProductDao, mProductTemplateDao);
-
     }
 
     @Test
@@ -95,7 +93,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void create_callListenerCallback_nullNameError() throws InterruptedException {
+    public void create_nullNameError() throws InterruptedException {
 
         final CountDownLatch countDown = new CountDownLatch(1);
 
@@ -118,7 +116,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void create_callListenerCallback_emptyNameError() throws InterruptedException {
+    public void create_emptyNameError() throws InterruptedException {
 
         final CountDownLatch countDown = new CountDownLatch(1);
 
@@ -142,7 +140,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void create_callListenerCallback_duplicateNameError() throws InterruptedException {
+    public void create_duplicateNameError() throws InterruptedException {
 
         String categoryName = "some name";
         when(mCategoryDao.findBySimilarName(categoryName)).thenReturn(UUID.randomUUID());
@@ -218,7 +216,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void update_callListenerCallback_nullNameError() throws InterruptedException {
+    public void update_nullNameError() throws InterruptedException {
 
         final CountDownLatch countDown = new CountDownLatch(1);
 
@@ -241,7 +239,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void update_callListenerCallback_emptyNameError() throws InterruptedException {
+    public void update_emptyNameError() throws InterruptedException {
 
         final CountDownLatch countDown = new CountDownLatch(1);
 
@@ -265,7 +263,7 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void update_callListenerCallback_duplicateNameError() throws InterruptedException {
+    public void update_duplicateNameError() throws InterruptedException {
 
         String categoryName = "some name";
         when(mCategoryDao.findBySimilarName(categoryName)).thenReturn(UUID.randomUUID());

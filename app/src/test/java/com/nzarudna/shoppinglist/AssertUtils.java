@@ -104,21 +104,23 @@ public class AssertUtils {
         return new ArgumentMatcher<ProductTemplate>() {
             @Override
             public boolean matches(ProductTemplate argument) {
-
-                if (!expected.getName().equals(argument.getName())) {
-                    return false;
-                }
-                if (!expected.getCategoryID().equals(argument.getCategoryID())) {
-                    return false;
-                }
-                if (expected.getTemplateID() != null
-                        ? expected.getTemplateID().equals(argument.getTemplateID()) : argument.getTemplateID() == null) {
-                    return false;
-                }
-
-                return true;
+                return matchesExceptID(expected, argument);
             }
         };
+    }
+
+    public static boolean matchesExceptID(ProductTemplate expected, ProductTemplate argument) {
+        if (!expected.getName().equals(argument.getName())) {
+            return false;
+        }
+        if (!expected.getCategoryID().equals(argument.getCategoryID())) {
+            return false;
+        }
+        if (expected.getTemplateID() != null
+                ? expected.getTemplateID().equals(argument.getTemplateID()) : argument.getTemplateID() == null) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean isDateEqualsToSeconds(Date expected, Date actual) {
