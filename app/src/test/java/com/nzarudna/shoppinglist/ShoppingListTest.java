@@ -397,6 +397,7 @@ public class ShoppingListTest {
 
         final Product newProduct = new Product();
         newProduct.setName(name);
+        when(mProductDao.findByIDSync(newProduct.getProductID())).thenReturn(newProduct);
 
         final CountDownLatch countDown = new CountDownLatch(1);
         mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
