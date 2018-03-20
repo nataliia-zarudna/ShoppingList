@@ -73,12 +73,12 @@ public class ShoppingList {
         new UpdateListAsyncTask(mProductListDao).execute(productList);
     }
 
-    public void addProduct(@NonNull Product product, @Nullable AsyncResultListener listener) {
+    public void addProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
         insertProduct(product, listener);
         mProductTemplateRepository.createTemplateFromProduct(product, listener);
     }
 
-    public void addProductFromTemplate(ProductTemplate template, @Nullable AsyncResultListener listener) {
+    public void addProductFromTemplate(ProductTemplate template, @Nullable AsyncResultListener<Product> listener) {
 
         Product product = new Product();
         product.setName(template.getName());
@@ -95,8 +95,8 @@ public class ShoppingList {
         ProductListDao mProductListDao;
         ProductDao mProductDao;
 
-        public CreateProductAsyncTask(ProductListDao productListDao, ProductDao productDao,
-                                      @Nullable AsyncResultListener<Product> listener) {
+        CreateProductAsyncTask(ProductListDao productListDao, ProductDao productDao,
+                               @Nullable AsyncResultListener<Product> listener) {
             super(listener);
             this.mProductListDao = productListDao;
             this.mProductDao = productDao;
@@ -188,8 +188,8 @@ public class ShoppingList {
         @Override
         protected Void doInBackground(Product... products) {
             Product product = products[0];
-            Product productAfter = products[1];
-            Product productBefore = products[2];
+            Product productBefore = products[1];
+            Product productAfter = products[2];
 
             UUID listID = product.getListID();
 
@@ -230,13 +230,12 @@ public class ShoppingList {
         }
     }
 
-    //TODO: change product after and before arguments order
-    public void moveProduct(Product product, Product productAfter, Product productBefore) throws ShoppingListException {
+    public void moveProduct(Product product, Product productBefore, Product productAfter) throws ShoppingListException {
         if (productAfter == null && productBefore == null) {
             throw new ShoppingListException("Either productAfter or productBefore must not be null");
         }
 
-        new MoveProductAsyncTask(mProductListDao, mProductDao).execute(product, productAfter, productBefore);
+        new MoveProductAsyncTask(mProductListDao, mProductDao).execute(product, productBefore, productAfter);
     }
 
     private static class RemoveProductAsyncTask extends AsyncTask<Product, Void, Void> {
@@ -301,38 +300,45 @@ public class ShoppingList {
     }
 
     public void removeProductsByStatus(@Product.ProductStatus int status) {
-        //TODO: add test
         new RemoveProductsByStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 
     public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
 
-        //TODO: add test
-        saveSortingAndView(sorting, isGroupedView);
+        DataSource.Factory<Integer, CategoryProductItem> resultProducts;
 
         if (isGroupedView) {
             switch (sorting) {
                 case ProductList.SORT_PRODUCTS_BY_NAME:
-                    return mProductDao.findByListIDSortByNameWithCategory(mListID);
+                    resultProducts = mProductDao.findByListIDSortByNameWithCategory(mListID);
+                    break;
                 case ProductList.SORT_PRODUCTS_BY_STATUS:
-                    return mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID);
+                    resultProducts = mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID);
+                    break;
                 case ProductList.SORT_PRODUCTS_BY_ORDER:
-                    return mProductDao.findByListIDSortByProductOrderWithCategory(mListID);
+                    resultProducts = mProductDao.findByListIDSortByProductOrderWithCategory(mListID);
+                    break;
                 default:
                     throw new ShoppingListException("Unknown products sorting " + sorting);
             }
         } else {
             switch (sorting) {
                 case ProductList.SORT_PRODUCTS_BY_NAME:
-                    return mProductDao.findByListIDSortByName(mListID);
+                    resultProducts = mProductDao.findByListIDSortByName(mListID);
+                    break;
                 case ProductList.SORT_PRODUCTS_BY_STATUS:
-                    return mProductDao.findByListIDSortByStatusAndName(mListID);
+                    resultProducts = mProductDao.findByListIDSortByStatusAndName(mListID);
+                    break;
                 case ProductList.SORT_PRODUCTS_BY_ORDER:
-                    return mProductDao.findByListIDSortByProductOrder(mListID);
+                    resultProducts = mProductDao.findByListIDSortByProductOrder(mListID);
+                    break;
                 default:
                     throw new ShoppingListException("Unknown products sorting " + sorting);
             }
         }
+        saveSortingAndView(sorting, isGroupedView);
+
+        return resultProducts;
     }
 
     private static class SaveSortingAndViewAsyncTask extends AsyncTask<Void, Void, Void> {
@@ -385,9 +391,7 @@ public class ShoppingList {
         }
     }
 
-    public void updateProductsStatus(int status) {
-        //TODO: add test
-
+    public void updateProductsStatus(@Product.ProductStatus int status) {
         new UpdateProductStatusAsyncTask(mProductDao, status, mListID).execute();
     }
 }

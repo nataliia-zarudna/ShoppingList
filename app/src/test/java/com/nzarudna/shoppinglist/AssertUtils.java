@@ -18,36 +18,40 @@ import static org.junit.Assert.assertTrue;
 public class AssertUtils {
 
     public static ArgumentMatcher<Product> getArgumentMatcher(final Product expected) {
-        
+
         return new ArgumentMatcher<Product>() {
             @Override
             public boolean matches(Product argument) {
-
-                if (Double.compare(argument.getCount(), expected.getCount()) != 0) return false;
-                if (expected.getStatus() != argument.getStatus()) return false;
-                if (Double.compare(argument.getOrder(), expected.getOrder()) != 0) return false;
-                if (!expected.getName().equals(argument.getName())) return false;
-                if (expected.getCategoryID() != null
-                        ? !expected.getCategoryID().equals(argument.getCategoryID()) : argument.getCategoryID() != null)
-                    return false;
-                if (expected.getUnitID() != null
-                        ? !expected.getUnitID().equals(argument.getUnitID()) : argument.getUnitID() != null)
-                    return false;
-                if (expected.getComment() != null
-                        ? !expected.getComment().equals(argument.getComment()) : argument.getComment() != null)
-                    return false;
-                if (expected.getListID() != null
-                        ? !expected.getListID().equals(argument.getListID()) : argument.getListID() != null)
-                    return false;
-
-                return expected.getTemplateID() != null
-                        ? expected.getTemplateID().equals(argument.getTemplateID()) : argument.getTemplateID() == null;
+                return matchesExceptID(expected, argument);
             }
-        };  
+        };
+    }
+
+    public static boolean matchesExceptID(Product expected, Product argument) {
+
+        if (Double.compare(argument.getCount(), expected.getCount()) != 0) return false;
+        if (expected.getStatus() != argument.getStatus()) return false;
+        if (Double.compare(argument.getOrder(), expected.getOrder()) != 0) return false;
+        if (!expected.getName().equals(argument.getName())) return false;
+        if (expected.getCategoryID() != null
+                ? !expected.getCategoryID().equals(argument.getCategoryID()) : argument.getCategoryID() != null)
+            return false;
+        if (expected.getUnitID() != null
+                ? !expected.getUnitID().equals(argument.getUnitID()) : argument.getUnitID() != null)
+            return false;
+        if (expected.getComment() != null
+                ? !expected.getComment().equals(argument.getComment()) : argument.getComment() != null)
+            return false;
+        if (expected.getListID() != null
+                ? !expected.getListID().equals(argument.getListID()) : argument.getListID() != null)
+            return false;
+
+        return expected.getTemplateID() != null
+                ? expected.getTemplateID().equals(argument.getTemplateID()) : argument.getTemplateID() == null;
     }
 
     public static ArgumentMatcher<Product> getProductArgumentMatcheWithoutPKAndListID(final Product expected) {
-        
+
         return new ArgumentMatcher<Product>() {
             @Override
             public boolean matches(Product argument) {
@@ -68,7 +72,7 @@ public class AssertUtils {
                 return expected.getTemplateID() != null
                         ? expected.getTemplateID().equals(argument.getTemplateID()) : argument.getTemplateID() == null;
             }
-        };  
+        };
     }
 
     public static ArgumentMatcher<ProductList> getArgumentMatcher(final ProductList expected) {
@@ -81,7 +85,8 @@ public class AssertUtils {
                 if (expected.getSorting() != argument.getSorting()) return false;
                 if (expected.isGroupedView() != argument.isGroupedView()) return false;
                 if (!expected.getName().equals(argument.getName())) return false;
-                if (!isDateEqualsToSeconds(expected.getCreatedAt(), argument.getCreatedAt())) return false;
+                if (!isDateEqualsToSeconds(expected.getCreatedAt(), argument.getCreatedAt()))
+                    return false;
                 if (!expected.getCreatedBy().equals(argument.getCreatedBy())) return false;
                 if (expected.getModifiedAt() != null
                         ? !isDateEqualsToSeconds(expected.getModifiedAt(), argument.getModifiedAt()) : argument.getModifiedAt() != null)
