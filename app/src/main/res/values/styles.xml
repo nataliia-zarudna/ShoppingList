@@ -14,6 +14,11 @@
     <style name="AppTheme.Grey">
 
     </style>
+
+    <style name="PrimaryText" parent="TextAppearance.AppCompat.Title">
+        <item name="textColor">@color/colorPrimaryText</item>
+        <item name="android:textSize">@dimen/primaryTextSize</item>
+    </style>
     
     <style name="FABsDialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowBackground">@color/whiteTransparent</item>
@@ -23,4 +28,5 @@
         <item name="android:layout_gravity">bottom</item>
     </style>
 
+    <dimen name="primaryTextSize">24sp</dimen>
 </resources>
