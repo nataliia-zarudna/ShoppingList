@@ -31,7 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.itemName}"
-                    android:layout_marginTop="@dimen/title_top_margin"
+                    android:layout_marginTop="@dimen/primaryTextTopMargin"
                     tool:text="Shopping list 1" />
 
                 <TextView

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -13,5 +14,11 @@
         android:id="@+id/item_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@{viewModel.title}" />
+        android:gravity="center_vertical"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:text="@{viewModel.title}"
+        tools:text="To buy for party"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
 </layout>
