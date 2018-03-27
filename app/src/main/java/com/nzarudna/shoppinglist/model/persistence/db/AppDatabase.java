@@ -9,9 +9,10 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import android.support.annotation.RawRes;
 import android.util.Log;
 
+import com.google.gson.stream.JsonReader;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -27,6 +28,12 @@ import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserDao;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -56,7 +63,10 @@ public abstract class AppDatabase extends RoomDatabase {
                             db.beginTransaction();
                             try {
 
-                                initDB(db, context);
+                                UUID selfUserID = insertSelfUser(db);
+
+                                initDB(db, context, R.raw.init_db, selfUserID);
+                                initDB(db, context, R.raw.test_db_data, selfUserID);
                                 db.setTransactionSuccessful();
 
                             } finally {
@@ -71,74 +81,81 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    private static void initDB(SupportSQLiteDatabase db, Context context) {
+    private static void initDB(SupportSQLiteDatabase db, Context context, @RawRes int dataResID, UUID selfUserID) {
 
-        // For testing
+        InputStream inputStream = null;
+        BufferedReader bufferedReader = null;
+        JsonReader jsonReader = null;
+        try {
 
-        String selfUserID = insertSelfUser(db);
-        Log.d(LOG, "selfUserID " + selfUserID);
+            inputStream = context.getResources().openRawResource(dataResID);
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            jsonReader = new JsonReader(bufferedReader);
 
-        int defaultCategoryID = insertDefaultCatefory(db, context);
+            jsonReader.beginObject();
+            while(jsonReader.hasNext()) {
 
-        String firstListID = UUID.randomUUID().toString();
-        for (int i = 10; i < 40; i++) {
-            ContentValues values = new ContentValues();
-            values.put("list_id", (i == 10) ? firstListID : UUID.randomUUID().toString());
-            values.put("name", "Shopping list #" + i);
-            values.put("created_by", selfUserID);
-            values.put("created_at", new Date().getTime());
-            values.put("status", ProductList.STATUS_ACTIVE);
-            values.put("sorting", ProductList.SORT_PRODUCTS_BY_NAME);
-            values.put("is_grouped_view", false);
+                String tableName = jsonReader.nextName();
+                jsonReader.beginArray();
+                while (jsonReader.hasNext()) {
 
-            long productListsID = db.insert("product_lists", OnConflictStrategy.IGNORE, values);
-            Log.d(LOG, "Shopping list #" + i + " id " + productListsID);
-        }
+                    ContentValues contentValues = new ContentValues();
 
-        String[] categoryIDs = {UUID.randomUUID().toString()
-                , UUID.randomUUID().toString(), UUID.randomUUID().toString()};
-        for (int i = 0; i < 3; i++) {
-            ContentValues values = new ContentValues();
-            values.put("category_id", categoryIDs[i]);
-            values.put("name", "Category #" + i);
+                    jsonReader.beginObject();
+                    while (jsonReader.hasNext()) {
 
-            db.insert("categories", OnConflictStrategy.IGNORE, values);
-        }
+                        String columnName = jsonReader.nextName();
+                        String value = jsonReader.nextString();
 
-        for (int i = 0; i < 10; i++) {
-            int categoryID = (i < 8) ? (i % 2 + 1) : defaultCategoryID;
-            ContentValues values = new ContentValues();
-            values.put("product_id", UUID.randomUUID().toString());
-            values.put("name", "Product #" + i + " cat " + categoryID);
-            values.put("category_id", categoryIDs[i % 2]);
-            values.put("list_id", firstListID);
-            values.put("count", 0);
-            values.put("status", Product.TO_BUY);
-            values.put("`order`", 0);
+                        if (columnName.equals("name")) {
+                            value = getStringResByName(value, context);
+                        } else if (columnName.equals("created_at")) {
+                            Date date = new SimpleDateFormat("HH:mm:ss dd-MM-YYYY").parse(value);
+                            value = String.valueOf(date.getTime());
+                        } else if (columnName.equals("created_by")) {
+                            value = selfUserID.toString();
+                        }
+                        contentValues.put(columnName, value);
 
-            db.insert("products", OnConflictStrategy.IGNORE, values);
-        }
+                    }
+                    jsonReader.endObject();
 
-        for (int i = 0; i < 10; i++) {
-            ContentValues values = new ContentValues();
-            values.put("template_id", UUID.randomUUID().toString());
-            values.put("name", ((i % 2 > 0) ? ("Template #" + i) : ("Temp #" + i)));
-            values.put("category_id", categoryIDs[i % 2]);
+                    db.insert(tableName, OnConflictStrategy.IGNORE, contentValues);
+                }
+                jsonReader.endArray();
+            }
+            jsonReader.endObject();
 
-            db.insert("product_templates", OnConflictStrategy.IGNORE, values);
-        }
-
-        for (int i = 0; i < 7; i++) {
-            ContentValues values = new ContentValues();
-            values.put("unit_id", UUID.randomUUID().toString());
-            values.put("name", ("Unit #" + i));
-
-            db.insert("units", OnConflictStrategy.IGNORE, values);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (jsonReader != null) {
+                    jsonReader.close();
+                }
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private static String insertSelfUser(SupportSQLiteDatabase db) {
-        String selfUserID = UUID.randomUUID().toString();
+    private static String getStringResByName(String stringResName, Context context) {
+
+        String packageName = context.getPackageName();
+        int stringIdentifier = context.getResources().getIdentifier(stringResName, "string", packageName);
+        return stringIdentifier != 0 ? context.getString(stringIdentifier) : stringResName;
+    }
+
+    private static UUID insertSelfUser(SupportSQLiteDatabase db) {
+        UUID selfUserID = UUID.randomUUID();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("user_id", selfUserID.toString());
@@ -147,7 +164,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
         ShoppingListApplication.getAppComponent().getSharedPreferences()
                 .edit()
-                .putString("selfUserID", selfUserID)
+                .putString("selfUserID", selfUserID.toString())
                 .commit();
 
         return selfUserID;

@@ -70,4 +70,18 @@
         <item name="sort_by_name">Alphabetically</item>
         <item name="sort_by_created_at">By creation date</item>
     </string-array>
+
+    <string name="unit_kilogram">kg</string>
+    <string name="unit_gram">g</string>
+    <string name="unit_liter">liter</string>
+    <string name="unit_item">item</string>
+
+    <string name="category_confectionery">Confectionery</string>
+    <string name="category_dairy">Dairy</string>
+    <string name="category_bakery">Bakery</string>
+
+    <string name="template_donut">Donut</string>
+    <string name="template_milk">Milk</string>
+    <string name="template_bread">Bread</string>
+    <string name="template_chocolate">Chocolate</string>
 </resources>

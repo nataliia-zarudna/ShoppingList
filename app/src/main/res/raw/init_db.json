@@ -1,0 +1,60 @@
+{
+  "units": [
+    {
+      "unit_id": "fb09457f-c6cd-417f-ba00-46faa2fdaec8",
+      "name": "unit_kilogram"
+    },
+    {
+      "unit_id": "c1accc53-003e-437a-8ba4-1c47702b2f18",
+      "name": "unit_gram"
+    },
+    {
+      "unit_id": "651f1657-b381-4cb9-9cd8-042ba89f0df9",
+      "name": "unit_liter"
+    },
+    {
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "name": "unit_item"
+    }
+  ],
+  "categories": [
+    {
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "name": "category_confectionery"
+    },
+    {
+      "category_id": "2790846a-9b29-447a-8d68-186d9716729f",
+      "name": "category_dairy"
+    },
+    {
+      "category_id": "fd3dd896-806a-4d7c-9b96-b6370702b397",
+      "name": "category_bakery"
+    }
+  ],
+  "product_templates": [
+    {
+      "template_id": "18cae2c3-40c6-42c8-bc20-adeab8cf35f2",
+      "name": "template_donut",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821"
+    },
+    {
+      "template_id": "abd946b7-5bab-4205-bbd3-af0acfe01f15",
+      "name": "template_milk",
+      "category_id": "2790846a-9b29-447a-8d68-186d9716729f",
+      "unit_id": "651f1657-b381-4cb9-9cd8-042ba89f0df9"
+    },
+    {
+      "template_id": "05856b76-a4df-4e5e-b168-8a8d017d668e",
+      "name": "template_bread",
+      "category_id": "fd3dd896-806a-4d7c-9b96-b6370702b397",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821"
+    },
+    {
+      "template_id": "67d4b84a-294e-4586-aa8c-d3fd0652b0a1",
+      "name": "template_chocolate",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821"
+    }
+  ]
+}

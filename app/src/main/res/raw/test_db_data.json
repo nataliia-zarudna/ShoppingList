@@ -1,0 +1,188 @@
+{
+  "product_lists": [
+    {
+      "list_id": "fbec632b-a7a0-4651-83c7-24a1586e18e1",
+      "name": "For best party ever",
+      "created_at": "13:36:52 08-03-2018",
+      "created_by": "",
+      "status": "1",
+      "sorting": "1",
+      "is_grouped_view": "false"
+    },
+    {
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "name": "Many-many donuts",
+      "created_at": "13:36:52 12-03-2018",
+      "created_by": "",
+      "status": "1",
+      "sorting": "1",
+      "is_grouped_view": "false"
+    }
+  ],
+  "products": [
+    {
+      "product_id": "18cae2c3-40c6-42c8-bc20-adeab8cf35f2",
+      "name": "template_donut",
+      "list_id": "fbec632b-a7a0-4651-83c7-24a1586e18e1",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "169c0a83-4491-4d09-94ad-c3f46ba2c1d1",
+      "name": "Candles",
+      "list_id": "fbec632b-a7a0-4651-83c7-24a1586e18e1",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "count": "5",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "8abc2cac-f6c3-465b-b4d9-55b140511ced",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "e44a8542-5c9d-46dc-b287-82b2cc9ee18f",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "821d54a3-442d-4da5-9445-8370dd9ee525",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "8e7f3f60-a711-43a0-904f-5930f4fdf35f",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "30df55b0-8aa7-4367-9b9a-42044e086ae4",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "7ae1a8c7-746b-4a60-9700-1ed311c1e406",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "70ca2332-9ab7-4a5f-b515-628bef4b231d",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "f0b54c3d-1565-41b0-b56e-d35b150bee3b",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "d5d70298-01de-4f68-a9bc-111c2df87388",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "e5d4f309-7cee-4d5a-97d2-1b31814cee7d",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "af82e1a5-3780-45e9-a86b-84284891ec3e",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "9886e9e8-0874-4d68-b1c9-18a8dac96bdb",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    },
+    {
+      "product_id": "e809f64c-74e5-4f8f-b1f4-0fb7fcd285d6",
+      "name": "template_donut",
+      "list_id": "819a964b-9a3d-44f0-9175-0d2613ecad05",
+      "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
+      "unit_id": "9031a598-8406-412d-a6bd-174da373a821",
+      "template_id": "81c69a51-5b02-46dd-928c-e3de1ea1309b",
+      "count": "1",
+      "status": "1",
+      "`order`": "0"
+    }
+  ]
+}

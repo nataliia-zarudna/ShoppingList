@@ -76,6 +76,7 @@ public class ProductList implements Parcelable {
     @ColumnInfo(name = "modified_by")
     private UUID modifiedBy;
 
+    @ProductListStatus
     private int status;
 
     @ProductSorting
