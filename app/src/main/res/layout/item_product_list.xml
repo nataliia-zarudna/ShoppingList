@@ -10,20 +10,24 @@
             type="com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel" />
     </data>
 
-    <RelativeLayout
+    <!--RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"-->
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="2dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:onClick="@{() -> viewModel.onItemClick()}">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/product_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/primaryTextTopMargin"
+                android:paddingStart="@dimen/primarySidePadding"
+                android:paddingEnd="@dimen/primarySidePadding"
+                android:paddingBottom="@dimen/subTextBottomMargin">
 
                 <TextView
                     style="@style/PrimaryText"
@@ -31,7 +35,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.itemName}"
-                    android:layout_marginTop="@dimen/primaryTextTopMargin"
                     tool:text="Shopping list 1" />
 
                 <TextView
@@ -39,6 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.boughtToAllText}"
+                    android:layout_marginTop="@dimen/primaryTextBottomMargin"
                     app:layout_constraintTop_toBottomOf="@id/list_name"
                     tool:text="5/10" />
 
@@ -55,5 +59,5 @@
             </android.support.constraint.ConstraintLayout>
 
         </android.support.v7.widget.CardView>
-    </RelativeLayout>
+    <!--/RelativeLayout-->
 </layout>

@@ -110,7 +110,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         if (columnName.equals("name")) {
                             value = getStringResByName(value, context);
                         } else if (columnName.equals("created_at")) {
-                            Date date = new SimpleDateFormat("HH:mm:ss dd-MM-YYYY").parse(value);
+                            Date date = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy").parse(value);
                             value = String.valueOf(date.getTime());
                         } else if (columnName.equals("created_by")) {
                             value = selfUserID.toString();
