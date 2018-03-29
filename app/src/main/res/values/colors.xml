@@ -9,6 +9,7 @@
     <color name="colorAccentLight">#b4a647</color>
 
     <color name="colorPrimaryText">#3e2723</color>
+    <color name="colorSubText">#cf3e2723</color>
     <color name="colorAccentText">#f9fbe7</color>
 
     <color name="whiteTransparent">#BBfafafa</color>

@@ -19,6 +19,11 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textSize">@dimen/primaryTextSize</item>
     </style>
+
+    <style name="SubText" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/colorSubText</item>
+        <item name="android:textSize">@dimen/subTextSize</item>
+    </style>
     
     <style name="FABsDialogTheme" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:windowBackground">@color/whiteTransparent</item>

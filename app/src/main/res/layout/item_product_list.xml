@@ -38,6 +38,7 @@
                     tool:text="Shopping list 1" />
 
                 <TextView
+                    style="@style/SubText"
                     android:id="@+id/list_statistics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

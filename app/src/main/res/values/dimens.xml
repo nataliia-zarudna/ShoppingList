@@ -9,7 +9,7 @@
 
     <dimen name="primarySidePadding">16sp</dimen>
 
-    <dimen name="primaryTextSize">24sp</dimen>
+    <dimen name="primaryTextSize">20sp</dimen>
     <dimen name="primaryTextTopMargin">24dp</dimen>
     <dimen name="primaryTextBottomMargin">16dp</dimen>
     <dimen name="subTextSize">14sp</dimen>
