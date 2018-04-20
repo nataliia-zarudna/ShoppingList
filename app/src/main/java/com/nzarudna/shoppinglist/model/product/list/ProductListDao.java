@@ -10,6 +10,7 @@ import android.arch.persistence.room.Update;
 
 import com.nzarudna.shoppinglist.model.product.Product;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,12 @@ public interface ProductListDao {
 
     @Update
     void update(ProductList list);
+
+    @Query(value = "UPDATE product_lists " +
+            "       SET modified_at = :modifiedAt " +
+            "           , modified_by = :modifiedBy" +
+            "       WHERE list_id = :listID")
+    void update(UUID listID, Date modifiedAt, UUID modifiedBy);
 
     @Delete
     void delete(ProductList productList);

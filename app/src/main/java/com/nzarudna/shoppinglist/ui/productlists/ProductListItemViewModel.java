@@ -48,7 +48,7 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
 
     @Override
     public void removeItem() {
-
+        mProductListRepository.removeList(mItem.getListID());
     }
 
     /*public void onSwipeProductListItem() {

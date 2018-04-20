@@ -17,7 +17,9 @@ import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
+import com.nzarudna.shoppinglist.model.user.UserRepository;
 
+import java.util.Date;
 import java.util.UUID;
 
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
@@ -36,6 +38,7 @@ public class ShoppingList {
     private ProductTemplateRepository mProductTemplateRepository;
     private ProductListDao mProductListDao;
     private ProductDao mProductDao;
+    private UserRepository mUserRepository;
 
     public ShoppingList(UUID listID, ProductListDao productListDao, ProductDao productDao,
                         ProductTemplateRepository productTemplateRepository) {
@@ -57,20 +60,25 @@ public class ShoppingList {
     private static class UpdateListAsyncTask extends AsyncTask<ProductList, Void, Void> {
 
         ProductListDao mProductListDao;
+        UserRepository mUserRepository;
 
-        UpdateListAsyncTask(ProductListDao productListDao) {
+        UpdateListAsyncTask(ProductListDao productListDao, UserRepository userRepository) {
             mProductListDao = productListDao;
+            mUserRepository = userRepository;
         }
 
         @Override
         protected Void doInBackground(ProductList... productLists) {
-            mProductListDao.update(productLists[0]);
+            ProductList productList = productLists[0];
+            productList.setModifiedAt(new Date());
+            productList.setModifiedBy(mUserRepository.getSelfUserID());
+            mProductListDao.update(productList);
             return null;
         }
     }
 
     public void updateProductList(ProductList productList) {
-        new UpdateListAsyncTask(mProductListDao).execute(productList);
+        new UpdateListAsyncTask(mProductListDao, mUserRepository).execute(productList);
     }
 
     public void addProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
@@ -133,10 +141,14 @@ public class ShoppingList {
     private static class UpdateProductAsyncTask extends ListenedAsyncTask<Product, Product> {
 
         ProductDao mProductDao;
+        ProductListDao mProductListDao;
+        UserRepository mUserRepository;
 
-        UpdateProductAsyncTask(ProductDao productDao, @Nullable AsyncResultListener<Product> listener) {
+        UpdateProductAsyncTask(ProductDao productDao, ProductListDao productListDao, UserRepository userRepository, @Nullable AsyncResultListener<Product> listener) {
             super(listener);
             mProductDao = productDao;
+            mProductListDao = productListDao;
+            mUserRepository = userRepository;
         }
 
         @Override
@@ -155,6 +167,8 @@ public class ShoppingList {
 
                 mProductDao.update(product);
 
+                mProductListDao.update(product.getListID(), new Date(), mUserRepository.getSelfUserID());
+
                 return product;
             } catch (NameIsEmptyException | UniqueNameConstraintException e) {
                 mResultException = e;
@@ -164,7 +178,7 @@ public class ShoppingList {
     }
 
     public void updateProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
-        new UpdateProductAsyncTask(mProductDao, listener).execute(product);
+        new UpdateProductAsyncTask(mProductDao, mProductListDao, mUserRepository, listener).execute(product);
     }
 
     private static void validateName(ProductDao productDao, String name, UUID listID) throws NameIsEmptyException, UniqueNameConstraintException {

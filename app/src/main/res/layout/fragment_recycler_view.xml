@@ -15,7 +15,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- TODO: add no items image -->
         <ImageView
+            android:id="@+id/no_items_img"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

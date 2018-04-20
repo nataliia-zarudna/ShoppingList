@@ -254,7 +254,7 @@ public abstract class BaseRecyclerViewFragment
 
     @Override
     public void showItemContextMenu(T item, int position) {
-        View itemView = mRecyclerView.getChildAt(position);
+        View itemView = mRecyclerView.findViewHolderForAdapterPosition(position).itemView;
         itemView.showContextMenu();
     }
 }

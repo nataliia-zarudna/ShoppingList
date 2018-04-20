@@ -11,6 +11,7 @@ import android.util.Log;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
+import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
@@ -22,6 +23,7 @@ import com.nzarudna.shoppinglist.model.user.UserRepository;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -218,12 +220,14 @@ public class ProductListRepository {
     private static class UpdateListStatusAsyncTask extends AsyncTask<UUID, Void, Void> {
 
         ProductListDao mProductListDao;
+        UserRepository mUserRepository;
 
         @ProductList.ProductListStatus
         int mStatus;
 
-        UpdateListStatusAsyncTask(ProductListDao productListDao, int status) {
+        UpdateListStatusAsyncTask(ProductListDao productListDao, UserRepository userRepository, int status) {
             this.mProductListDao = productListDao;
+            this.mUserRepository = userRepository;
             this.mStatus = status;
         }
 
@@ -233,6 +237,8 @@ public class ProductListRepository {
 
             ProductList productList = mProductListDao.findByIDSync(productListID);
             productList.setStatus(mStatus);
+            productList.setModifiedBy(mUserRepository.getSelfUserID());
+            productList.setModifiedAt(new Date());
             mProductListDao.update(productList);
 
             return null;
@@ -240,7 +246,7 @@ public class ProductListRepository {
     }
 
     public void updateListStatus(UUID productListID, @ProductList.ProductListStatus int status) {
-        new UpdateListStatusAsyncTask(mProductListDao, status).execute(productListID);
+        new UpdateListStatusAsyncTask(mProductListDao, mUserRepository, status).execute(productListID);
     }
 
     static class RemoveListAsyncTask extends AsyncTask<UUID, Void, Void> {

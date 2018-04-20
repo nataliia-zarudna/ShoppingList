@@ -8,11 +8,29 @@
         <variable
             name="viewModel"
             type="com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel" />
+
+        <import type="android.view.View" />
     </data>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <!-- TODO: add no items image -->
+        <ImageView
+            android:id="@+id/no_items_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.noItemsMessage}"
+            android:visibility="@{viewModel.listEmpty ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

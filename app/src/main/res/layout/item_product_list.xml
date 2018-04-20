@@ -10,55 +10,50 @@
             type="com.nzarudna.shoppinglist.ui.productlists.ProductListItemViewModel" />
     </data>
 
-    <!--RelativeLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"-->
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="@{() -> viewModel.onItemClick()}">
 
-        <android.support.v7.widget.CardView
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/product_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:onClick="@{() -> viewModel.onItemClick()}">
+            android:paddingBottom="@dimen/subTextBottomMargin"
+            android:paddingEnd="@dimen/primarySidePadding"
+            android:paddingStart="@dimen/primarySidePadding"
+            android:paddingTop="@dimen/primaryTextTopMargin">
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/product_layout"
+            <TextView
+                android:id="@+id/list_name"
+                style="@style/PrimaryText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/primaryTextTopMargin"
-                android:paddingStart="@dimen/primarySidePadding"
-                android:paddingEnd="@dimen/primarySidePadding"
-                android:paddingBottom="@dimen/subTextBottomMargin">
+                android:text="@{viewModel.itemName}"
+                tool:text="Shopping list 1" />
 
-                <TextView
-                    style="@style/PrimaryText"
-                    android:id="@+id/list_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.itemName}"
-                    tool:text="Shopping list 1" />
+            <TextView
+                android:id="@+id/list_statistics"
+                style="@style/SubText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/primaryTextBottomMargin"
+                android:text="@{viewModel.boughtToAllText}"
+                app:layout_constraintTop_toBottomOf="@id/list_name"
+                tool:text="5/10" />
 
-                <TextView
-                    style="@style/SubText"
-                    android:id="@+id/list_statistics"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.boughtToAllText}"
-                    android:layout_marginTop="@dimen/primaryTextBottomMargin"
-                    app:layout_constraintTop_toBottomOf="@id/list_name"
-                    tool:text="5/10" />
+            <ImageView
+                android:id="@+id/btn_product_list_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.onMenuItemClick()}"
+                android:src="@drawable/ic_more_vert_black_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/btn_product_list_menu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{() -> viewModel.onMenuItemClick()}"
-                    android:src="@drawable/ic_more_vert_black_24dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
 
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v7.widget.CardView>
-    <!--/RelativeLayout-->
+    </android.support.v7.widget.CardView>
 </layout>
