@@ -3,10 +3,9 @@ package com.nzarudna.shoppinglist.dependency;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.AppFirebaseMessagingService;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
-import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsItemViewModel;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsViewModel;
 import com.nzarudna.shoppinglist.ui.categories.CategoriesViewModel;
@@ -24,6 +23,9 @@ import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
 import com.nzarudna.shoppinglist.ui.units.EditUnitViewModel;
 import com.nzarudna.shoppinglist.ui.units.UnitItemViewModel;
 import com.nzarudna.shoppinglist.ui.units.UnitsViewModel;
+import com.nzarudna.shoppinglist.ui.users.EditUserViewModel;
+import com.nzarudna.shoppinglist.ui.users.UserItemViewModel;
+import com.nzarudna.shoppinglist.ui.users.UsersViewModel;
 
 import javax.inject.Singleton;
 
@@ -39,10 +41,6 @@ public interface AppComponent {
     Context getContext();
 
     SharedPreferences getSharedPreferences();
-
-    ProductListRepository getProductListRepository();
-
-    ProductTemplateRepository getProductTemplateRepository();
 
     void inject(ProductListsViewModel viewModel);
 
@@ -79,4 +77,12 @@ public interface AppComponent {
     void inject(ArchivedListsViewModel viewModel);
 
     void inject(ArchivedListsItemViewModel itemViewModel);
+
+    void inject(UserItemViewModel itemViewModel);
+
+    void inject(UsersViewModel viewModel);
+
+    void inject(EditUserViewModel viewModel);
+
+    void inject(AppFirebaseMessagingService appFirebaseMessagingService);
 }

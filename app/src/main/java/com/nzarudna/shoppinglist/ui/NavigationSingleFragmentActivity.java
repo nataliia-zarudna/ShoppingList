@@ -1,21 +1,32 @@
 package com.nzarudna.shoppinglist.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsActivity;
 import com.nzarudna.shoppinglist.ui.categories.CategoriesActivity;
 import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
 import com.nzarudna.shoppinglist.ui.units.UnitsActivity;
+import com.nzarudna.shoppinglist.ui.users.UsersActivity;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -23,11 +34,16 @@ import com.nzarudna.shoppinglist.ui.units.UnitsActivity;
 
 public abstract class NavigationSingleFragmentActivity extends SingleFragmentActivity {
 
+    private static final String TAG = "NavSingleFragmentActivi";
     private DrawerLayout mDrawerLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        handleFirebase();
+//
+//        buildLink();
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -50,6 +66,9 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                     case R.id.templates_item:
                         activityClass = TemplatesActivity.class;
                         break;
+                    case R.id.users_item:
+                        activityClass = UsersActivity.class;
+                        break;
                     case R.id.categories_item:
                         activityClass = CategoriesActivity.class;
                         break;
@@ -68,6 +87,60 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                 return true;
             }
         });
+    }
+
+    private void buildLink() {
+        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://familyshopping.ua/invite?token=777"))
+                .setDynamicLinkDomain("familyshopping.page.link")
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                // Set parameters
+                // ...
+                .buildShortDynamicLink()
+                .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
+                    @Override
+                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                        if (task.isSuccessful()) {
+                            // Short link created
+                            Uri shortLink = task.getResult().getShortLink();
+                            Uri flowchartLink = task.getResult().getPreviewLink();
+                            Log.d(TAG, "shortLink " + shortLink);
+                            Log.d(TAG, "flowchartLink " + flowchartLink);
+                        } else {
+                            // Error
+                            // ...
+                        }
+                    }
+                });
+    }
+
+    private void handleFirebase() {
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                        }
+
+
+                        // Handle the deep link. For example, open the linked
+                        // content, or apply promotional credit to the user's
+                        // account.
+                        // ...
+
+                        // ...
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "getDynamicLink:onFailure", e);
+                    }
+                });
     }
 
     @Override

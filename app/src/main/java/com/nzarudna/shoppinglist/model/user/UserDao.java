@@ -27,7 +27,10 @@ public interface UserDao {
     void delete(User user);
 
     @Query("SELECT * FROM users WHERE user_id = :userID")
-    LiveData<User> findByID(UUID userID);
+    LiveData<User> findByIDLiveData(UUID userID);
+
+    @Query("SELECT * FROM users WHERE user_id = :userID")
+    User findByID(UUID userID);
 
     @Query("SELECT * FROM users WHERE user_id <> :userID")
     DataSource.Factory<Integer, User> findByExcludeID(UUID userID);

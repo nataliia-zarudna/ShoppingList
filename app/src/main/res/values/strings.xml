@@ -84,4 +84,9 @@
     <string name="template_milk">Milk</string>
     <string name="template_bread">Bread</string>
     <string name="template_chocolate">Chocolate</string>
+    <string name="user_unique_name_validation_message">User with the same name alread exists</string>
+    <string name="users_activity_label">Users</string>
+    <string name="invite_btn">Invite</string>
+    <string name="invite_user_subject">Invitation to Family Shopping List</string>
+    <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.\n%2$s.</string>
 </resources>
