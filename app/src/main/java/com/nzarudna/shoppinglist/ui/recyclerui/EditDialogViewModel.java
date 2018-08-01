@@ -43,6 +43,10 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
+    public T getItem() {
+        return mItem;
+    }
+
     public String getValidationMessage() {
         return mValidationMessage;
     }
@@ -95,6 +99,10 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
             mValidationMessage = mResourceResolver.getString(R.string.error_occurd_message);
         }
         mPropertyChangeRegistry.notifyChange(this, BR._all);
+    }
+
+    public boolean isNewItem() {
+        return mIsNew;
     }
 
     protected abstract void updateItem(AsyncResultListener asyncResultListener);

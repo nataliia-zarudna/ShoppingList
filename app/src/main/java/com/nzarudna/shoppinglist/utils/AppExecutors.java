@@ -7,12 +7,15 @@ import android.support.annotation.NonNull;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+
 public class AppExecutors {
 
     private Executor mDiscIO;
     private Executor mNetworkIO;
     private Executor mMainThread;
 
+    @Inject
     public AppExecutors() {
         mDiscIO = Executors.newSingleThreadExecutor();
         mNetworkIO = Executors.newFixedThreadPool(3);

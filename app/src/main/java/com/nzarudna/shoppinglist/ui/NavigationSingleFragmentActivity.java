@@ -89,31 +89,6 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
         });
     }
 
-    private void buildLink() {
-        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://familyshopping.ua/invite?token=777"))
-                .setDynamicLinkDomain("familyshopping.page.link")
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
-                // Set parameters
-                // ...
-                .buildShortDynamicLink()
-                .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
-                    @Override
-                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
-                        if (task.isSuccessful()) {
-                            // Short link created
-                            Uri shortLink = task.getResult().getShortLink();
-                            Uri flowchartLink = task.getResult().getPreviewLink();
-                            Log.d(TAG, "shortLink " + shortLink);
-                            Log.d(TAG, "flowchartLink " + flowchartLink);
-                        } else {
-                            // Error
-                            // ...
-                        }
-                    }
-                });
-    }
-
     private void handleFirebase() {
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())

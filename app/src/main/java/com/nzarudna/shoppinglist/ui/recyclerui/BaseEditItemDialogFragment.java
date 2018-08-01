@@ -127,7 +127,12 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     protected void sendResponse() {
         Fragment targetFragment = getTargetFragment();
         if (targetFragment != null) {
-            targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
+            targetFragment.onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, getResponseIntent());
         }
+    }
+
+    @NonNull
+    protected Intent getResponseIntent() {
+        return new Intent();
     }
 }

@@ -1,7 +1,5 @@
 package com.nzarudna.shoppinglist.ui.users;
 
-import android.arch.lifecycle.LiveData;
-
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.user.User;
@@ -78,11 +76,6 @@ public class EditUserViewModel extends EditDialogViewModel<User> {
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mItem.
         mUserRepository.createUser(mItem, asyncResultListener);
-    }
-
-    public interface EditUserViewModelListener {
-        void inviteFriend(String invitationText);
     }
 }

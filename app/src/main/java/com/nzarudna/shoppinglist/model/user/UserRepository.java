@@ -46,12 +46,20 @@ public class UserRepository {
         return mUserDao.findByID(getSelfUserID());
     }
 
+    public LiveData<User> getSelfUserLiveData() {
+        return mUserDao.findByIDLiveData(getSelfUserID());
+    }
+
     public void updateUser(User user, AsyncResultListener asyncResultListener) {
         mUserDao.update(user);
     }
 
-    public LiveData<User> getUser(UUID userID) {
+    public LiveData<User> getUserLiveData(UUID userID) {
         return mUserDao.findByIDLiveData(userID);
+    }
+
+    public User getUser(UUID userID) {
+        return mUserDao.findByID(userID);
     }
 
     private static class CreateUserAsyncTask extends ListenedAsyncTask<User, User> {

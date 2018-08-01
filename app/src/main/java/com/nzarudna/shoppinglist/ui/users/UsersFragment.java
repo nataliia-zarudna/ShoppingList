@@ -1,9 +1,11 @@
 package com.nzarudna.shoppinglist.ui.users;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
+import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
@@ -19,8 +21,10 @@ import java.util.UUID;
  */
 
 public class UsersFragment
-        extends BaseRecyclerViewFragment<User, UsersViewModel, UserItemViewModel>
-        implements EditUserViewModel.EditUserViewModelListener {
+        extends BaseRecyclerViewFragment<User, UsersViewModel, UserItemViewModel> {
+
+    private static final int REQUEST_CODE_EDIT_USER = 1;
+    private static final int REQUEST_CODE_SEND_INVITATION_LINK = 2;
 
     public static UsersFragment newInstance() {
         return new UsersFragment();
@@ -49,7 +53,25 @@ public class UsersFragment
 
     @Override
     protected BaseEditItemDialogFragment<User, ? extends EditDialogViewModel<User>> getEditItemDialogFragment() {
-        return new EditUserDialogFragment();
+        EditUserDialogFragment fragment = new EditUserDialogFragment();
+        fragment.setTargetFragment(this, REQUEST_CODE_EDIT_USER);
+        return fragment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+
+            switch (requestCode) {
+                case REQUEST_CODE_EDIT_USER:
+                    UUID userID = EditUserDialogFragment.getNewUserID(data);
+                    inviteFriend(userID);
+                    return;
+                case REQUEST_CODE_SEND_INVITATION_LINK:
+                    return;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -69,16 +91,20 @@ public class UsersFragment
 
     public void inviteFriend(UUID userID) {
 
-        mViewModel.getUser(userID).observe(this, user -> {
-            if (user != null) {
-                startSendLinkApp("", user.getInvitationLink());
+        mViewModel.getUserInvitationLink(userID).observe(this, invitationLink -> {
+            if (invitationLink != null) {
+                startSendLinkApp(invitationLink);
+            } else {
+                Toast.makeText(getActivity(), R.string.error_on_build_dynamic_link, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void startSendLinkApp(String subject, String invitationLink) {
+    private void startSendLinkApp(String invitationLink) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invite_user_subject));
-        intent.putExtra(Intent.EXTRA_TEXT, getString(R.id))
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_user_text, invitationLink));
+
+        startActivityForResult(intent, REQUEST_CODE_SEND_INVITATION_LINK);
     }
 }
