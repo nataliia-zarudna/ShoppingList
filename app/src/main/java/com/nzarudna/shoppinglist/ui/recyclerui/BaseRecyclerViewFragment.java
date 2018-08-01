@@ -14,7 +14,7 @@ import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -64,7 +64,7 @@ public abstract class BaseRecyclerViewFragment
 
     protected abstract EditDialogViewModel<T> getEditDialogViewModel();
 
-    protected abstract DiffCallback<T> getDiffCallback();
+    protected abstract DiffUtil.ItemCallback<T> getDiffCallback();
 
     @Nullable
     @Override
@@ -97,7 +97,7 @@ public abstract class BaseRecyclerViewFragment
 
     @Override
     public void onChanged(@Nullable PagedList<T> items) {
-        mAdapter.setList(items);
+        mAdapter.submitList(items);
         mViewModel.onItemsLoad(items.isEmpty());
     }
 

@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import android.databinding.Bindable;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
@@ -68,6 +69,11 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         } else {
             updateItem(this);
         }
+    }
+
+    @StringRes
+    protected int getSaveButtonTitle() {
+        return R.string.save_btn;
     }
 
     @Override

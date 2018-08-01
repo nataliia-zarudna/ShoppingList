@@ -3,7 +3,7 @@ package com.nzarudna.shoppinglist.ui.archivedproductlists;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -98,8 +98,8 @@ public class ArchivedListsFragment
     }
 
     @Override
-    protected DiffCallback<ProductList> getDiffCallback() {
-        return new DiffCallback<ProductList>() {
+    protected DiffUtil.ItemCallback<ProductList> getDiffCallback() {
+        return new DiffUtil.ItemCallback<ProductList>() {
             @Override
             public boolean areItemsTheSame(@NonNull ProductList oldItem, @NonNull ProductList newItem) {
                 return oldItem.getListID().equals(newItem.getListID());

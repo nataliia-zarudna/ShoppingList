@@ -2,7 +2,7 @@ package com.nzarudna.shoppinglist.ui.categories;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -40,8 +40,8 @@ public class CategoriesFragment extends BaseRecyclerViewFragment<Category, Categ
     }
 
     @Override
-    protected DiffCallback<Category> getDiffCallback() {
-        return new DiffCallback<Category>() {
+    protected DiffUtil.ItemCallback<Category> getDiffCallback() {
+        return new DiffUtil.ItemCallback<Category>() {
             @Override
             public boolean areItemsTheSame(@NonNull Category oldItem, @NonNull Category newItem) {
                 return oldItem.getCategoryID().equals(newItem.getCategoryID());

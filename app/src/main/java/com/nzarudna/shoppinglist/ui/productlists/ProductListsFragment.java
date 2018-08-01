@@ -3,18 +3,13 @@ package com.nzarudna.shoppinglist.ui.productlists;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.recyclerview.extensions.DiffCallback;
-import android.view.LayoutInflater;
+import android.support.v7.util.DiffUtil;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
@@ -174,8 +169,8 @@ public class ProductListsFragment
     }
 
     @Override
-    protected DiffCallback<ProductListWithStatistics> getDiffCallback() {
-        return new DiffCallback<ProductListWithStatistics>() {
+    protected DiffUtil.ItemCallback<ProductListWithStatistics> getDiffCallback() {
+        return new DiffUtil.ItemCallback<ProductListWithStatistics>() {
             @Override
             public boolean areItemsTheSame(@NonNull ProductListWithStatistics oldItem, @NonNull ProductListWithStatistics newItem) {
                 return oldItem.getListID() == newItem.getListID();

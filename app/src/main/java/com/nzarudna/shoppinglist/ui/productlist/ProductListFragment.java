@@ -10,7 +10,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -102,8 +102,8 @@ public abstract class ProductListFragment
     }
 
     @Override
-    protected DiffCallback<CategoryProductItem> getDiffCallback() {
-        return new DiffCallback<CategoryProductItem>() {
+    protected DiffUtil.ItemCallback<CategoryProductItem> getDiffCallback() {
+        return new DiffUtil.ItemCallback<CategoryProductItem>() {
 
             @Override
             public boolean areItemsTheSame(@NonNull CategoryProductItem oldItem, @NonNull CategoryProductItem newItem) {
@@ -375,7 +375,7 @@ public abstract class ProductListFragment
         private static final int CATEGORY_VIEW_TYPE = 1;
         private static final int PRODUCT_VIEW_TYPE = 2;
 
-        protected CategoryProductAdapter(Fragment fragment, DiffCallback<CategoryProductItem> diffCallback) {
+        protected CategoryProductAdapter(Fragment fragment, DiffUtil.ItemCallback<CategoryProductItem> diffCallback) {
             super(fragment, diffCallback);
         }
 

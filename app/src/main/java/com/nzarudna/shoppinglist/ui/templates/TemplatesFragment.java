@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -88,8 +88,8 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
     }
 
     @Override
-    protected DiffCallback<CategoryTemplateItem> getDiffCallback() {
-        return new DiffCallback<CategoryTemplateItem>() {
+    protected DiffUtil.ItemCallback<CategoryTemplateItem> getDiffCallback() {
+        return new DiffUtil.ItemCallback<CategoryTemplateItem>() {
             @Override
             public boolean areItemsTheSame(@NonNull CategoryTemplateItem oldItem, @NonNull CategoryTemplateItem newItem) {
                 if (oldItem.getType().equals(newItem.getType())) {
@@ -183,7 +183,7 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
         private static final int TYPE_TEMPLATE = 1;
         private static final int TYPE_CATEGORY = 2;
 
-        protected CategoryTemplateAdapter(Fragment fragment, DiffCallback<CategoryTemplateItem> diffCallback) {
+        protected CategoryTemplateAdapter(Fragment fragment, DiffUtil.ItemCallback<CategoryTemplateItem> diffCallback) {
             super(fragment, diffCallback);
         }
 

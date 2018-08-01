@@ -4,8 +4,10 @@ import android.arch.paging.PagedListAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
@@ -22,7 +24,7 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
     private int mItemLayoutResID;
     protected RecyclerItemViewModel.RecyclerItemViewModelObserver<T> mRecyclerItemViewModelObserver;
 
-    protected BaseRecyclerAdapter(Fragment fragment, DiffCallback<T> diffCallback) {
+    protected BaseRecyclerAdapter(Fragment fragment, DiffUtil.ItemCallback<T> diffCallback) {
         super(diffCallback);
         mFragment = fragment;
 
@@ -30,11 +32,12 @@ public abstract class BaseRecyclerAdapter<T, IVM extends RecyclerItemViewModel<T
     }
 
     @Override
-    public RecyclerItemViewHolder<T, IVM> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerItemViewHolder<T, IVM> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         int layoutResID = getItemLayoutResID(viewType);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         ViewDataBinding dataBinding =
-                DataBindingUtil.inflate(mFragment.getLayoutInflater(), layoutResID, parent, false);
+                DataBindingUtil.inflate(layoutInflater, layoutResID, parent, false);
 
         return getViewHolderInstance(dataBinding);
     }

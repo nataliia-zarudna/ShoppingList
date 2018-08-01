@@ -2,7 +2,7 @@ package com.nzarudna.shoppinglist.ui.units;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.annotation.NonNull;
-import android.support.v7.recyclerview.extensions.DiffCallback;
+import android.support.v7.util.DiffUtil;
 
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.unit.Unit;
@@ -41,8 +41,8 @@ public class UnitsFragment extends BaseRecyclerViewFragment<Unit, UnitsViewModel
     }
 
     @Override
-    protected DiffCallback<Unit> getDiffCallback() {
-        return new DiffCallback<Unit>() {
+    protected DiffUtil.ItemCallback<Unit> getDiffCallback() {
+        return new DiffUtil.ItemCallback<Unit>() {
             @Override
             public boolean areItemsTheSame(@NonNull Unit oldItem, @NonNull Unit newItem) {
                 return oldItem.getUnitID().equals(newItem.getUnitID());

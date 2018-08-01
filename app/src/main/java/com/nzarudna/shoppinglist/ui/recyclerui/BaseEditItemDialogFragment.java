@@ -2,7 +2,6 @@ package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -11,6 +10,7 @@ import android.os.Parcelable;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -30,6 +30,7 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     private static final String ARG_ITEM = "com.nzarudna.shoppinglist.ui.recyclerui.item";
 
     protected VM mViewModel;
+    private AlertDialog mDialog;
 
     public static BaseEditItemDialogFragment newInstance() {
         return new BaseEditItemDialogFragment();
@@ -66,55 +67,47 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final AlertDialog dialog = new AlertDialog.Builder(getContext())
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext())
                 .setTitle(mViewModel.getDialogTitle())
-                .setPositiveButton(R.string.save_btn, null)
-                .setNegativeButton(R.string.cancel_btn, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dismiss();
-                    }
-                })
-                .setNeutralButton(R.string.save_and_next_button, null)
-                .setView(getCustomView())
-                .create();
+                .setPositiveButton(getViewModel().getSaveButtonTitle(), null)
+                .setNegativeButton(R.string.cancel_btn, (dialogInterface, i) -> dismiss())
+                .setView(getCustomView());
 
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
+        if (hasSaveAndNextButton()) {
+            dialogBuilder.setNeutralButton(R.string.save_and_next_button, null);
+        }
 
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positiveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mViewModel.saveItem(new EditDialogViewModel.OnSaveItemListener() {
-                            @Override
-                            public void onSuccess() {
-                                sendResponse();
-                                dialog.dismiss();
-                            }
-                        });
-                    }
-                });
+        mDialog = dialogBuilder.create();
 
-                Button nextButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-                nextButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mViewModel.saveItem(new EditDialogViewModel.OnSaveItemListener() {
-                            @Override
-                            public void onSuccess() {
-                                sendResponse();
-                                //mViewModel = getViewModel();
-                                mViewModel.setItem(null);
-                            }
-                        });
-                    }
-                });
-            }
+        mDialog.setOnShowListener(dialogInterface -> {
+
+            Button positiveButton = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(BaseEditItemDialogFragment.this::onSaveButtonClick);
+
+            Button nextButton = mDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+            nextButton.setOnClickListener(BaseEditItemDialogFragment.this::onSaveAndNextButtonClick);
         });
 
-        return dialog;
+        return mDialog;
+    }
+
+    protected void onSaveButtonClick(View view) {
+        mViewModel.saveItem(() -> {
+            sendResponse();
+            mDialog.dismiss();
+        });
+    }
+
+    protected void onSaveAndNextButtonClick(View view) {
+        mViewModel.saveItem(() -> {
+            sendResponse();
+            mViewModel.setItem(null);
+        });
+    }
+
+    protected boolean hasSaveAndNextButton() {
+        return true;
     }
 
     @LayoutRes
