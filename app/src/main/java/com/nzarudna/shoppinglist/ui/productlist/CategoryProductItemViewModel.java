@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -50,8 +51,8 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
     }
 
     @Override
-    public void removeItem() {
-        mShoppingList.removeProduct(mItem.getProduct());
+    public void removeItem(AsyncListener asyncListener) {
+        mShoppingList.removeProduct(mItem.getProduct(), asyncListener);
     }
 
     public String getProductCount() {

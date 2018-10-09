@@ -57,12 +57,12 @@ public class EditTemplateViewModel extends BaseEditTemplateViewModel<CategoryTem
 
     @Override
     protected void updateItem(AsyncResultListener asyncResultListener) {
-        mTemplateRepository.updateTemplate(mTemplate, asyncResultListener);
+        mTemplateRepository.updateAsync(mTemplate, asyncResultListener);
     }
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mTemplateRepository.createTemplate(mTemplate, asyncResultListener);
+        mTemplateRepository.createAsync(mTemplate, asyncResultListener);
     }
 
     @Override

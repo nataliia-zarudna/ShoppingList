@@ -91,7 +91,7 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
         if (isNewCategorySelected()) {
             final Category category = new Category();
             category.setName(mCategoryName);
-            mCategoryRepository.create(category, new AsyncResultListener<Category>() {
+            mCategoryRepository.createAsync(category, new AsyncResultListener<Category>() {
                 @Override
                 public void onAsyncSuccess(Category category) {
                     setCategoryID(category.getCategoryID());

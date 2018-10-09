@@ -160,7 +160,7 @@ public class ProductTemplateRepositoryTest {
         expectedTemplate.setUnitID(unitID);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createTemplateFromProduct(product, new AsyncResultListener<ProductTemplate>() {
+        mSubject.createFromProductAsync(product, new AsyncResultListener<ProductTemplate>() {
             @Override
             public void onAsyncSuccess(ProductTemplate resultTemplate) {
                 assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));
@@ -190,7 +190,7 @@ public class ProductTemplateRepositoryTest {
         expectedTemplate.setUnitID(null);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createTemplateFromProduct(product, new AsyncResultListener<ProductTemplate>() {
+        mSubject.createFromProductAsync(product, new AsyncResultListener<ProductTemplate>() {
             @Override
             public void onAsyncSuccess(ProductTemplate resultTemplate) {
                 assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));

@@ -105,9 +105,9 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
         return mIsNew;
     }
 
-    protected abstract void updateItem(AsyncResultListener asyncResultListener);
+    protected abstract void updateItem(AsyncResultListener<T> asyncResultListener);
 
-    protected abstract void createItem(AsyncResultListener asyncResultListener);
+    protected abstract void createItem(AsyncResultListener<T> asyncResultListener);
 
     public interface OnSaveItemListener {
         void onSuccess();

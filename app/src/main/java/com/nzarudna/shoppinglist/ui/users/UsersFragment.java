@@ -95,7 +95,7 @@ public class UsersFragment
             if (invitationLink != null) {
                 startSendLinkApp(invitationLink);
             } else {
-                Toast.makeText(getActivity(), R.string.error_on_build_dynamic_link, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), R.string.error_on_build_dynamic_link, Toast.LENGTH_SHORT).show();
             }
         });
     }

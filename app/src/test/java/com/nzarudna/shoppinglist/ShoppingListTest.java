@@ -108,7 +108,7 @@ public class ShoppingListTest {
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
-        verify(mProductTemplateRepository).createTemplateFromProduct(
+        verify(mProductTemplateRepository).createFromProductAsync(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)),
                 any(AsyncResultListener.class));
     }
@@ -222,7 +222,7 @@ public class ShoppingListTest {
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
-        verify(mProductTemplateRepository).createTemplateFromProduct(
+        verify(mProductTemplateRepository).createFromProductAsync(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)),
                 any(AsyncResultListener.class));
     }
@@ -266,7 +266,7 @@ public class ShoppingListTest {
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository, never())
-                .createTemplateFromProduct(eq(expectedProduct), any(AsyncResultListener.class));
+                .createFromProductAsync(eq(expectedProduct), any(AsyncResultListener.class));
     }
 
     @Test
@@ -311,7 +311,7 @@ public class ShoppingListTest {
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository, never())
-                .createTemplateFromProduct(eq(expectedProduct), any(AsyncResultListener.class));
+                .createFromProductAsync(eq(expectedProduct), any(AsyncResultListener.class));
     }
 
     @Test

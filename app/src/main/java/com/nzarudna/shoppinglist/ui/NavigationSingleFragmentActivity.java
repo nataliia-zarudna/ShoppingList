@@ -58,6 +58,29 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
                 item.setChecked(true);
                 mDrawerLayout.closeDrawers();
 
+
+                if (item.getItemId() == R.id.templates_item) {
+//                    Intent intent = new Intent(Intent.ACTION_SEND);
+////                    intent.addCategory(Intent.CATEGORY_DEFAULT);
+//                    intent.putExtra("sms", "123");
+//                    intent.putExtra("smsto", "+38099999999");
+//                    intent.setType("text/plain");
+//                    startActivityForResult(intent, 1);
+
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND, Uri.parse("sms:+380989606919"));
+//                    sendIntent.setAction(I);
+                    sendIntent.setData(Uri.parse("sms:+380989606919"));
+                    sendIntent.putExtra("sms_body", "ABC");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+
+
+
+                    return true;
+                }
+
+
                 Class activityClass = null;
                 switch (item.getItemId()) {
                     case R.id.shopping_lists_item:

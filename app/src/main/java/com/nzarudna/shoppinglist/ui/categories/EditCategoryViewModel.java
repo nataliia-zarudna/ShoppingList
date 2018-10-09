@@ -40,14 +40,14 @@ public class EditCategoryViewModel extends EditDialogViewModel<Category> {
     }
 
     @Override
-    protected void updateItem(AsyncResultListener asyncResultListener) {
+    protected void updateItem(AsyncResultListener<Category> asyncResultListener) {
         Log.d("magic", "mCategoryRepository updateItem " + mCategoryRepository.toString());
 
-        mCategoryRepository.update(mItem, asyncResultListener);
+        mCategoryRepository.updateAsync(mItem, asyncResultListener);
     }
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mCategoryRepository.create(mItem, asyncResultListener);
+        mCategoryRepository.createAsync(mItem, asyncResultListener);
     }
 }

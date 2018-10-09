@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ToastAsyncResultListener;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
@@ -69,9 +70,9 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
         }
     }
 
-    public void onSwipeProductListItem(UUID productListID) {
-        mProductListRepository.updateListStatus(productListID, ProductList.STATUS_ARCHIVED);
-    }
+//    public void onSwipeProductListItem(UUID productListID) {
+//        mProductListRepository.updateListStatus(productListID, ProductList.STATUS_ARCHIVED, new ToastAsyncResultListener(null));
+//    }
 
     public void onClickCreateListBtn() {
         mProductListRepository.createNewList(this);

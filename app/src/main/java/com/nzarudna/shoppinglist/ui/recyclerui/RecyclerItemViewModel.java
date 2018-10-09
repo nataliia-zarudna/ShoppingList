@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.ui.ArrayItemViewModel;
 
 /**
@@ -54,7 +55,7 @@ public abstract class RecyclerItemViewModel<T> extends ArrayItemViewModel<T> {
         return true;
     }
 
-    public abstract void removeItem();
+    public abstract void removeItem(AsyncListener listener);
 
     public interface RecyclerItemViewModelObserver<T> {
 

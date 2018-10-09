@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.AppFirebaseMessagingService;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
+import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsItemViewModel;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsViewModel;
@@ -41,6 +42,8 @@ public interface AppComponent {
     Context getContext();
 
     SharedPreferences getSharedPreferences();
+
+    void inject(ProductListRepository viewModel);
 
     void inject(ProductListsViewModel viewModel);
 

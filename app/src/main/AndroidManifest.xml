@@ -39,8 +39,8 @@
         <activity android:name=".ui.archivedproductlists.ArchivedListsActivity"
             android:label="@string/archive_activity_label"
             android:theme="@style/AppTheme.Grey"/>
-        <activity android:name=".ui.users.UsersActivity"
-            android:label="@string/users_activity_label" />
+        <!--<activity android:name=".ui.users.UsersActivity"-->
+            <!--android:label="@string/users_activity_label" />-->
 
         <service android:name=".AppFirebaseMessagingService" >
             <intent-filter>
