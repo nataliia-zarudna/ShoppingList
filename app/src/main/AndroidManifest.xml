@@ -17,32 +17,62 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:host="familyshopping.ua/invite?token=111" android:scheme="http"/>
-                <data android:host="familyshopping.ua/invite?token=111" android:scheme="https"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="familyshopping.ua/invite?token=111"
+                    android:scheme="http" />
+                <data
+                    android:host="familyshopping.ua/invite?token=111"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.productlist.read.ReadProductListActivity" />
         <activity android:name=".ui.productlist.edit.EditProductListActivity" />
         <activity
             android:name=".ui.productlist.edit.template.ChooseTemplateActivity"
-            android:parentActivityName=".ui.productlist.edit.EditProductListActivity"
-            android:label="@string/choose_template_activity_name"/>
-        <activity android:name=".ui.templates.TemplatesActivity"
-            android:label="@string/templates_activity_label"/>
-        <activity android:name=".ui.categories.CategoriesActivity"
+            android:label="@string/choose_template_activity_name"
+            android:parentActivityName=".ui.productlist.edit.EditProductListActivity" />
+        <activity
+            android:name=".ui.templates.TemplatesActivity"
+            android:label="@string/templates_activity_label" />
+        <activity
+            android:name=".ui.categories.CategoriesActivity"
             android:label="@string/categories_activity_label" />
-        <activity android:name=".ui.units.UnitsActivity"
+        <activity
+            android:name=".ui.units.UnitsActivity"
             android:label="@string/units_activity_label" />
-        <activity android:name=".ui.archivedproductlists.ArchivedListsActivity"
+        <activity
+            android:name=".ui.archivedproductlists.ArchivedListsActivity"
             android:label="@string/archive_activity_label"
-            android:theme="@style/AppTheme.Grey"/>
-        <activity android:name=".ui.users.UsersActivity"
+            android:theme="@style/AppTheme.Grey" />
+        <activity
+            android:name=".ui.users.UsersActivity"
             android:label="@string/users_activity_label" />
+        <activity
+            android:name=".ui.openinvitation.OpenInvitationActivity"
+            android:label="@string/open_invitation_activity_label">
 
-        <service android:name=".AppFirebaseMessagingService" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="familyshopping.ua"
+                    android:scheme="http" />
+                <data
+                    android:host="familyshopping.ua"
+                    android:scheme="https" />
+            </intent-filter>
+
+        </activity>
+
+        <service android:name=".AppFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

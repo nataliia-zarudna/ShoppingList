@@ -1,10 +1,13 @@
 package com.nzarudna.shoppinglist.utils;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import java.util.concurrent.Executor;
 
@@ -21,7 +24,7 @@ public class UserUtils {
     public static void buildInvitationLink(Executor executor,
                                            String invitorFirebaseToken,
                                            String invitorName,
-                                           DynamicLinkListener dynamicLinkListener) {
+                                           BuildDynamicLinkListener listener) {
 
         Uri invitationUri = new Uri.Builder()
                 .appendEncodedPath(INVITATION_LINK)
@@ -39,18 +42,46 @@ public class UserUtils {
                         // Short link created
                         Uri shortLink = task.getResult().getShortLink();
 
-                        dynamicLinkListener.onBuildDynamicLinkSuccess(shortLink);
+                        listener.onBuildDynamicLinkSuccess(shortLink);
 
                         Log.d(TAG, "shortLink " + shortLink);
                     } else {
-                        dynamicLinkListener.onBuildDynamicLinkError();
+                        listener.onBuildDynamicLinkError();
                     }
                 });
     }
 
-    public interface DynamicLinkListener {
+    public static void handleDeepLink(Intent intent, ParseDynamicLinkListener listener) {
+
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(intent)
+                .addOnSuccessListener(pendingDynamicLinkData -> {
+
+                    Uri deepLink = pendingDynamicLinkData.getLink();
+                    if (deepLink != null) {
+
+                        String invitorFirebaseToken = deepLink.getQueryParameter(PARAM_TOKEN);
+                        String invitorName = deepLink.getQueryParameter(PARAM_INVITOR_NAME);
+
+                        listener.onParseDynamicLinkSuccess(invitorFirebaseToken, invitorName);
+                    }
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to get firebase deep link", e);
+                    listener.onParseDynamicLinkError();
+                });
+    }
+
+    public interface BuildDynamicLinkListener {
         void onBuildDynamicLinkSuccess(Uri shortLink);
 
         void onBuildDynamicLinkError();
+    }
+
+    public interface ParseDynamicLinkListener {
+        void onParseDynamicLinkSuccess(String invitorFirebaseToken, String invitorName);
+
+        void onParseDynamicLinkError();
     }
 }

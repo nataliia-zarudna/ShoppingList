@@ -88,5 +88,7 @@
     <string name="users_activity_label">Users</string>
     <string name="invite_btn">Invite</string>
     <string name="invite_user_subject">Invitation to Family Shopping List</string>
-    <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.\n%2$s.</string>
+    <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.</string>
+    <string name="error_on_build_dynamic_link">Error creation link</string>
+    <string name="open_invitation_activity_label">User Invitation</string>
 </resources>

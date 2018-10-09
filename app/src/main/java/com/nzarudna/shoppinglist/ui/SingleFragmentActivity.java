@@ -10,10 +10,12 @@ import android.support.v7.widget.Toolbar;
 import com.nzarudna.shoppinglist.R;
 
 /**
- * Activity for hosting one fragment
+ * Activity for hosting one mFragment
  */
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
+
+    protected Fragment mFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -22,10 +24,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
-            Fragment fragment = getFragment();
+            mFragment = getFragment();
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.fragment_container, fragment)
+                    .add(R.id.fragment_container, mFragment)
                     .commit();
         }
 

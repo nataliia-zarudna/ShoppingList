@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Dialog fragment that shows all product lists
+ * Dialog mFragment that shows all product lists
  * to choose one to copy
  */
 

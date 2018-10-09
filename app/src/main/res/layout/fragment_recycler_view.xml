@@ -37,7 +37,8 @@
             android:layout_height="match_parent"
             android:visibility="@{viewModel.listEmpty ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@android:color/holo_blue_light"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

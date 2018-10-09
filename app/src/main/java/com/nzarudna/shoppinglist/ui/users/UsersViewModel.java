@@ -50,7 +50,7 @@ public class UsersViewModel extends RecyclerViewModel<User> {
                         mAppExecutors.getDiscIO(),
                         selfUser.getToken(),
                         user.getInvitorName(),
-                        new UserUtils.DynamicLinkListener() {
+                        new UserUtils.BuildDynamicLinkListener() {
 
                             @Override
                             public void onBuildDynamicLinkSuccess(Uri shortLink) {

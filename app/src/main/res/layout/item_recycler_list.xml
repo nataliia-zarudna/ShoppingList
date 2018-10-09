@@ -10,7 +10,7 @@
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="@dimen/list_item_height"
         android:onClick="@{() -> viewModel.onItemClick()}"
         android:onLongClick="@{() -> viewModel.onItemLongClick()}"
@@ -20,8 +20,10 @@
             android:id="@+id/template_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
             android:text="@{viewModel.itemName}"
             android:textSize="@dimen/list_item_text_size"
             tools:text="Item" />
