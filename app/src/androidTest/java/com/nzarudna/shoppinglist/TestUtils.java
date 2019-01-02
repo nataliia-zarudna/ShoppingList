@@ -107,7 +107,8 @@ public class TestUtils {
     }
 
     public static UUID insertUser(UserDao userDao) {
-        User user = new User("new user");
+        User user = new User();
+        user.setName("new user");
         userDao.insert(user);
         return user.getUserID();
     }

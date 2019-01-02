@@ -44,27 +44,25 @@ public class UserDaoTest {
 
     @Test
     public void create() {
-
-        User user = new User("New user");
+        User user = new User();
+        user.setName("new user");
         mSubjectDao.insert(user);
     }
 
     @Test(expected = SQLiteConstraintException.class)
     public void exceptionOnCreateWithNullName() {
-
-        User user = new User(null);
-
+        User user = new User();
         mSubjectDao.insert(user);
     }
 
     @Test
     public void createAndRead() throws InterruptedException {
 
-        User user = new User("New user");
+        User user = new User();
 
         mSubjectDao.insert(user);
 
-        LiveData<User> userLiveData = mSubjectDao.findByID(user.getUserID());
+        LiveData<User> userLiveData = mSubjectDao.findByIDLiveData(user.getUserID());
         User insertedUser = TestUtils.getLiveDataValueSync(userLiveData);
 
         assertThat(user, is(insertedUser));
@@ -111,11 +109,12 @@ public class UserDaoTest {
 
     private User createUser() throws InterruptedException {
 
-        User user = new User("New user");
+        User user = new User();
+        user.setName("new user");
 
         mSubjectDao.insert(user);
 
-        LiveData<User> userLiveData = mSubjectDao.findByID(user.getUserID());
+        LiveData<User> userLiveData = mSubjectDao.findByIDLiveData(user.getUserID());
         return TestUtils.getLiveDataValueSync(userLiveData);
     }
 
