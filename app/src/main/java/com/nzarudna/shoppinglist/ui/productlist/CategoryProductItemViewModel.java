@@ -126,6 +126,6 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
 
         Product prevProduct = (prevViewModel != null) ? prevViewModel.getProduct() : null;
         Product nextProduct = (nextViewModel != null) ? nextViewModel.getProduct() : null;
-        mShoppingList.moveProduct(mItem.getProduct(), nextProduct, prevProduct, null);
+        mShoppingList.moveProduct(mItem.getProduct(), prevProduct, nextProduct, null);
     }
 }

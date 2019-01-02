@@ -95,7 +95,7 @@ public class ShoppingList {
         mAppExecutors.loadAsync(() -> {
             product.setListID(mListID);
 
-            validateName(mProductDao, product.getName(), product.getListID());
+            validateName(product.getName(), product.getListID());
 
             ProductList productList = mProductListDao.findByIDSync(product.getListID());
             if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
@@ -113,7 +113,7 @@ public class ShoppingList {
     public void updateProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
         mAppExecutors.loadAsync(() -> {
 
-            validateName(mProductDao, product.getName(), product.getListID());
+            ModelUtils.validateNameIsNotEmpty(product.getName());
 
             Product oldProduct = mProductDao.findByIDSync(product.getProductID());
             if (!oldProduct.getName().equals(product.getName())
@@ -131,10 +131,10 @@ public class ShoppingList {
         }, listener);
     }
 
-    private static void validateName(ProductDao productDao, String name, UUID listID) throws EmptyNameException, UniqueNameConstraintException {
+    private void validateName(String name, UUID listID) throws EmptyNameException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
-        if (productDao.isProductsWithSameNameAndListExists(name, listID)) {
+        if (mProductDao.isProductsWithSameNameAndListExists(name, listID)) {
             throw new UniqueNameConstraintException("Product with name '" + name + "' already exists in list " + listID);
         }
     }
