@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.ToastAsyncResultListener;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;

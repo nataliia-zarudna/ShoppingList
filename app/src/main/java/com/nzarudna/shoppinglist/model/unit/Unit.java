@@ -13,7 +13,7 @@ import java.util.UUID;
  * Unit of products
  */
 @Entity(tableName = "units")
-public class Unit implements Parcelable {
+public class Unit implements Parcelable, Cloneable {
 
     @PrimaryKey()
     @NonNull
@@ -95,5 +95,10 @@ public class Unit implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeSerializable(unitID);
         parcel.writeString(name);
+    }
+
+    @Override
+    public Unit clone() throws CloneNotSupportedException {
+        return (Unit) super.clone();
     }
 }

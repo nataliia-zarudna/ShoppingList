@@ -71,11 +71,11 @@ public class EditUserViewModel extends EditDialogViewModel<User> {
 
     @Override
     protected void updateItem(AsyncResultListener asyncResultListener) {
-        mUserRepository.updateUser(mItem, asyncResultListener);
+        mUserRepository.updateAsync(mItem, asyncResultListener);
     }
 
     @Override
     protected void createItem(AsyncResultListener asyncResultListener) {
-        mUserRepository.createUser(mItem, asyncResultListener);
+        mUserRepository.createAsync(mItem, asyncResultListener);
     }
 }

@@ -12,14 +12,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
-import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsActivity;
 import com.nzarudna.shoppinglist.ui.categories.CategoriesActivity;

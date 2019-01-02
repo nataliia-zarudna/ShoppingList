@@ -1,13 +1,14 @@
 package com.nzarudna.shoppinglist;
 
-import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.BaseRepository;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryDao;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,21 +17,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.verify;
-
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by nsirobaba on 2/1/18.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class CategoryRepositoryTest {
+public class CategoryRepositoryTest extends BaseRepositoryTest<Category> {
 
     private CategoryRepository mSubject;
+    private AppExecutors mAppExecutors;
 
     @Mock
     private CategoryDao mCategoryDao;
@@ -41,102 +39,52 @@ public class CategoryRepositoryTest {
 
     @Before
     public void setUp() {
-        mSubject = new CategoryRepository(mCategoryDao, mProductDao, mProductTemplateDao);
+        mAppExecutors = new TestAppExecutors();
+        mSubject = new CategoryRepository(mCategoryDao, mProductDao, mProductTemplateDao, mAppExecutors);
+    }
+
+    @Override
+    protected BaseRepository<Category> getRepositorySubject() {
+        return mSubject;
     }
 
     @Test
-    public void create() {
+    public void create() throws InterruptedException {
         Category category = new Category();
         category.setName("some name");
-        mSubject.create(category,  null);
+
+        verifyCreate(category);
 
         verify(mCategoryDao).insert(category);
     }
 
     @Test
-    public void create_trimName() {
+    public void create_trimName() throws InterruptedException, CloneNotSupportedException {
         String name = " some name   ";
 
         Category category = new Category();
         category.setName(name);
-        mSubject.create(category,  null);
 
-        category.setName(name.trim());
+        Category resultCategory = category.clone();
+        resultCategory.setName(name.trim());
+
+        verifyCreate(category, resultCategory);
 
         verify(mCategoryDao).insert(category);
     }
 
     @Test
-    public void create_callListenerCallback() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-        final Category newCategory = new Category();
-        newCategory.setName("some name");
-        mSubject.create(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
-
-                assertEquals(newCategory, category);
-                countDown.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mCategoryDao).insert(newCategory);
-    }
-
-    @Test
     public void create_nullNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Category newCategory = new Category();
-        mSubject.create(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newCategory, EmptyNameException.class);
     }
 
     @Test
     public void create_emptyNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Category newCategory = new Category();
         newCategory.setName("  ");
-        mSubject.create(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newCategory, EmptyNameException.class);
     }
 
     @Test
@@ -145,121 +93,48 @@ public class CategoryRepositoryTest {
         String categoryName = "some name";
         when(mCategoryDao.findBySimilarName(categoryName)).thenReturn(UUID.randomUUID());
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-
         final Category newCategory = new Category();
         newCategory.setName(categoryName);
-        mSubject.create(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newCategory, UniqueNameConstraintException.class);
     }
 
     @Test
-    public void update() {
+    public void update() throws InterruptedException {
         Category category = new Category();
         category.setName("Some name");
-        mSubject.update(category, null);
+
+        verifyUpdate(category);
 
         verify(mCategoryDao).update(category);
     }
 
     @Test
-    public void update_trimName() {
+    public void update_trimName() throws InterruptedException, CloneNotSupportedException {
         String name = " some name   ";
 
         Category category = new Category();
         category.setName(name);
-        mSubject.update(category,  null);
 
-        category.setName(name.trim());
+        Category savedCategory = category.clone();
+        savedCategory.setName(name.trim());
+
+        verifyUpdate(category, savedCategory);
 
         verify(mCategoryDao).update(category);
     }
 
     @Test
-    public void update_callListenerCallback() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-        final Category newCategory = new Category();
-        newCategory.setName("some name");
-        mSubject.update(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
-
-                assertEquals(newCategory, category);
-                countDown.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mCategoryDao).update(newCategory);
-    }
-
-    @Test
     public void update_nullNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Category newCategory = new Category();
-        mSubject.update(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newCategory, EmptyNameException.class);
     }
 
     @Test
     public void update_emptyNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Category newCategory = new Category();
         newCategory.setName("   ");
-        mSubject.update(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newCategory, EmptyNameException.class);
     }
 
     @Test
@@ -268,40 +143,27 @@ public class CategoryRepositoryTest {
         String categoryName = "some name";
         when(mCategoryDao.findBySimilarName(categoryName)).thenReturn(UUID.randomUUID());
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Category newCategory = new Category();
         newCategory.setName(categoryName);
-        mSubject.update(newCategory, new AsyncResultListener<Category>() {
-            @Override
-            public void onAsyncSuccess(Category category) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newCategory, UniqueNameConstraintException.class);
     }
 
     @Test
-    public void remove() {
+    public void remove() throws InterruptedException {
         Category category = new Category();
-        mSubject.remove(category);
+
+        verifyRemove(category);
 
         verify(mCategoryDao).delete(category);
     }
 
     @Test
-    public void remove_setDefaultCategoryToFKs() {
+    public void remove_setDefaultCategoryToFKs() throws InterruptedException {
 
         Category category = new Category();
-        mSubject.remove(category);
+
+        verifyRemove(category);
 
         verify(mProductDao).setDefaultCategoryID(category.getCategoryID());
         verify(mProductTemplateDao).setDefaultCategoryID(category.getCategoryID());

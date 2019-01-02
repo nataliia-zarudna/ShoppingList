@@ -11,7 +11,6 @@ import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListViewModel;
 
 import java.util.UUID;
 

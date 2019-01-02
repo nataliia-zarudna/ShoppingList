@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
-import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;

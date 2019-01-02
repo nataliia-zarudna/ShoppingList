@@ -36,7 +36,7 @@ import java.util.UUID;
                         onDelete = ForeignKey.SET_NULL)
         },
         indices = {@Index(value = "status")})
-public class ProductList implements Parcelable {
+public class ProductList implements Parcelable, Cloneable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_ACTIVE, STATUS_ARCHIVED})
@@ -275,5 +275,10 @@ public class ProductList implements Parcelable {
         parcel.writeInt(sorting);
         parcel.writeByte((byte) (isGroupedView ? 1 : 0));
         parcel.writeSerializable(assignedID);
+    }
+
+    @Override
+    public ProductList clone() throws CloneNotSupportedException {
+        return (ProductList) super.clone();
     }
 }

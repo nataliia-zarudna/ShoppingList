@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.templates;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
@@ -38,7 +39,7 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
     }
 
     @Override
-    public void removeItem() {
+    public void removeItem(AsyncListener listener) {
         ProductTemplate template = getItem().getTemplate();
         mTemplateRepository.removeAsync(template, null);
     }

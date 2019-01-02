@@ -2,15 +2,10 @@ package com.nzarudna.shoppinglist;
 
 import android.util.Log;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 
 import javax.inject.Inject;
 

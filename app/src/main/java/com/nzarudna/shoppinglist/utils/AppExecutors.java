@@ -12,17 +12,18 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class AppExecutors {
 
     private static final String TAG = AppExecutors.class.getSimpleName();
 
     private Executor mDiscIO;
     private Executor mNetworkIO;
-    private Executor mMainThread;
+    protected Executor mMainThread;
 
-    @Inject
+
     public AppExecutors() {
         mDiscIO = Executors.newSingleThreadExecutor();
         mNetworkIO = Executors.newFixedThreadPool(3);

@@ -2,16 +2,14 @@ package com.nzarudna.shoppinglist.model.product.list;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
 import com.nzarudna.shoppinglist.model.ModelUtils;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -45,12 +43,14 @@ public class ShoppingList {
     private AppExecutors mAppExecutors;
 
     public ShoppingList(UUID listID, ProductListDao productListDao, ProductDao productDao,
-                        ProductTemplateRepository productTemplateRepository, AppExecutors appExecutors) {
+                        ProductTemplateRepository productTemplateRepository, UserRepository userRepository,
+                        AppExecutors appExecutors) {
         mAppExecutors = appExecutors;
         mListID = listID;
         mProductListDao = productListDao;
         mProductTemplateRepository = productTemplateRepository;
         mProductDao = productDao;
+        mUserRepository = userRepository;
     }
 
     public LiveData<ProductList> getListData() {
@@ -61,14 +61,16 @@ public class ShoppingList {
         return mListID;
     }
 
-    public void updateProductList(ProductList productList) {
+    public void updateProductList(ProductList productList, AsyncResultListener<ProductList> listener) {
         mAppExecutors.loadAsync(() -> {
 
             productList.setModifiedAt(new Date());
             productList.setModifiedBy(mUserRepository.getSelfUserID());
             mProductListDao.update(productList);
 
-        }, null);
+            return productList;
+
+        }, listener);
     }
 
     public void addProduct(@NonNull Product product, @Nullable AsyncResultListener<Product> listener) {
@@ -129,7 +131,7 @@ public class ShoppingList {
         }, listener);
     }
 
-    private static void validateName(ProductDao productDao, String name, UUID listID) throws NameIsEmptyException, UniqueNameConstraintException {
+    private static void validateName(ProductDao productDao, String name, UUID listID) throws EmptyNameException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
         if (productDao.isProductsWithSameNameAndListExists(name, listID)) {
@@ -137,7 +139,7 @@ public class ShoppingList {
         }
     }
 
-    public void moveProduct(Product product, Product productBefore, Product productAfter) throws ShoppingListException {
+    public void moveProduct(Product product, Product productBefore, Product productAfter, AsyncListener asyncListener) throws ShoppingListException {
         if (productAfter == null && productBefore == null) {
             throw new ShoppingListException("Either productAfter or productBefore must not be null");
         }
@@ -181,22 +183,24 @@ public class ShoppingList {
             product.setOrder(newProductOrder);
             mProductDao.update(product);
 
-        }, null);
+        }, asyncListener);
     }
 
     public void removeProduct(Product product, AsyncListener listener) {
         mAppExecutors.loadAsync(() -> mProductDao.delete(product), listener);
     }
 
-    public void removeProductsWithTemplate(UUID templateID) {
-        mAppExecutors.loadAsync(() -> mProductDao.delete(templateID, mListID), null);
+    public void removeProductsWithTemplate(UUID templateID, AsyncListener listener) {
+        mAppExecutors.loadAsync(() -> mProductDao.delete(templateID, mListID), listener);
     }
 
-    public void removeProductsByStatus(@Product.ProductStatus int status) {
-        mAppExecutors.loadAsync(() -> mProductDao.delete(status, mListID), null);
+    public void removeProductsByStatus(@Product.ProductStatus int status, AsyncListener listener) {
+        mAppExecutors.loadAsync(() -> mProductDao.delete(status, mListID), listener);
     }
 
-    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting, boolean isGroupedView) throws ShoppingListException {
+    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting,
+                                                                        boolean isGroupedView,
+                                                                        AsyncListener asyncListener) throws ShoppingListException {
 
         DataSource.Factory<Integer, CategoryProductItem> resultProducts;
 
@@ -229,12 +233,12 @@ public class ShoppingList {
                     throw new ShoppingListException("Unknown products sorting " + sorting);
             }
         }
-        saveSortingAndView(sorting, isGroupedView);
+        saveSortingAndView(sorting, isGroupedView, asyncListener);
 
         return resultProducts;
     }
 
-    private void saveSortingAndView(@ProductList.ProductSorting int sorting, boolean isGroupedView) {
+    private void saveSortingAndView(@ProductList.ProductSorting int sorting, boolean isGroupedView, AsyncListener asyncListener) {
         mAppExecutors.loadAsync(() -> {
 
             ProductList productList = mProductListDao.findByIDSync(mListID);
@@ -243,28 +247,10 @@ public class ShoppingList {
                 productList.setIsGroupedView(isGroupedView);
                 mProductListDao.update(productList);
             }
-        }, null);
+        }, asyncListener);
     }
 
-    static class UpdateProductStatusAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        ProductDao mProductDao;
-        int mStatus;
-        UUID mListID;
-
-        UpdateProductStatusAsyncTask(ProductDao productDao, int status, UUID listID) {
-            mProductDao = productDao;
-            mStatus = status;
-            mListID = listID;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-    }
-
-    public void updateProductsStatus(@Product.ProductStatus int status) {
-        mAppExecutors.loadAsync(() -> mProductDao.updateStatus(status, mListID), null);
+    public void updateProductsStatus(@Product.ProductStatus int status, AsyncListener asyncListener) {
+        mAppExecutors.loadAsync(() -> mProductDao.updateStatus(status, mListID), asyncListener);
     }
 }

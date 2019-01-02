@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.archivedproductlists;
 
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
@@ -27,8 +28,8 @@ public class ArchivedListsItemViewModel extends RecyclerItemViewModel<ProductLis
     }
 
     @Override
-    public void removeItem() {
-        mProductListRepository.removeList(mItem.getListID());
+    public void removeItem(AsyncListener listener) {
+        mProductListRepository.removeList(mItem.getListID(), listener);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ArchivedListsItemViewModel extends RecyclerItemViewModel<ProductLis
     }
 
     public void restoreItem() {
-        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ACTIVE);
+        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ACTIVE, null);
     }
 
     public interface ArchivedListsItemViewModelObserver {

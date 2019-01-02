@@ -5,12 +5,16 @@ import android.support.annotation.WorkerThread;
 
 import com.nzarudna.shoppinglist.utils.AppExecutors;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public abstract class BaseRepository<T> {
 
-    @Inject
     protected AppExecutors mAppExecutors;
+
+    public BaseRepository(AppExecutors appExecutors) {
+        mAppExecutors = appExecutors;
+    }
 
     @WorkerThread
     protected abstract T create(T entity) throws Exception;

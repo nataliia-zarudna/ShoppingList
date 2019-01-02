@@ -4,19 +4,21 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
+import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
+import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
+import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
-import com.nzarudna.shoppinglist.model.product.Product;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
-import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
-import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,16 +32,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static com.nzarudna.shoppinglist.SharedPreferencesConstants.*;
-import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.*;
+import static com.nzarudna.shoppinglist.SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW;
+import static com.nzarudna.shoppinglist.SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_NAME;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_ASSIGNED;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_CREATED_AT;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_CREATED_BY;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_MODIFIED_AT;
+import static com.nzarudna.shoppinglist.model.product.list.ProductListRepository.SORT_LISTS_BY_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,13 +53,14 @@ import static org.mockito.Mockito.when;
  * Test Shopping List
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ProductListRepositoryTest {
+public class ProductListRepositoryTest extends BaseAsyncTest {
 
     private static final String MOCKED_DEFAULT_LIST_NAME = "Default List Name";
     private static final String MOCKED_DEFAULT_LIST_NAME_FROM_PREFERENCES = "My own default List Name";
     private static final UUID MOCKED_SELF_USER_ID = UUID.randomUUID();
 
     private ProductListRepository mSubject;
+    private AppExecutors mAppExecutors;
 
     @Mock
     private UserRepository mUserRepository;
@@ -82,8 +89,9 @@ public class ProductListRepositoryTest {
 
         when(mUserRepository.getSelfUserID()).thenReturn(MOCKED_SELF_USER_ID);
 
+        mAppExecutors = new TestAppExecutors();
         mSubject = new ProductListRepository(mProductListDao, mProductDao, mProductTemplateRepository,
-                mUserRepository, mResourceResolver, mSharedPreferences);
+                mUserRepository, mResourceResolver, mSharedPreferences, mAppExecutors);
     }
 
     @Test
@@ -93,24 +101,22 @@ public class ProductListRepositoryTest {
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createNewList(new AsyncResultListener<ProductList>() {
-            @Override
-            public void onAsyncSuccess(ProductList productList) {
 
-                assertNotNull(productList);
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<ProductList> asyncListener = (AsyncResultListener<ProductList>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            @Override
-            public void onAsyncError(Exception e) {
+            assertNotNull(invocation.getArgument(0));
 
-            }
-        });
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductList.class));
 
-        countDownLatch.await();
+        mSubject.createNewList(asyncListener);
+        await(countDownLatch);
 
         verify(mProductListDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProductList)));
+        verify(asyncListener).onAsyncSuccess(any(ProductList.class));
     }
 
     @Test
@@ -126,24 +132,22 @@ public class ProductListRepositoryTest {
         expectedProductList.setIsGroupedView(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createNewList(new AsyncResultListener<ProductList>() {
-            @Override
-            public void onAsyncSuccess(ProductList productList) {
 
-                assertNotNull(productList);
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<ProductList> asyncListener = (AsyncResultListener<ProductList>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            @Override
-            public void onAsyncError(Exception e) {
+            assertNotNull(invocation.getArgument(0));
 
-            }
-        });
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductList.class));
 
-        countDownLatch.await();
+        mSubject.createNewList(asyncListener);
+        await(countDownLatch);
 
         verify(mProductListDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProductList)));
+        verify(asyncListener).onAsyncSuccess(any(ProductList.class));
     }
 
     @Test
@@ -165,27 +169,25 @@ public class ProductListRepositoryTest {
         expectedList.setStatus(ProductList.STATUS_ACTIVE);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.copyList(etalonListID, new AsyncResultListener<ProductList>() {
 
-            @Override
-            public void onAsyncSuccess(ProductList productList) {
-                assertNotNull(productList);
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<ProductList> asyncListener = (AsyncResultListener<ProductList>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            @Override
-            public void onAsyncError(Exception e) {
+            assertNotNull(invocation.getArgument(0));
 
-            }
-        });
-        countDownLatch.await();
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductList.class));
+
+        mSubject.copyList(etalonListID, asyncListener);
+        await(countDownLatch);
 
         verify(mProductListDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedList)));
     }
 
     @Test
-    public void copyList_testEqualsProducts() throws InterruptedException, ShoppingListException {
+    public void copyList_testEqualsProducts() throws InterruptedException {
 
         UUID etalonListID = UUID.randomUUID();
         ProductList etalonList = new ProductList("Some etalon name", UUID.randomUUID());
@@ -209,18 +211,14 @@ public class ProductListRepositoryTest {
         when(mProductDao.findByListIDSync(etalonListID)).thenReturn(etalonProducts);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.copyList(etalonListID, new AsyncResultListener<ProductList>() {
-            @Override
-            public void onAsyncSuccess(ProductList productList) {
-                countDownLatch.countDown();
-            }
 
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        AsyncResultListener<ProductList> asyncListener = (AsyncResultListener<ProductList>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductList.class));
+        mSubject.copyList(etalonListID, asyncListener);
+        await(countDownLatch);
 
         List<Product> expectedProducts = etalonProducts;
         for (final Product expectedProduct : expectedProducts) {
@@ -229,6 +227,8 @@ public class ProductListRepositoryTest {
             verify(mProductDao).insert(
                     argThat(AssertUtils.getProductArgumentMatcheWithoutPKAndListID(expectedProduct)));
         }
+
+        verify(asyncListener).onAsyncSuccess(any(ProductList.class));
     }
 
     @Test
@@ -249,21 +249,21 @@ public class ProductListRepositoryTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final List<ProductList> resultList = new ArrayList<>();
-        mSubject.createNewList(templates, new AsyncResultListener<ProductList>() {
-            @Override
-            public void onAsyncSuccess(ProductList productList) {
-                resultList.add(productList);
 
-                assertNotNull(productList);
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<ProductList> asyncListener = (AsyncResultListener<ProductList>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            @Override
-            public void onAsyncError(Exception e) {
+            ProductList productList = invocation.getArgument(0);
+            resultList.add(productList);
 
-            }
-        });
-        countDownLatch.await();
+            assertNotNull(productList);
+
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductList.class));
+
+        mSubject.createNewList(templates, asyncListener);
+        await(countDownLatch);
 
         expectedProductList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
         verify(mProductListDao).insert(
@@ -280,15 +280,18 @@ public class ProductListRepositoryTest {
 
             verify(mProductDao).insert(argThat(AssertUtils.getArgumentMatcher(product)));
         }
+        verify(asyncListener).onAsyncSuccess(any(ProductList.class));
     }
 
     @Test
-    public void updateListStatus() {
+    public void updateListStatus() throws InterruptedException {
 
         ProductList productList = new ProductList(MOCKED_DEFAULT_LIST_NAME, MOCKED_SELF_USER_ID);
         when(mProductListDao.findByIDSync(productList.getListID())).thenReturn(productList);
 
-        mSubject.updateListStatus(productList.getListID(), ProductList.STATUS_ARCHIVED);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.updateListStatus(productList.getListID(), ProductList.STATUS_ARCHIVED, null);
+        await(countDownLatch);
 
         productList.setStatus(ProductList.STATUS_ARCHIVED);
 
@@ -296,12 +299,21 @@ public class ProductListRepositoryTest {
     }
 
     @Test
-    public void removeList() {
+    public void removeList() throws InterruptedException {
         ProductList listToRemove = new ProductList("Some name", UUID.randomUUID());
+        CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        mSubject.removeList(listToRemove.getListID());
+        AsyncListener asyncListener = Mockito.mock(AsyncListener.class);
+        doAnswer(invocation -> {
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess();
+
+        mSubject.removeList(listToRemove.getListID(), asyncListener);
+        await(countDownLatch);
 
         verify(mProductListDao).deleteByID(listToRemove.getListID());
+        verify(asyncListener).onAsyncSuccess();
     }
 
     @Test

@@ -70,14 +70,14 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         this.mSorting = sorting;
 
         mProductList.setSorting(sorting);
-        mShoppingList.updateProductList(mProductList);
+        mShoppingList.updateProductList(mProductList, null);
     }
 
     public void setIsGroupedView(Boolean isGroupedView) {
         this.mIsGroupedView = isGroupedView;
 
         mProductList.setIsGroupedView(isGroupedView);
-        mShoppingList.updateProductList(mProductList);
+        mShoppingList.updateProductList(mProductList, null);
     }
 
     public String getListName() {
@@ -89,7 +89,7 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
 
         DataSource.Factory<Integer, CategoryProductItem> productsFactory = null;
         try {
-            productsFactory = mShoppingList.getProducts(mSorting, mIsGroupedView);
+            productsFactory = mShoppingList.getProducts(mSorting, mIsGroupedView, null);
         } catch (ShoppingListException e) {
             //TODO: handle error
             e.printStackTrace();
@@ -98,10 +98,10 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
     }
 
     public void removeBoughtProducts() {
-        mShoppingList.removeProductsByStatus(Product.BOUGHT);
+        mShoppingList.removeProductsByStatus(Product.BOUGHT, null);
     }
 
     public void markProductsAs(int status) {
-        mShoppingList.updateProductsStatus(status);
+        mShoppingList.updateProductsStatus(status, null);
     }
 }

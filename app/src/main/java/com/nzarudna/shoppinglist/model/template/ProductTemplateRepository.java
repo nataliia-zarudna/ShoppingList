@@ -2,16 +2,13 @@ package com.nzarudna.shoppinglist.model.template;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.BaseRepository;
-import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
 import com.nzarudna.shoppinglist.model.ModelUtils;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
@@ -29,10 +26,16 @@ import javax.inject.Singleton;
 @Singleton
 public class ProductTemplateRepository extends BaseRepository<ProductTemplate> {
 
+    private ProductTemplateDao mProductTemplateDao;
+    private ProductDao mProductDao;
+
     @Inject
-    ProductTemplateDao mProductTemplateDao;
-    @Inject
-    ProductDao mProductDao;
+    public ProductTemplateRepository(ProductTemplateDao productTemplateDao, ProductDao productDao,
+                                     AppExecutors appExecutors) {
+        super(appExecutors);
+        mProductTemplateDao = productTemplateDao;
+        mProductDao = productDao;
+    }
 
     @Override
     protected ProductTemplate create(ProductTemplate template) throws Exception {
@@ -71,14 +74,14 @@ public class ProductTemplateRepository extends BaseRepository<ProductTemplate> {
     }
 
     @WorkerThread
-    private ProductTemplate insertTemplate(ProductTemplate template) throws UniqueNameConstraintException, NameIsEmptyException {
+    private ProductTemplate insertTemplate(ProductTemplate template) throws UniqueNameConstraintException, EmptyNameException {
 
         validateName(mProductTemplateDao, template.getName());
         mProductTemplateDao.insert(template);
         return template;
     }
 
-    private static void validateName(ProductTemplateDao productTemplateDao, String name) throws NameIsEmptyException, UniqueNameConstraintException {
+    private static void validateName(ProductTemplateDao productTemplateDao, String name) throws EmptyNameException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
         if (productTemplateDao.isTemplatesWithSameNameExists(name)) {

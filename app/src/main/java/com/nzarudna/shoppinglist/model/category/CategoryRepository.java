@@ -4,10 +4,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.support.annotation.WorkerThread;
 
-import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.BaseRepository;
 import com.nzarudna.shoppinglist.model.ModelUtils;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
@@ -25,26 +24,23 @@ import javax.inject.Singleton;
 @Singleton
 public class CategoryRepository extends BaseRepository<Category> {
 
-    @Inject
-    CategoryDao mCategoryDao;
-    @Inject
-    ProductDao mProductDao;
-    @Inject
-    ProductTemplateDao mProductTemplateDao;
+    private CategoryDao mCategoryDao;
+    private ProductDao mProductDao;
+    private ProductTemplateDao mProductTemplateDao;
 
-//    @Inject
-//    public CategoryRepository(CategoryDao categoryDao, ProductDao productDao,
-//                              ProductTemplateDao productTemplateDao, AppExecutors appExecutors) {
-//        super(appExecutors);
-//
-//        mCategoryDao = categoryDao;
-//        mProductDao = productDao;
-//        mProductTemplateDao = productTemplateDao;
-//    }
+    @Inject
+    public CategoryRepository(CategoryDao categoryDao, ProductDao productDao,
+                              ProductTemplateDao productTemplateDao, AppExecutors appExecutors) {
+        super(appExecutors);
+
+        mCategoryDao = categoryDao;
+        mProductDao = productDao;
+        mProductTemplateDao = productTemplateDao;
+    }
 
     @Override
     @WorkerThread
-    protected Category create(Category category) throws NameIsEmptyException, UniqueNameConstraintException {
+    protected Category create(Category category) throws EmptyNameException, UniqueNameConstraintException {
         validateName(category.getName());
         mCategoryDao.insert(category);
 
@@ -53,7 +49,7 @@ public class CategoryRepository extends BaseRepository<Category> {
 
     @Override
     @WorkerThread
-    protected Category update(Category category) throws NameIsEmptyException, UniqueNameConstraintException {
+    protected Category update(Category category) throws EmptyNameException, UniqueNameConstraintException {
         validateName(category.getName());
         mCategoryDao.update(category);
 
@@ -61,7 +57,7 @@ public class CategoryRepository extends BaseRepository<Category> {
     }
 
     @WorkerThread
-    private void validateName(String name) throws NameIsEmptyException, UniqueNameConstraintException {
+    private void validateName(String name) throws EmptyNameException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
         UUID duplicateCategoryID = mCategoryDao.findBySimilarName(name);

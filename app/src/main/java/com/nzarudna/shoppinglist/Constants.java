@@ -7,4 +7,6 @@ package com.nzarudna.shoppinglist;
 public interface Constants {
 
     int PRODUCT_ORDER_STEP = 10;
+
+    String PREF_SELF_USER_ID = "selfUserID";
 }

@@ -1,6 +1,6 @@
 package com.nzarudna.shoppinglist.model;
 
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 
 /**
  * Created by Nataliia on 15.03.2018.
@@ -8,9 +8,9 @@ import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
 
 public class ModelUtils {
 
-    public static void validateNameIsNotEmpty(String name) throws NameIsEmptyException {
+    public static void validateNameIsNotEmpty(String name) throws EmptyNameException {
         if (name == null || name.trim().isEmpty()) {
-            throw new NameIsEmptyException("Entity name cannot be null or empty");
+            throw new EmptyNameException("Entity name cannot be null or empty");
         }
     }
 }

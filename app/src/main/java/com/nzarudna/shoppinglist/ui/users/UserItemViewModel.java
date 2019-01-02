@@ -1,6 +1,6 @@
 package com.nzarudna.shoppinglist.ui.users;
 
-import com.nzarudna.shoppinglist.model.unit.Unit;
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
@@ -22,7 +22,7 @@ public class UserItemViewModel extends RecyclerItemViewModel<User> {
     }
 
     @Override
-    public void removeItem() {
-        mUserRepository.removeUser(mItem);
+    public void removeItem(AsyncListener listener) {
+        mUserRepository.removeAsync(mItem, listener);
     }
 }

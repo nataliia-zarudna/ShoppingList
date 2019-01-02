@@ -8,7 +8,7 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.category.CategoryRepository;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
@@ -100,7 +100,7 @@ public abstract class BaseEditTemplateViewModel<T> extends EditDialogViewModel<T
 
                 @Override
                 public void onAsyncError(Exception e) {
-                    if (e instanceof NameIsEmptyException) {
+                    if (e instanceof EmptyNameException) {
                         setCategoryID(Category.DEFAULT_CATEGORY_ID);
                         BaseEditTemplateViewModel.super.saveItem(listener);
                     } else if (e instanceof UniqueNameConstraintException) {

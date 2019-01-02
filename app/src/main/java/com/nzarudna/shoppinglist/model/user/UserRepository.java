@@ -4,9 +4,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 
-import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.BaseRepository;
-import com.nzarudna.shoppinglist.model.ListenedAsyncTask;
+import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
+import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import java.util.UUID;
@@ -14,40 +15,42 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import static com.nzarudna.shoppinglist.Constants.PREF_SELF_USER_ID;
+
 /**
  * Provides user data
  */
 @Singleton
 public class UserRepository extends BaseRepository<User> {
 
-    private static final String SELF_USER_ID = "selfUserID";
+    private SharedPreferences mSharedPreferences;
+    private UserDao mUserDao;
 
     @Inject
-    SharedPreferences mSharedPreferences;
-    @Inject
-    UserDao mUserDao;
-
-//    @Inject
-//    public UserRepository(SharedPreferences sharedPreferences,
-//                          UserDao userDao, AppExecutors appExecutors) {
-//        super(appExecutors);
-//        mSharedPreferences = sharedPreferences;
-//        mUserDao = userDao;
-//    }
+    public UserRepository(SharedPreferences sharedPreferences,
+                          UserDao userDao, AppExecutors appExecutors) {
+        super(appExecutors);
+        mSharedPreferences = sharedPreferences;
+        mUserDao = userDao;
+    }
 
     public UUID getSelfUserID() {
-        String strUUID = mSharedPreferences.getString(SELF_USER_ID, "");
+        String strUUID = mSharedPreferences.getString(PREF_SELF_USER_ID, "");
         return UUID.fromString(strUUID);
     }
 
     @Override
     protected User create(User user) throws Exception {
+        validateUserName(user.getName());
+
         mUserDao.insert(user);
         return user;
     }
 
     @Override
     protected User update(User user) throws Exception {
+        validateUserName(user.getName());
+
         mUserDao.update(user);
         return user;
     }
@@ -60,7 +63,7 @@ public class UserRepository extends BaseRepository<User> {
     public void setSelfUserID(UUID selfUserID) {
         mSharedPreferences
                 .edit()
-                .putString(SELF_USER_ID, selfUserID.toString())
+                .putString(PREF_SELF_USER_ID, selfUserID.toString())
                 .apply();
     }
 
@@ -82,5 +85,13 @@ public class UserRepository extends BaseRepository<User> {
 
     public DataSource.Factory<Integer, User> getOtherUsers() {
         return mUserDao.findByExcludeID(getSelfUserID());
+    }
+
+    private void validateUserName(String name) throws EmptyNameException, UniqueNameConstraintException {
+        ModelUtils.validateNameIsNotEmpty(name);
+
+        if (mUserDao.isUsersWithSameNameExists(name)) {
+            throw new UniqueNameConstraintException("User with name '" + name + "' already exists");
+        }
     }
 }

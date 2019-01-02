@@ -34,4 +34,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE user_id <> :userID")
     DataSource.Factory<Integer, User> findByExcludeID(UUID userID);
+
+    @Query("SELECT 1 FROM users WHERE lower(name) = lower(:name) LIMIT 1")
+    boolean isUsersWithSameNameExists(String name);
 }

@@ -199,7 +199,7 @@ public abstract class BaseRecyclerViewFragment
                 openEditItemDialog(mItemModelView.getItem());
                 return true;
             case R.id.remove_menu_item:
-                mItemModelView.removeItem();
+                mItemModelView.removeItem(null);
                 return true;
         }
         return super.onContextItemSelected(item);

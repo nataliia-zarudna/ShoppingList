@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.nzarudna.shoppinglist.AndroidResourceResolver;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import javax.inject.Singleton;
 
@@ -41,4 +42,9 @@ public class AppModule {
         return new AndroidResourceResolver(mContext);
     }
 
+    @Provides
+    @Singleton
+    public AppExecutors provideAppExecutors() {
+        return new AppExecutors();
+    }
 }

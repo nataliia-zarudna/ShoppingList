@@ -45,7 +45,6 @@ public class ProductListRepository {
     private SharedPreferences mSharedPreferences;
     private AppExecutors mAppExecutors;
 
-    // TODO replace with field injection
     @Inject
     public ProductListRepository(ProductListDao productListDao, ProductDao productDao,
                                  ProductTemplateRepository productTemplateRepository,
@@ -161,7 +160,7 @@ public class ProductListRepository {
 
     public ShoppingList getShoppingList(UUID productListID) {
         return new ShoppingList(productListID, mProductListDao,
-                mProductDao, mProductTemplateRepository);
+                mProductDao, mProductTemplateRepository, mUserRepository, mAppExecutors);
     }
 
     public DataSource.Factory<Integer, ProductListWithStatistics> getListsWithStatistics(@ProductList.ProductListStatus int status,

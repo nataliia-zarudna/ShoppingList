@@ -19,7 +19,7 @@ public class EditProductListViewModel extends ProductListViewModel {
         Log.d(TAG, "onListNameChanged " + newName);
         if (mProductList != null && !mProductList.getName().equals(newName)) {
             mProductList.setName(newName);
-            mShoppingList.updateProductList(mProductList);
+            mShoppingList.updateProductList(mProductList, null);
         }
     }
 

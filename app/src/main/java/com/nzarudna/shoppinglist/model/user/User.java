@@ -13,7 +13,7 @@ import java.util.UUID;
  * App user
  */
 @Entity(tableName = "users")
-public class User implements Parcelable {
+public class User implements Parcelable, Cloneable {
 
     @PrimaryKey()
     @NonNull
@@ -95,7 +95,7 @@ public class User implements Parcelable {
     }
 
     public void setName(@NonNull String name) {
-        this.name = name;
+        this.name = (name != null) ? name.trim() : null;
     }
 
     public String getInvitorName() {
@@ -161,5 +161,10 @@ public class User implements Parcelable {
                 ", invitationLink='" + invitationLink + '\'' +
                 ", token='" + token + '\'' +
                 '}';
+    }
+
+    @Override
+    public User clone() throws CloneNotSupportedException {
+        return (User) super.clone();
     }
 }

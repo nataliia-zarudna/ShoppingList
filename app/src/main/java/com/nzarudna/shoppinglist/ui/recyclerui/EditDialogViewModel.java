@@ -8,7 +8,7 @@ import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
@@ -91,7 +91,7 @@ public abstract class EditDialogViewModel<T> extends ObservableViewModel impleme
 
     @Override
     public void onAsyncError(Exception e) {
-        if (e instanceof NameIsEmptyException) {
+        if (e instanceof EmptyNameException) {
             mValidationMessage = mResourceResolver.getString(R.string.name_is_empty_validation_message);
         } else if (e instanceof UniqueNameConstraintException) {
             mValidationMessage = getUniqueNameValidationMessage();

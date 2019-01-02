@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlists;
 
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
@@ -47,8 +48,8 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
     }
 
     @Override
-    public void removeItem() {
-        mProductListRepository.removeList(mItem.getListID());
+    public void removeItem(AsyncListener listener) {
+        mProductListRepository.removeList(mItem.getListID(), null);
     }
 
     /*public void onSwipeProductListItem() {
@@ -56,7 +57,7 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
     }*/
 
     public void onArchiveMenuItemSelected() {
-        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ARCHIVED);
+        mProductListRepository.updateListStatus(mItem.getListID(), ProductList.STATUS_ARCHIVED, null);
     }
 
     public interface ProductListItemViewModelObserver {

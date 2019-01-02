@@ -1,5 +1,6 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
 import com.nzarudna.shoppinglist.model.template.CategoryTemplateItemWithListStatistics;
@@ -41,12 +42,12 @@ public class CategoryTemplateItemViewModel extends RecyclerItemViewModel<Categor
         if (isUsed) {
             mShoppingList.addProductFromTemplate(mItem.getTemplate(), null);
         } else {
-            mShoppingList.removeProductsWithTemplate(mItem.getTemplate().getTemplateID());
+            mShoppingList.removeProductsWithTemplate(mItem.getTemplate().getTemplateID(), null);
         }
     }
 
     @Override
-    public void removeItem() {
+    public void removeItem(AsyncListener listener) {
 
     }
 }

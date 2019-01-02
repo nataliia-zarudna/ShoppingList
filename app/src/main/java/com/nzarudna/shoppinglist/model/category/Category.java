@@ -17,7 +17,7 @@ import java.util.UUID;
         indices = {
                 @Index(value = "name")
         })
-public class Category implements Parcelable {
+public class Category implements Parcelable, Cloneable {
 
     public static final String DEFAULT_CATEGORY_ID_STRING = "ffffffff-ffff-ffff-ffff-ffffffffffff";
     public static final UUID DEFAULT_CATEGORY_ID = UUID.fromString(DEFAULT_CATEGORY_ID_STRING);
@@ -102,5 +102,10 @@ public class Category implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeSerializable(categoryID);
         parcel.writeString(name);
+    }
+
+    @Override
+    public Category clone() throws CloneNotSupportedException {
+        return (Category) super.clone();
     }
 }

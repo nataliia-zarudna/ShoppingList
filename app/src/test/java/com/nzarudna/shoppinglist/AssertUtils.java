@@ -3,13 +3,10 @@ package com.nzarudna.shoppinglist;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
-import com.nzarudna.shoppinglist.utils.DateUtils;
 
 import org.mockito.ArgumentMatcher;
 
 import java.util.Date;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by nsirobaba on 2/2/18.
@@ -81,22 +78,26 @@ public class AssertUtils {
             @Override
             public boolean matches(ProductList argument) {
 
-                if (expected.getStatus() != argument.getStatus()) return false;
-                if (expected.getSorting() != argument.getSorting()) return false;
-                if (expected.isGroupedView() != argument.isGroupedView()) return false;
-                if (!expected.getName().equals(argument.getName())) return false;
-                if (!isDateEqualsToSeconds(expected.getCreatedAt(), argument.getCreatedAt()))
-                    return false;
-                if (!expected.getCreatedBy().equals(argument.getCreatedBy())) return false;
-                if (expected.getModifiedAt() != null
-                        ? !isDateEqualsToSeconds(expected.getModifiedAt(), argument.getModifiedAt()) : argument.getModifiedAt() != null)
-                    return false;
-                if (expected.getModifiedBy() != null
-                        ? !expected.getModifiedBy().equals(argument.getModifiedBy()) : argument.getModifiedBy() != null)
-                    return false;
-                return expected.getAssignedID() != null ? expected.getAssignedID().equals(argument.getAssignedID()) : argument.getAssignedID() == null;
+                return AssertUtils.matches(argument, expected);
             }
         };
+    }
+
+    public static boolean matches(ProductList argument, ProductList expected) {
+        if (expected.getStatus() != argument.getStatus()) return false;
+        if (expected.getSorting() != argument.getSorting()) return false;
+        if (expected.isGroupedView() != argument.isGroupedView()) return false;
+        if (!expected.getName().equals(argument.getName())) return false;
+        if (!isDateEqualsToSeconds(expected.getCreatedAt(), argument.getCreatedAt()))
+            return false;
+        if (!expected.getCreatedBy().equals(argument.getCreatedBy())) return false;
+        if (expected.getModifiedAt() != null
+                ? !isDateEqualsToSeconds(expected.getModifiedAt(), argument.getModifiedAt()) : argument.getModifiedAt() != null)
+            return false;
+        if (expected.getModifiedBy() != null
+                ? !expected.getModifiedBy().equals(argument.getModifiedBy()) : argument.getModifiedBy() != null)
+            return false;
+        return expected.getAssignedID() != null ? expected.getAssignedID().equals(argument.getAssignedID()) : argument.getAssignedID() == null;
     }
 
     public static ArgumentMatcher<ProductTemplate> getArgumentMatcher(final ProductTemplate expected) {

@@ -1,11 +1,12 @@
 package com.nzarudna.shoppinglist;
 
-import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.BaseRepository;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.model.unit.UnitDao;
 import com.nzarudna.shoppinglist.model.unit.UnitRepository;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,88 +23,56 @@ import static org.mockito.Mockito.when;
  * Created by nsirobaba on 2/1/18.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class UnitRepositoryTest {
+public class UnitRepositoryTest extends BaseRepositoryTest<Unit> {
 
     private UnitRepository mSubject;
+    private AppExecutors mAppExecutors;
 
     @Mock
     private UnitDao mUnitDao;
+
     @Before
     public void setUp() {
 
-        mSubject = new UnitRepository(mUnitDao);
+        mAppExecutors = new TestAppExecutors();
+        mSubject = new UnitRepository(mUnitDao, mAppExecutors);
+    }
 
+    @Override
+    protected BaseRepository<Unit> getRepositorySubject() {
+        return mSubject;
     }
 
     @Test
-    public void create() {
+    public void create() throws InterruptedException {
         Unit unit = new Unit();
         unit.setName("some name");
-        mSubject.createUnit(unit,  null);
+
+        verifyCreate(unit);
 
         verify(mUnitDao).insert(unit);
     }
 
     @Test
-    public void create_trimName() {
+    public void create_trimName() throws CloneNotSupportedException, InterruptedException {
         String name = " some name   ";
 
         Unit unit = new Unit();
         unit.setName(name);
-        mSubject.createUnit(unit,  null);
 
-        unit.setName(name.trim());
+        Unit resultUnit = unit.clone();
+        resultUnit.setName(name.trim());
 
-        verify(mUnitDao).insert(unit);
-    }
+        verifyCreate(unit, resultUnit);
 
-    @Test
-    public void create_callListenerCallback() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-        final Unit newUnit = new Unit();
-        newUnit.setName("some name");
-        mSubject.createUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
-
-                assertEquals(newUnit, unit);
-                countDown.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mUnitDao).insert(newUnit);
+        verify(mUnitDao).insert(resultUnit);
     }
 
     @Test
     public void create_callListenerCallback_nullNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Unit newUnit = new Unit();
-        mSubject.createUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newUnit, EmptyNameException.class);
     }
 
     @Test
@@ -116,21 +82,8 @@ public class UnitRepositoryTest {
 
         final Unit newUnit = new Unit();
         newUnit.setName("  ");
-        mSubject.createUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newUnit, EmptyNameException.class);
     }
 
     @Test
@@ -139,121 +92,48 @@ public class UnitRepositoryTest {
         String unitName = "some name";
         when(mUnitDao.isUnitsWithSameNameExists(unitName)).thenReturn(true);
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-
         final Unit newUnit = new Unit();
         newUnit.setName(unitName);
-        mSubject.createUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newUnit, UniqueNameConstraintException.class);
     }
 
     @Test
-    public void update() {
+    public void update() throws InterruptedException {
         Unit unit = new Unit();
         unit.setName("Some name");
-        mSubject.updateUnit(unit, null);
+
+        verifyUpdate(unit);
 
         verify(mUnitDao).update(unit);
     }
 
     @Test
-    public void update_trimName() {
+    public void update_trimName() throws CloneNotSupportedException, InterruptedException {
         String name = " some name   ";
 
         Unit unit = new Unit();
         unit.setName(name);
-        mSubject.updateUnit(unit,  null);
 
-        unit.setName(name.trim());
+        Unit resultUnit = unit.clone();
+        resultUnit.setName(name.trim());
+
+        verifyUpdate(unit, resultUnit);
 
         verify(mUnitDao).update(unit);
     }
 
     @Test
-    public void update_callListenerCallback() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
-        final Unit newUnit = new Unit();
-        newUnit.setName("some name");
-        mSubject.updateUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
-
-                assertEquals(newUnit, unit);
-                countDown.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mUnitDao).update(newUnit);
-    }
-
-    @Test
     public void update_callListenerCallback_nullNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Unit newUnit = new Unit();
-        mSubject.updateUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newUnit, EmptyNameException.class);
     }
 
     @Test
     public void update_callListenerCallback_emptyNameError() throws InterruptedException {
-
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Unit newUnit = new Unit();
         newUnit.setName("   ");
-        mSubject.updateUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newUnit, EmptyNameException.class);
     }
 
     @Test
@@ -262,31 +142,17 @@ public class UnitRepositoryTest {
         String unitName = "some name";
         when(mUnitDao.isUnitsWithSameNameExists(unitName)).thenReturn(true);
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-
         final Unit newUnit = new Unit();
         newUnit.setName(unitName);
-        mSubject.updateUnit(newUnit, new AsyncResultListener<Unit>() {
-            @Override
-            public void onAsyncSuccess(Unit unit) {
 
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newUnit, UniqueNameConstraintException.class);
     }
 
     @Test
-    public void remove() {
+    public void remove() throws InterruptedException {
         Unit unit = new Unit();
-        mSubject.removeUnit(unit);
+
+        verifyRemove(unit);
 
         verify(mUnitDao).delete(unit);
     }

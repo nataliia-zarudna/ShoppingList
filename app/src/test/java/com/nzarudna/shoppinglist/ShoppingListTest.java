@@ -1,16 +1,19 @@
 package com.nzarudna.shoppinglist;
 
+import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
+import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
-import com.nzarudna.shoppinglist.model.product.ProductDao;
-import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
 import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
+import com.nzarudna.shoppinglist.model.product.list.ProductListDao;
+import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
-import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
-import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
+import com.nzarudna.shoppinglist.model.user.UserRepository;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,17 +23,17 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,27 +42,36 @@ import static org.mockito.Mockito.when;
  * Test methods on shopping list object
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ShoppingListTest {
+public class ShoppingListTest extends BaseAsyncTest {
 
     private static final UUID MOCKED_PRODUCTS_LIST_ID = UUID.randomUUID();
+    private static final UUID MOCKED_SELF_USER_ID = UUID.randomUUID();
 
     @Mock
     private ProductListDao mProductListDao;
+
     @Mock
     private ProductDao mProductDao;
+
     @Mock
     private ProductTemplateRepository mProductTemplateRepository;
+
+    @Mock
+    private UserRepository mUserRepository;
+
     private UUID mMockedCategoryID;
     private UUID mMockedTemplateID;
     private ProductList mMockedProductList;
 
     private ShoppingList mSubject;
+    private AppExecutors mAppExecutors;
 
     @Before
     public void setUp() {
 
+        mAppExecutors = new TestAppExecutors();
         mSubject = new ShoppingList(MOCKED_PRODUCTS_LIST_ID, mProductListDao, mProductDao,
-                mProductTemplateRepository);
+                mProductTemplateRepository, mUserRepository, mAppExecutors);
 
         mMockedCategoryID = UUID.randomUUID();
         mMockedCategoryID = UUID.randomUUID();
@@ -67,10 +79,32 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void updateList() {
+    public void updateList() throws InterruptedException, CloneNotSupportedException {
 
-        ProductList updatedList = new ProductList("Some name", UUID.randomUUID());
-        mSubject.updateProductList(updatedList);
+        UUID createdByUserID = MOCKED_SELF_USER_ID;
+        ProductList updatedList = new ProductList("Some name", createdByUserID);
+
+        when(mUserRepository.getSelfUserID()).thenReturn(createdByUserID);
+
+        ProductList expectedList = updatedList.clone();
+        expectedList.setCreatedAt(new Date());
+        expectedList.setCreatedBy(createdByUserID);
+        expectedList.setModifiedAt(new Date());
+        expectedList.setModifiedBy(createdByUserID);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncResultListener<ProductList> listener = Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
+
+            ProductList resultList = invocation.getArgument(0);
+            assertTrue(AssertUtils.matches(resultList, expectedList));
+
+            countDownLatch.countDown();
+            return null;
+        }).when(listener).onAsyncSuccess(any(ProductList.class));
+
+        mSubject.updateProductList(updatedList, listener);
+        await(countDownLatch);
 
         verify(mProductListDao).update(updatedList);
     }
@@ -92,25 +126,25 @@ public class ShoppingListTest {
         expectedProduct.setListID(mSubject.getListID());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.addProduct(product, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product resultProduct) {
-                assertTrue(AssertUtils.matchesExceptID(resultProduct, expectedProduct));
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<Product> listener = Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            @Override
-            public void onAsyncError(Exception e) {
+            Product resultProduct = invocation.getArgument(0);
+            assertTrue(AssertUtils.matchesExceptID(resultProduct, expectedProduct));
 
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+            countDownLatch.countDown();
+            return null;
+        }).when(listener).onAsyncSuccess(any(Product.class));
+
+        mSubject.addProduct(product, listener);
+        await(countDownLatch);
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository).createFromProductAsync(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)),
-                any(AsyncResultListener.class));
+                isNull());
+        verify(listener).onAsyncSuccess(any(Product.class));
     }
 
     @Test
@@ -119,21 +153,12 @@ public class ShoppingListTest {
         final Product newProduct = new Product();
 
         final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
 
-            }
+        AsyncResultListener<Product> listener = getAsyncResultListenerForError(EmptyNameException.class, countDown);
+        mSubject.addProduct(newProduct, listener);
+        await(countDown);
 
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verify(listener).onAsyncError(any(EmptyNameException.class));
     }
 
     @Test
@@ -143,21 +168,12 @@ public class ShoppingListTest {
         newProduct.setName("   ");
 
         final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
 
-            }
+        AsyncResultListener<Product> listener = getAsyncResultListenerForError(EmptyNameException.class, countDown);
+        mSubject.addProduct(newProduct, listener);
+        await(countDown);
 
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verify(listener).onAsyncError(any(EmptyNameException.class));
     }
 
     @Test
@@ -170,21 +186,12 @@ public class ShoppingListTest {
         newProduct.setName(name);
 
         final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.addProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
 
-            }
+        AsyncResultListener<Product> listener = getAsyncResultListenerForError(EmptyNameException.class, countDown);
+        mSubject.addProduct(newProduct, listener);
+        await(countDown);
 
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verify(listener).onAsyncError(any(UniqueNameConstraintException.class));
     }
 
     @Test
@@ -218,13 +225,13 @@ public class ShoppingListTest {
 
             }
         });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        await(countDownLatch);
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
         verify(mProductTemplateRepository).createFromProductAsync(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)),
-                any(AsyncResultListener.class));
+                isNull());
     }
 
     @Test
@@ -261,7 +268,7 @@ public class ShoppingListTest {
 
             }
         });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        await(countDownLatch);
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
@@ -306,7 +313,7 @@ public class ShoppingListTest {
 
             }
         });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        await(countDownLatch);
 
         verify(mProductDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedProduct)));
@@ -324,22 +331,7 @@ public class ShoppingListTest {
         product.setTemplateID(UUID.randomUUID());
         when(mProductDao.findByIDSync(productID)).thenReturn(product);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.updateProduct(product, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product resultProduct) {
-                assertEquals(resultProduct, product);
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mProductDao).update(product);
+        verifyProductUpdate(product, product);
     }
 
     @Test
@@ -347,22 +339,7 @@ public class ShoppingListTest {
 
         final Product newProduct = new Product();
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyProductUpdateWithException(newProduct, EmptyNameException.class);
     }
 
     @Test
@@ -371,50 +348,31 @@ public class ShoppingListTest {
         final Product newProduct = new Product();
         newProduct.setName("   ");
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyProductUpdateWithException(newProduct, EmptyNameException.class);
     }
 
     @Test
     public void update_duplicateNameError() throws InterruptedException {
 
         String name = "some name";
-        when(mProductDao.isProductsWithSameNameAndListExists(name, MOCKED_PRODUCTS_LIST_ID)).thenReturn(true);
+        UUID listID = MOCKED_PRODUCTS_LIST_ID;
+
+        when(mProductDao.isProductsWithSameNameAndListExists(name, listID)).thenReturn(true);
 
         final Product newProduct = new Product();
         newProduct.setName(name);
-        when(mProductDao.findByIDSync(newProduct.getProductID())).thenReturn(newProduct);
+        newProduct.setListID(listID);
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateProduct(newProduct, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product product) {
+        verifyProductUpdateWithException(newProduct, UniqueNameConstraintException.class);
+    }
 
-            }
+    private void verifyProductUpdateWithException(Product newProduct, Class<? extends Exception> exceptionClass) throws InterruptedException {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncResultListener<Product> listener = getAsyncResultListenerForError(exceptionClass, countDownLatch);
+        mSubject.updateProduct(newProduct, listener);
+        await(countDownLatch);
 
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verify(listener).onAsyncError(any(exceptionClass));
     }
 
     @Test
@@ -439,22 +397,17 @@ public class ShoppingListTest {
         expectedProduct.setProductID(productID);
         expectedProduct.setTemplateID(null);
 
+        verifyProductUpdate(productWithNewName, expectedProduct);
+    }
+
+    private void verifyProductUpdate(Product inputProduct, Product resultProduct) throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.updateProduct(productWithNewName, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product resultProduct) {
-                assertEquals(resultProduct, expectedProduct);
-                countDownLatch.countDown();
-            }
+        AsyncResultListener<Product> listener = getAsyncResultListener(resultProduct, countDownLatch);
+        mSubject.updateProduct(inputProduct, listener);
+        await(countDownLatch);
 
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mProductDao).update(expectedProduct);
+        verify(mProductDao).update(resultProduct);
+        verify(listener).onAsyncSuccess(resultProduct);
     }
 
     @Test
@@ -483,22 +436,7 @@ public class ShoppingListTest {
         expectedProduct.setCategoryID(mMockedCategoryID);
         expectedProduct.setTemplateID(null);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.updateProduct(productWithNewName, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product resultProduct) {
-                assertEquals(resultProduct, expectedProduct);
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mProductDao).update(expectedProduct);
+        verifyProductUpdate(productWithNewName, expectedProduct);
     }
 
     @Test
@@ -527,33 +465,20 @@ public class ShoppingListTest {
         expectedProduct.setUnitID(mockedUnitID);
         expectedProduct.setTemplateID(null);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.updateProduct(productWithNewName, new AsyncResultListener<Product>() {
-            @Override
-            public void onAsyncSuccess(Product resultProduct) {
-                assertEquals(resultProduct, expectedProduct);
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
-
-        verify(mProductDao).update(expectedProduct);
+        verifyProductUpdate(productWithNewName, expectedProduct);
     }
 
     @Test
     public void updateProductsStatus() throws InterruptedException {
-        mSubject.updateProductsStatus(Product.ABSENT);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.updateProductsStatus(Product.ABSENT, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         verify(mProductDao).updateStatus(Product.ABSENT, MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void moveProduct_insideList_WithCustomOrder() throws ShoppingListException {
+    public void moveProduct_insideList_WithCustomOrder() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -579,7 +504,9 @@ public class ShoppingListTest {
         product3.setOrder(8.7);
         products.add(product3);
 
-        mSubject.moveProduct(product3, product1, product2);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product3, product1, product2, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product3.setOrder((8.7 - 4.1) / 2);
 
@@ -587,7 +514,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListStart_WithCustomOrder() throws ShoppingListException {
+    public void moveProduct_toListStart_WithCustomOrder() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -613,7 +540,9 @@ public class ShoppingListTest {
         product3.setOrder(8.7);
         products.add(product3);
 
-        mSubject.moveProduct(product1, null, product2);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product1, null, product2, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product1.setOrder(2 - 10);
 
@@ -621,7 +550,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListEnd_WithCustomOrder() throws ShoppingListException {
+    public void moveProduct_toListEnd_WithCustomOrder() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -647,7 +576,9 @@ public class ShoppingListTest {
         product3.setOrder(8.7);
         products.add(product3);
 
-        mSubject.moveProduct(product2, product3, null);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product2, product3, null, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product2.setOrder(8.7 + 10);
 
@@ -655,7 +586,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_insideList_WithOrderByName() throws ShoppingListException {
+    public void moveProduct_insideList_WithOrderByName() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -683,7 +614,9 @@ public class ShoppingListTest {
         product4.setListID(MOCKED_PRODUCTS_LIST_ID);
         products.add(product4);
 
-        mSubject.moveProduct(product3, product1, product2);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product3, product1, product2, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product3.setOrder(5);
 
@@ -691,7 +624,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListStart_WithOrderByName() throws ShoppingListException {
+    public void moveProduct_toListStart_WithOrderByName() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -719,7 +652,9 @@ public class ShoppingListTest {
         product4.setListID(MOCKED_PRODUCTS_LIST_ID);
         products.add(product4);
 
-        mSubject.moveProduct(product3, product2, null);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product3, product2, null, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product3.setOrder(-10);
 
@@ -727,7 +662,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListEnd_WithOrderByName() throws ShoppingListException {
+    public void moveProduct_toListEnd_WithOrderByName() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -755,7 +690,9 @@ public class ShoppingListTest {
         product4.setListID(MOCKED_PRODUCTS_LIST_ID);
         products.add(product4);
 
-        mSubject.moveProduct(product1, null, product3);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product1, null, product3, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product1.setOrder(40);
 
@@ -763,7 +700,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_insideList_WithOrderByStatus() throws ShoppingListException {
+    public void moveProduct_insideList_WithOrderByStatus() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -795,7 +732,9 @@ public class ShoppingListTest {
         product4.setStatus(Product.BOUGHT);
         products.add(product4);
 
-        mSubject.moveProduct(product3, product1, product2);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product3, product1, product2, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         // list order: 2 1 3 4
         product3.setOrder(5);
@@ -804,7 +743,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListStart_WithOrderByStatus() throws ShoppingListException {
+    public void moveProduct_toListStart_WithOrderByStatus() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -836,7 +775,9 @@ public class ShoppingListTest {
         product4.setStatus(Product.BOUGHT);
         products.add(product4);
 
-        mSubject.moveProduct(product3, product2, null);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product3, product2, null, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product3.setOrder(-10);
 
@@ -844,7 +785,7 @@ public class ShoppingListTest {
     }
 
     @Test
-    public void moveProduct_toListEnd_WithOrderByStatus() throws ShoppingListException {
+    public void moveProduct_toListEnd_WithOrderByStatus() throws ShoppingListException, InterruptedException {
 
         ProductList productList = new ProductList("Some name", UUID.randomUUID());
         productList.setListID(MOCKED_PRODUCTS_LIST_ID);
@@ -876,7 +817,9 @@ public class ShoppingListTest {
         product4.setStatus(Product.BOUGHT);
         products.add(product4);
 
-        mSubject.moveProduct(product1, null, product3);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(product1, null, product3, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         product1.setOrder(40);
 
@@ -884,88 +827,118 @@ public class ShoppingListTest {
     }
 
     @Test(expected = ShoppingListException.class)
-    public void moveProduct_exceptionOnNullBeforeAndAfterProducts() throws ShoppingListException {
-        mSubject.moveProduct(new Product(), null, null);
+    public void moveProduct_exceptionOnNullBeforeAndAfterProducts() throws ShoppingListException, InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.moveProduct(new Product(), null, null, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
     }
 
     @Test
-    public void removeProduct() {
+    public void removeProduct() throws InterruptedException {
 
         Product product = new Product();
 
-        mSubject.removeProduct(product);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.removeProduct(product, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         verify(mProductDao).delete(product);
     }
 
     @Test
-    public void removeProductsWithTemplate() {
+    public void removeProductsWithTemplate() throws InterruptedException {
 
         UUID templateID = UUID.randomUUID();
 
-        mSubject.removeProductsWithTemplate(templateID);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncListener listener = getEmptyAsyncListener(countDownLatch);
+        mSubject.removeProductsWithTemplate(templateID, listener);
+        await(countDownLatch);
 
         verify(mProductDao).delete(templateID, MOCKED_PRODUCTS_LIST_ID);
+        verify(listener).onAsyncSuccess();
     }
 
     @Test
-    public void removeProductsByStatus() {
+    public void removeProductsByStatus() throws InterruptedException {
 
-        mSubject.removeProductsByStatus(Product.BOUGHT);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        AsyncListener listener = getEmptyAsyncListener(countDownLatch);
+        mSubject.removeProductsByStatus(Product.BOUGHT, listener);
+        await(countDownLatch);
 
         verify(mProductDao).delete(Product.BOUGHT, MOCKED_PRODUCTS_LIST_ID);
+        verify(listener).onAsyncSuccess();
     }
 
     @Test
-    public void findProductsByListID_sortByName() throws ShoppingListException {
+    public void findProductsByListID_sortByName() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, false);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, false, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByName(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_sortByStatus() throws ShoppingListException {
+    public void findProductsByListID_sortByStatus() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, false);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, false, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByStatusAndName(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_sortByOrder() throws ShoppingListException {
+    public void findProductsByListID_sortByOrder() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, false);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, false, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByProductOrder(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_sortByName_groupeView() throws ShoppingListException {
+    public void findProductsByListID_sortByName_groupeView() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, true);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_NAME, true, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByNameWithCategory(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_sortByStatus_groupeView() throws ShoppingListException {
+    public void findProductsByListID_sortByStatus_groupeView() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, true);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, true, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByStatusAndNameWithCategory(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_sortByOrder_groupeView() throws ShoppingListException {
+    public void findProductsByListID_sortByOrder_groupeView() throws ShoppingListException, InterruptedException {
         when(mProductListDao.findByIDSync(MOCKED_PRODUCTS_LIST_ID)).thenReturn(mMockedProductList);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, true);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_ORDER, true, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
+
         verify(mProductDao).findByListIDSortByProductOrderWithCategory(MOCKED_PRODUCTS_LIST_ID);
     }
 
     @Test
-    public void findProductsByListID_saveSortAndView() throws ShoppingListException {
+    public void findProductsByListID_saveSortAndView() throws ShoppingListException, InterruptedException {
 
         ProductList list = new ProductList("Some name", UUID.randomUUID());
         list.setListID(mSubject.getListID());
@@ -973,7 +946,9 @@ public class ShoppingListTest {
         list.setIsGroupedView(false);
         when(mProductListDao.findByIDSync(list.getListID())).thenReturn(list);
 
-        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, true);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(ProductList.SORT_PRODUCTS_BY_STATUS, true, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
 
         ProductList expectedList = new ProductList(list.getName(), list.getCreatedBy());
         expectedList.setCreatedAt(list.getCreatedAt());
@@ -985,12 +960,16 @@ public class ShoppingListTest {
     }
 
     @Test(expected = ShoppingListException.class)
-    public void findProductsByListID_exceptionOnUnknownSorting() throws ShoppingListException {
-        mSubject.getProducts(99, false);
+    public void findProductsByListID_exceptionOnUnknownSorting() throws ShoppingListException, InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(99, false, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
     }
 
     @Test(expected = ShoppingListException.class)
-    public void findProductsByListID_exceptionOnUnknownSorting_groupeView() throws ShoppingListException {
-        mSubject.getProducts(99, true);
+    public void findProductsByListID_exceptionOnUnknownSorting_groupeView() throws ShoppingListException, InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        mSubject.getProducts(99, true, getEmptyAsyncListener(countDownLatch));
+        await(countDownLatch);
     }
 }

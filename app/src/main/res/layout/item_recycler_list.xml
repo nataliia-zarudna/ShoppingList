@@ -24,6 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@{viewModel.itemName}"
             android:textSize="@dimen/list_item_text_size"
+            android:padding="15dp"
             tools:text="Item" />
 
         <ImageView

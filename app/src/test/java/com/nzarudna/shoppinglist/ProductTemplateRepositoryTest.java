@@ -1,27 +1,30 @@
 package com.nzarudna.shoppinglist;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
-import com.nzarudna.shoppinglist.model.exception.NameIsEmptyException;
+import com.nzarudna.shoppinglist.model.BaseRepository;
+import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.model.product.ProductDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateDao;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +33,7 @@ import static org.mockito.Mockito.when;
  */
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProductTemplateRepositoryTest {
+public class ProductTemplateRepositoryTest extends BaseRepositoryTest<ProductTemplate> {
 
     @Mock
     private ProductTemplateDao mProductTemplateDao;
@@ -38,11 +41,18 @@ public class ProductTemplateRepositoryTest {
     private ProductDao mProductDao;
 
     private ProductTemplateRepository mSubject;
+    private AppExecutors mAppExecutors;
 
     @Before
     public void setUp() {
 
-        mSubject = new ProductTemplateRepository(mProductTemplateDao, mProductDao);
+        mAppExecutors = new TestAppExecutors();
+        mSubject = new ProductTemplateRepository(mProductTemplateDao, mProductDao, mAppExecutors);
+    }
+
+    @Override
+    protected BaseRepository<ProductTemplate> getRepositorySubject() {
+        return mSubject;
     }
 
     @Test
@@ -51,20 +61,7 @@ public class ProductTemplateRepositoryTest {
         final ProductTemplate template = new ProductTemplate();
         template.setName("some name");
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createTemplate(template, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate resultTemplate) {
-                assertEquals(resultTemplate, template);
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreate(template);
 
         verify(mProductTemplateDao).insert(template);
     }
@@ -74,22 +71,7 @@ public class ProductTemplateRepositoryTest {
 
         final ProductTemplate newProductTemplate = new ProductTemplate();
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.createTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newProductTemplate, EmptyNameException.class);
     }
 
     @Test
@@ -98,22 +80,7 @@ public class ProductTemplateRepositoryTest {
         final ProductTemplate newProductTemplate = new ProductTemplate();
         newProductTemplate.setName("   ");
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.createTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newProductTemplate, EmptyNameException.class);
     }
 
     @Test
@@ -124,22 +91,7 @@ public class ProductTemplateRepositoryTest {
         newProductTemplate.setName(name);
         when(mProductTemplateDao.isTemplatesWithSameNameExists(name)).thenReturn(true);
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.createTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                assertTrue(e instanceof UniqueNameConstraintException);
-
-                countDown.countDown();
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyCreateWithException(newProductTemplate, UniqueNameConstraintException.class);
     }
 
     @Test
@@ -160,22 +112,23 @@ public class ProductTemplateRepositoryTest {
         expectedTemplate.setUnitID(unitID);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createFromProductAsync(product, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate resultTemplate) {
-                assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));
-                countDownLatch.countDown();
-            }
 
-            @Override
-            public void onAsyncError(Exception e) {
+        AsyncResultListener<ProductTemplate> asyncListener = Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+            ProductTemplate resultTemplate = invocation.getArgument(0);
+            assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));
+
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductTemplate.class));
+
+        mSubject.createFromProductAsync(product, asyncListener);
+        await(countDownLatch);
 
         verify(mProductTemplateDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedTemplate)));
+        verify(asyncListener).onAsyncSuccess(any(ProductTemplate.class));
     }
 
     @Test
@@ -190,22 +143,24 @@ public class ProductTemplateRepositoryTest {
         expectedTemplate.setUnitID(null);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.createFromProductAsync(product, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate resultTemplate) {
-                assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));
-                countDownLatch.countDown();
-            }
 
-            @Override
-            public void onAsyncError(Exception e) {
+        AsyncResultListener<ProductTemplate> asyncListener = (AsyncResultListener<ProductTemplate>) Mockito.mock(AsyncResultListener.class);
+        doAnswer(invocation -> {
 
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+            ProductTemplate resultTemplate = invocation.getArgument(0);
+            assertTrue(AssertUtils.matchesExceptID(resultTemplate, expectedTemplate));
+
+            countDownLatch.countDown();
+            return null;
+        }).when(asyncListener).onAsyncSuccess(any(ProductTemplate.class));
+
+        mSubject.createFromProductAsync(product, asyncListener);
+
+        await(countDownLatch);
 
         verify(mProductTemplateDao).insert(
                 argThat(AssertUtils.getArgumentMatcher(expectedTemplate)));
+        verify(asyncListener).onAsyncSuccess(any(ProductTemplate.class));
     }
 
     @Test
@@ -217,20 +172,7 @@ public class ProductTemplateRepositoryTest {
         template.setName("Some name");
         template.setTemplateID(templateID);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        mSubject.updateTemplate(template, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate resultTemplate) {
-                assertEquals(resultTemplate, template);
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-
-            }
-        });
-        countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdate(template);
 
         verify(mProductTemplateDao).update(template);
         verify(mProductDao).clearTemplateIDs(templateID);
@@ -241,22 +183,7 @@ public class ProductTemplateRepositoryTest {
 
         final ProductTemplate newProductTemplate = new ProductTemplate();
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newProductTemplate, EmptyNameException.class);
     }
 
     @Test
@@ -265,22 +192,7 @@ public class ProductTemplateRepositoryTest {
         final ProductTemplate newProductTemplate = new ProductTemplate();
         newProductTemplate.setName("   ");
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof NameIsEmptyException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newProductTemplate, EmptyNameException.class);
     }
 
     @Test
@@ -291,29 +203,14 @@ public class ProductTemplateRepositoryTest {
         newProductTemplate.setName(name);
         when(mProductTemplateDao.isTemplatesWithSameNameExists(name)).thenReturn(true);
 
-        final CountDownLatch countDown = new CountDownLatch(1);
-        mSubject.updateTemplate(newProductTemplate, new AsyncResultListener<ProductTemplate>() {
-            @Override
-            public void onAsyncSuccess(ProductTemplate template) {
-
-            }
-
-            @Override
-            public void onAsyncError(Exception e) {
-                countDown.countDown();
-
-                assertTrue(e instanceof UniqueNameConstraintException);
-            }
-        });
-
-        countDown.await(3000, TimeUnit.MILLISECONDS);
+        verifyUpdateWithException(newProductTemplate, UniqueNameConstraintException.class);
     }
 
     @Test
-    public void removeTemplate() {
-
+    public void removeTemplate() throws InterruptedException {
         ProductTemplate template = new ProductTemplate();
-        mSubject.remove(template);
+
+        verifyRemove(template);
 
         verify(mProductTemplateDao).delete(template);
     }
