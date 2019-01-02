@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.nzarudna.shoppinglist.dependency.AppComponent;
 import com.nzarudna.shoppinglist.dependency.AppModule;
 import com.nzarudna.shoppinglist.dependency.DaggerAppComponent;
@@ -20,6 +21,8 @@ public class ShoppingListApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Stetho.initializeWithDefaults(this);
 
         AppDatabase database = AppDatabase.getInstance(this);
 
