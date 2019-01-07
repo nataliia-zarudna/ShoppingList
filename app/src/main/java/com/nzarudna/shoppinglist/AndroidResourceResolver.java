@@ -23,4 +23,9 @@ public class AndroidResourceResolver implements ResourceResolver {
     public String getString(@StringRes int resID) {
         return mContext.getString(resID);
     }
+
+    @Override
+    public String getString(@StringRes int resID, Object... formatArgs) {
+        return mContext.getString(resID, formatArgs);
+    }
 }

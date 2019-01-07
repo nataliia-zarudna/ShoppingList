@@ -19,6 +19,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 import com.nzarudna.shoppinglist.utils.AppExecutors;
 import com.nzarudna.shoppinglist.utils.ErrorHandler;
+import com.nzarudna.shoppinglist.utils.Preferences;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,12 +45,14 @@ public class ProductListRepository {
     private ResourceResolver mResourceResolver;
     private SharedPreferences mSharedPreferences;
     private AppExecutors mAppExecutors;
+    private Preferences mPreferences;
 
     @Inject
     public ProductListRepository(ProductListDao productListDao, ProductDao productDao,
                                  ProductTemplateRepository productTemplateRepository,
                                  UserRepository userRepository, ResourceResolver resourceResolver,
-                                 SharedPreferences sharedPreferences, AppExecutors appExecutors) {
+                                 SharedPreferences sharedPreferences, AppExecutors appExecutors,
+                                 Preferences preferences) {
         this.mProductListDao = productListDao;
         this.mProductDao = productDao;
         this.mProductTemplateRepository = productTemplateRepository;
@@ -57,6 +60,7 @@ public class ProductListRepository {
         this.mResourceResolver = resourceResolver;
         this.mSharedPreferences = sharedPreferences;
         this.mAppExecutors = appExecutors;
+        this.mPreferences = preferences;
     }
 
     public void createNewList(@Nullable AsyncResultListener<ProductList> listener) {
@@ -105,7 +109,7 @@ public class ProductListRepository {
 
     private ProductList createProductList() {
 
-        String defaultName = mResourceResolver.getString(R.string.default_list_name);
+        String defaultName = mResourceResolver.getString(R.string.default_list_name, getNextShoppingListNum());
         String defaultNameFromPrefs = mSharedPreferences.getString(
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_NAME, defaultName);
 
@@ -201,6 +205,13 @@ public class ProductListRepository {
 
     public LiveData<List<ProductList>> getAllLists() {
         return mProductListDao.findAllSortByModifiedAtDesc();
+    }
+
+    private int getNextShoppingListNum() {
+        int lastUsedShoppingListNum = mPreferences.getLastUsedShoppingListNum();
+        lastUsedShoppingListNum++;
+        mPreferences.setLastUsedShoppingListNum(lastUsedShoppingListNum);
+        return lastUsedShoppingListNum;
     }
 
     @Retention(RetentionPolicy.SOURCE)

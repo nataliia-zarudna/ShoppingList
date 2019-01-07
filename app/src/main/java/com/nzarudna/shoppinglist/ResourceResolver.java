@@ -9,4 +9,6 @@ import javax.inject.Singleton;
 public interface ResourceResolver {
 
     String getString(int resID);
+
+    String getString(int resID, Object... formatArgs);
 }
