@@ -1,6 +1,12 @@
 package com.nzarudna.shoppinglist.ui;
 
 import android.databinding.Bindable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.style.StrikethroughSpan;
 
 import com.nzarudna.shoppinglist.BR;
 
@@ -23,4 +29,8 @@ public abstract class ArrayItemViewModel<T> extends ObservableViewModel {
     }
 
     public abstract String getItemName();
+
+    public Spannable getFormatItemName() {
+       return new SpannableString(getItemName());
+    }
 }

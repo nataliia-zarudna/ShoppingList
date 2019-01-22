@@ -150,21 +150,13 @@ public class ProductListsFragment
     public void showFABMenu() {
         FABsDialog.newInstance()
                 .addFAB(R.id.fab_copy_list, R.string.copy_list_title, R.drawable.ic_content_copy_black,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
-                                copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
-                                copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
-                            }
+                        view -> {
+                            CopyListDialogFragment copyListFragment = new CopyListDialogFragment();
+                            copyListFragment.setTargetFragment(ProductListsFragment.this, REQUEST_CODE_LIST_TO_COPY);
+                            copyListFragment.show(getFragmentManager(), CopyListDialogFragment.class.getSimpleName());
                         })
                 .addFAB(R.id.fab_new_list, R.string.new_list_title, R.drawable.ic_add_black,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mViewModel.onClickCreateListBtn();
-                            }
-                        })
+                        view -> mViewModel.onClickCreateListBtn())
                 .show(getFragmentManager(), "FABsDialog");
     }
 

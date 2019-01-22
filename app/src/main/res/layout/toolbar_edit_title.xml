@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/hint_shopping_list_name"
             android:text="@{editListViewModel.listName}"
+            android:inputType="textCapSentences"
             android:onTextChanged="@{(s, start, beforex, count) -> editListViewModel.onListNameChanged(s.toString())}"
             tools:text="New Shopping List" />
 

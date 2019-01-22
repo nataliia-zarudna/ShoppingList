@@ -8,4 +8,8 @@ public class ErrorHandler {
         Log.e(tag, message, e);
         // TODO add Crashlytics
     }
+    public static void logError(String tag, String message) {
+        Log.e(tag, message);
+        // TODO add Crashlytics
+    }
 }

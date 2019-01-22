@@ -7,6 +7,8 @@ import android.arch.paging.PagedList;
 import android.databinding.Bindable;
 
 import com.nzarudna.shoppinglist.BR;
+import com.nzarudna.shoppinglist.model.AsyncResultListener;
+import com.nzarudna.shoppinglist.model.ResultCallback;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
@@ -38,6 +40,7 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
     protected int mSorting;
 
     protected boolean mIsGroupedView;
+    private boolean mUseCustomSorting;
 
     public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
@@ -57,6 +60,7 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         mProductList = productList;
 
         mSorting = mProductList.getSorting();
+        mUseCustomSorting = mProductList.isUseCustomSorting();
         mIsGroupedView = mProductList.isGroupedView();
 
         mPropertyChangeRegistry.notifyChange(this, BR._all);
@@ -68,8 +72,16 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
 
     public void setSorting(int sorting) {
         this.mSorting = sorting;
+        this.mUseCustomSorting = false;
 
         mProductList.setSorting(sorting);
+        mShoppingList.updateProductList(mProductList, null);
+    }
+
+    public void setUseCustomSorting(boolean useCustomSorting) {
+        this.mUseCustomSorting = useCustomSorting;
+
+        mProductList.setUseCustomSorting(useCustomSorting);
         mShoppingList.updateProductList(mProductList, null);
     }
 
@@ -87,13 +99,8 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
     @Override
     public LiveData<PagedList<CategoryProductItem>> getItems(int pageSize) {
 
-        DataSource.Factory<Integer, CategoryProductItem> productsFactory = null;
-        try {
-            productsFactory = mShoppingList.getProducts(mSorting, mIsGroupedView, null);
-        } catch (ShoppingListException e) {
-            //TODO: handle error
-            e.printStackTrace();
-        }
+        DataSource.Factory<Integer, CategoryProductItem> productsFactory
+                = mShoppingList.getProducts(mUseCustomSorting, mSorting, mIsGroupedView, null);
         return new LivePagedListBuilder<>(productsFactory, pageSize).build();
     }
 
@@ -103,5 +110,9 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
 
     public void markProductsAs(int status) {
         mShoppingList.updateProductsStatus(status, null);
+    }
+
+    public void hasUnboughtProducts(ResultCallback<Boolean> resultCallback) {
+
     }
 }

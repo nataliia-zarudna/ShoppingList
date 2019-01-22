@@ -1,5 +1,10 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
+
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
@@ -10,6 +15,7 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
+import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import javax.inject.Inject;
 
@@ -17,7 +23,7 @@ import javax.inject.Inject;
  * Created by Nataliia on 28.01.2018.
  */
 
-public  class CategoryProductItemViewModel extends RecyclerItemViewModel<CategoryProductItem> {
+public class CategoryProductItemViewModel extends RecyclerItemViewModel<CategoryProductItem> {
 
     @Inject
     ProductListRepository mProductListRepository;
@@ -30,19 +36,31 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
 
     @Override
     public String getItemName() {
-        if (mItem != null) {
-            if (mItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)) {
-                String name = mItem.getProduct().getName();
-                if (mItem.getProduct().getStatus() == Product.BOUGHT) {
-                    return "<u>" + name + "</u>";
-                }
-                return name;
-            } else {
-                return mItem.getCategory().getName();
-            }
-        } else {
+        if (mItem == null) {
             return "";
         }
+
+        if (mItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)) {
+            return mItem.getProduct().getName();
+        } else {
+            return mItem.getCategory().getName();
+        }
+    }
+
+    @Override
+    public Spannable getFormatItemName() {
+        if (mItem == null) {
+            return null;
+        }
+
+        String name = mItem.getProduct().getName();
+        if (mItem.getType().equals(CategoryProductItem.TYPE_PRODUCT)) {
+            if (mItem.getProduct().getStatus() == Product.BOUGHT) {
+                return FormatUtils.getCrossedText(name);
+            }
+        }
+
+        return new SpannableString(name);
     }
 
     @Override
@@ -69,6 +87,10 @@ public  class CategoryProductItemViewModel extends RecyclerItemViewModel<Categor
         if (mItem != null) {
 
             double count = mItem.getProduct().getCount();
+            if (count == 0) {
+                return "";
+            }
+
             if (count > 0) {
                 info.append(FormatUtils.format(count));
                 info.append(" ");

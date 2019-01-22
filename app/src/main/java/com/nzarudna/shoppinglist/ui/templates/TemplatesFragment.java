@@ -164,11 +164,11 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.view_by_categories:
+            case R.id.menu_item_view_by_categories:
                 mViewModel.setIsGroupedView(true);
                 loadItems();
                 return true;
-            case R.id.view_separately:
+            case R.id.menu_item_view_separately:
                 mViewModel.setIsGroupedView(false);
                 loadItems();
                 return true;

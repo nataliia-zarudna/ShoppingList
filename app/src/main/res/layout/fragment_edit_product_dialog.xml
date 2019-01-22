@@ -13,13 +13,15 @@
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
         <android.support.v7.widget.AppCompatAutoCompleteTextView
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/product_name_hint"
+            android:inputType="textCapSentences"
             android:text="@{viewModel.name}"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,53 +29,69 @@
             android:id="@+id/validation_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/item_name"
+            android:layout_marginTop="4dp"
             android:text="@{viewModel.validationMessage}"
-            tools:text="Name is invalid"/>
+            app:layout_constraintTop_toBottomOf="@id/name"
+            tools:text="Name is invalid" />
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/count"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="@string/product_count_hint"
             android:inputType="numberDecimal"
-            android:text="@{viewModel.productCount}"
             android:onTextChanged="@{viewModel::onCountChange}"
-            app:layout_constraintTop_toBottomOf="@id/name" />
+            android:text="@{viewModel.productCount}"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/unit_spinner"
+            app:layout_constraintTop_toBottomOf="@id/validation_error" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/unit_spinner"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/count"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/count"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/count"
-            app:layout_constraintBottom_toBottomOf="@id/count"/>
+            app:layout_constraintTop_toTopOf="@id/count" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/category_spinner"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
             android:visibility="@{viewModel.isNewCategorySelected ? View.GONE : View.VISIBLE}"
-            app:layout_constraintTop_toBottomOf="@id/count" />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/create_choose_category_btn"
+            app:layout_constraintTop_toBottomOf="@id/count"
+            tools:visibility="invisible" />
 
         <EditText
-            android:layout_width="match_parent"
+            android:id="@+id/new_category_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@={viewModel.categoryName}"
             android:visibility="@{viewModel.isNewCategorySelected ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@id/category_spinner"
-            app:layout_constraintTop_toTopOf="@id/category_spinner" />
+            app:layout_constraintLeft_toLeftOf="@id/category_spinner"
+            app:layout_constraintRight_toRightOf="@id/category_spinner"
+            app:layout_constraintTop_toTopOf="@id/category_spinner"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/create_choose_category_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{() -> viewModel.toggleIsNewCategorySelected()}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/unit_spinner"
             android:src="@{viewModel.isNewCategorySelected ? @drawable/ic_list_black_24dp : @drawable/ic_create_black_24dp}"
-            tools:src="@drawable/ic_create_black_24dp"/>
+            app:layout_constraintBottom_toBottomOf="@id/category_spinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/category_spinner"
+            tools:src="@drawable/ic_create_black_24dp" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

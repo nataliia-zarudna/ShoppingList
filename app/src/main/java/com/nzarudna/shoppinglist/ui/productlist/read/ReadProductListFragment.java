@@ -38,7 +38,18 @@ public class ReadProductListFragment extends ProductListFragment {
 
     @Override
     protected void onLoadProductList(ProductList productList) {
+        super.onLoadProductList(productList);
         getActivity().setTitle(mViewModel.getListName());
+    }
+
+    @Override
+    protected void hideUsedSortingMenu() {
+        super.hideUsedSortingMenu();
+        ProductList productList = mViewModel.getProductList();
+        if (mOptionsMenu != null && productList != null) {
+            mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_name).setVisible(false);
+            mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_status).setVisible(false);
+        }
     }
 
     @Override

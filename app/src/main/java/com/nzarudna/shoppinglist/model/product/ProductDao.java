@@ -164,7 +164,8 @@ public interface ProductDao {
             "           FROM products product" +
             "           WHERE products.product_id = product.product_id" +
             "               AND list_id = :listID" +
-            "           ORDER BY name) * " + PRODUCT_ORDER_STEP)
+            "           ORDER BY name) * " + PRODUCT_ORDER_STEP +
+            "        WHERE list_id = :listID")
     void updateProductOrdersByListIDSortByName(UUID listID);
 
     @Query(value = "UPDATE products " +
@@ -177,6 +178,7 @@ public interface ProductDao {
             "           FROM products product" +
             "           WHERE products.product_id = product.product_id" +
             "               AND list_id = :listID" +
-            "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP)
+            "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP +
+            "        WHERE list_id = :listID")
     void updateProductOrdersByListIDSortByStatusAndName(UUID listID);
 }

@@ -19,6 +19,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 import com.nzarudna.shoppinglist.utils.AppExecutors;
+import com.nzarudna.shoppinglist.utils.ErrorHandler;
 
 import java.util.Date;
 import java.util.UUID;
@@ -98,7 +99,7 @@ public class ShoppingList {
             validateName(product.getName(), product.getListID());
 
             ProductList productList = mProductListDao.findByIDSync(product.getListID());
-            if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_ORDER) {
+            if (productList.isUseCustomSorting()) {
                 double maxProductOrder = mProductDao.getMaxProductOrderByListID(product.getListID());
                 product.setOrder(maxProductOrder + PRODUCT_ORDER_STEP);
             }
@@ -150,14 +151,14 @@ public class ShoppingList {
 
             ProductList productList = mProductListDao.findByIDSync(listID);
             boolean resortPerformed = false;
-            if (productList.getSorting() != ProductList.SORT_PRODUCTS_BY_ORDER) {
+            if (!productList.isUseCustomSorting()) {
 
                 if (productList.getSorting() == ProductList.SORT_PRODUCTS_BY_NAME) {
                     mProductDao.updateProductOrdersByListIDSortByName(listID);
                 } else {
                     mProductDao.updateProductOrdersByListIDSortByStatusAndName(listID);
                 }
-                productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
+                productList.setUseCustomSorting(true);
 
                 //TODO: fix list status 2
                 productList.setStatus(ProductList.STATUS_ACTIVE);
@@ -198,51 +199,56 @@ public class ShoppingList {
         mAppExecutors.loadAsync(() -> mProductDao.delete(status, mListID), listener);
     }
 
-    public DataSource.Factory<Integer, CategoryProductItem> getProducts(@ProductList.ProductSorting int sorting,
+    public DataSource.Factory<Integer, CategoryProductItem> getProducts(boolean useCustomSorting,
+                                                                        @ProductList.ProductSorting int sorting,
                                                                         boolean isGroupedView,
-                                                                        AsyncListener asyncListener) throws ShoppingListException {
+                                                                        AsyncListener asyncListener) {
 
-        DataSource.Factory<Integer, CategoryProductItem> resultProducts;
+        DataSource.Factory<Integer, CategoryProductItem> resultProducts = null;
 
         if (isGroupedView) {
-            switch (sorting) {
-                case ProductList.SORT_PRODUCTS_BY_NAME:
-                    resultProducts = mProductDao.findByListIDSortByNameWithCategory(mListID);
-                    break;
-                case ProductList.SORT_PRODUCTS_BY_STATUS:
-                    resultProducts = mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID);
-                    break;
-                case ProductList.SORT_PRODUCTS_BY_ORDER:
-                    resultProducts = mProductDao.findByListIDSortByProductOrderWithCategory(mListID);
-                    break;
-                default:
-                    throw new ShoppingListException("Unknown products sorting " + sorting);
+            if (useCustomSorting) {
+                resultProducts = mProductDao.findByListIDSortByProductOrderWithCategory(mListID);
+            } else {
+                switch (sorting) {
+                    case ProductList.SORT_PRODUCTS_BY_NAME:
+                        resultProducts = mProductDao.findByListIDSortByNameWithCategory(mListID);
+                        break;
+                    case ProductList.SORT_PRODUCTS_BY_STATUS:
+                        resultProducts = mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID);
+                        break;
+                    default:
+                        ErrorHandler.logError(TAG, "Unknown products sorting " + sorting);
+                }
             }
         } else {
-            switch (sorting) {
-                case ProductList.SORT_PRODUCTS_BY_NAME:
-                    resultProducts = mProductDao.findByListIDSortByName(mListID);
-                    break;
-                case ProductList.SORT_PRODUCTS_BY_STATUS:
-                    resultProducts = mProductDao.findByListIDSortByStatusAndName(mListID);
-                    break;
-                case ProductList.SORT_PRODUCTS_BY_ORDER:
-                    resultProducts = mProductDao.findByListIDSortByProductOrder(mListID);
-                    break;
-                default:
-                    throw new ShoppingListException("Unknown products sorting " + sorting);
+            if (useCustomSorting) {
+                resultProducts = mProductDao.findByListIDSortByProductOrder(mListID);
+            } else {
+                switch (sorting) {
+                    case ProductList.SORT_PRODUCTS_BY_NAME:
+                        resultProducts = mProductDao.findByListIDSortByName(mListID);
+                        break;
+                    case ProductList.SORT_PRODUCTS_BY_STATUS:
+                        resultProducts = mProductDao.findByListIDSortByStatusAndName(mListID);
+                        break;
+                    default:
+                        ErrorHandler.logError(TAG, "Unknown products sorting " + sorting);
+                }
             }
         }
-        saveSortingAndView(sorting, isGroupedView, asyncListener);
+        saveSortingAndView(useCustomSorting, sorting, isGroupedView, asyncListener);
 
         return resultProducts;
     }
 
-    private void saveSortingAndView(@ProductList.ProductSorting int sorting, boolean isGroupedView, AsyncListener asyncListener) {
+    private void saveSortingAndView(boolean useCustomSorting, @ProductList.ProductSorting int sorting, boolean isGroupedView, AsyncListener asyncListener) {
         mAppExecutors.loadAsync(() -> {
 
             ProductList productList = mProductListDao.findByIDSync(mListID);
-            if (productList.getSorting() != sorting || productList.isGroupedView() != isGroupedView) {
+            if (productList.getSorting() != sorting
+                    || productList.isUseCustomSorting() != useCustomSorting
+                    || productList.isGroupedView() != isGroupedView) {
                 productList.setSorting(sorting);
                 productList.setIsGroupedView(isGroupedView);
                 mProductListDao.update(productList);

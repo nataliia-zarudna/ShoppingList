@@ -47,13 +47,12 @@ public class ProductList implements Parcelable, Cloneable {
     public static final int STATUS_ARCHIVED = 2;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SORT_PRODUCTS_BY_NAME, SORT_PRODUCTS_BY_STATUS, SORT_PRODUCTS_BY_ORDER})
+    @IntDef({SORT_PRODUCTS_BY_NAME, SORT_PRODUCTS_BY_STATUS})
     public @interface ProductSorting {
     }
 
     public static final int SORT_PRODUCTS_BY_NAME = 1;
     public static final int SORT_PRODUCTS_BY_STATUS = 2;
-    public static final int SORT_PRODUCTS_BY_ORDER = 3;
 
     @PrimaryKey()
     @NonNull
@@ -82,6 +81,8 @@ public class ProductList implements Parcelable, Cloneable {
     @ProductSorting
     private int sorting;
 
+    private boolean useCustomSorting;
+
     @ColumnInfo(name = "is_grouped_view")
     private boolean isGroupedView;
 
@@ -94,6 +95,8 @@ public class ProductList implements Parcelable, Cloneable {
         this.createdBy = createdBy;
         this.createdAt = new Date();
         this.setStatus(STATUS_ACTIVE);
+        this.sorting = SORT_PRODUCTS_BY_STATUS;
+        this.useCustomSorting = true;
     }
 
     protected ProductList(Parcel in) {
@@ -105,6 +108,7 @@ public class ProductList implements Parcelable, Cloneable {
         modifiedBy = (UUID) in.readSerializable();
         status = in.readInt();
         sorting = in.readInt();
+        useCustomSorting = in.readByte() != 0;
         isGroupedView = in.readByte() != 0;
         assignedID = (UUID) in.readSerializable();
     }
@@ -188,6 +192,15 @@ public class ProductList implements Parcelable, Cloneable {
 
     public void setSorting(@ProductSorting int sorting) {
         this.sorting = sorting;
+        useCustomSorting = false;
+    }
+
+    public boolean isUseCustomSorting() {
+        return useCustomSorting;
+    }
+
+    public void setUseCustomSorting(boolean useCustomSorting) {
+        this.useCustomSorting = useCustomSorting;
     }
 
     public boolean isGroupedView() {
@@ -215,6 +228,7 @@ public class ProductList implements Parcelable, Cloneable {
 
         if (status != that.status) return false;
         if (sorting != that.sorting) return false;
+        if (useCustomSorting != that.useCustomSorting) return false;
         if (isGroupedView != that.isGroupedView) return false;
         if (!listID.equals(that.listID)) return false;
         if (!name.equals(that.name)) return false;
@@ -237,6 +251,7 @@ public class ProductList implements Parcelable, Cloneable {
         result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         result = 31 * result + status;
         result = 31 * result + sorting;
+        result = 31 * result + (useCustomSorting ? 1 : 0);
         result = 31 * result + (isGroupedView ? 1 : 0);
         result = 31 * result + (assignedID != null ? assignedID.hashCode() : 0);
         return result;
@@ -253,6 +268,7 @@ public class ProductList implements Parcelable, Cloneable {
                 ", modifiedBy=" + modifiedBy +
                 ", status=" + status +
                 ", sorting=" + sorting +
+                ", useCustomSorting=" + useCustomSorting +
                 ", isGroupedView=" + isGroupedView +
                 ", assignedID=" + assignedID +
                 '}';
@@ -273,6 +289,7 @@ public class ProductList implements Parcelable, Cloneable {
         parcel.writeSerializable(modifiedBy);
         parcel.writeInt(status);
         parcel.writeInt(sorting);
+        parcel.writeByte((byte) (useCustomSorting ? 1 : 0));
         parcel.writeByte((byte) (isGroupedView ? 1 : 0));
         parcel.writeSerializable(assignedID);
     }

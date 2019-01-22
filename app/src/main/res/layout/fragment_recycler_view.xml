@@ -43,10 +43,11 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:layout_width="@dimen/fab_size"
-            android:layout_height="@dimen/fab_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
+            app:fabSize="normal"
             android:onClick="@{() -> viewModel.onFABClick()}"
             android:src="@drawable/ic_add_black"
             android:visibility="@{viewModel.canCreateNewItem() ? View.VISIBLE : View.GONE}"

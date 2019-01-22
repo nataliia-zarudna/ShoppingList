@@ -97,6 +97,7 @@ public class ProductListRepository {
             ProductList newProductList = createProductList();
             newProductList.setName(etalonList.getName());
             newProductList.setSorting(etalonList.getSorting());
+            newProductList.setUseCustomSorting(etalonList.isUseCustomSorting());
             newProductList.setIsGroupedView(etalonList.isGroupedView());
 
             mProductListDao.insert(newProductList);
@@ -116,7 +117,6 @@ public class ProductListRepository {
         UUID selfUserID = mUserRepository.getSelfUserID();
 
         ProductList productList = new ProductList(defaultNameFromPrefs, selfUserID);
-        productList.setSorting(ProductList.SORT_PRODUCTS_BY_ORDER);
 
         boolean defaultIsGroupedView = mSharedPreferences.getBoolean(
                 SharedPreferencesConstants.DEFAULT_PRODUCT_LIST_IS_GROUPED_VIEW, false);

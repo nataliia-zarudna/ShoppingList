@@ -23,7 +23,7 @@
     <string name="view_list_title">View</string>
     <string name="menu_remove_bought">Remove bought</string>
     <string name="menu_remove_absent">Remove absent</string>
-    <string name="menu_mark_all_as_bought">Mark all as active</string>
+    <string name="menu_mark_all_as_bought">Mark all as bought</string>
     <string name="menu_mark_all_as_active">Mark all as active</string>
     <string name="edit_menu_item">Edit</string>
     <string name="remove_product_menu_item">Remove</string>

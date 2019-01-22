@@ -80,6 +80,8 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
         mNameAutocompleteAdapter = new ProductNameAutocompleteAdapter(getActivity());
         nameView.setAdapter(mNameAutocompleteAdapter);
 
+//        nameView.setError("Some test error");
+
         loadNameAutocompleteValues("");
 
         nameView.addTextChangedListener(new TextWatcher() {
@@ -98,22 +100,16 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
             }
         });
 
-        nameView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d(TAG, "onItemClick template " + ((ProductTemplate) mNameAutocompleteAdapter.getItem(i)).getName());
-                ProductTemplate template = ((ProductTemplate) mNameAutocompleteAdapter.getItem(i));
-                mViewModel.onChooseProductTemplate(template);
-            }
+        nameView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Log.d(TAG, "onItemClick template " + ((ProductTemplate) mNameAutocompleteAdapter.getItem(i)).getName());
+            ProductTemplate template = ((ProductTemplate) mNameAutocompleteAdapter.getItem(i));
+            mViewModel.onChooseProductTemplate(template);
         });
     }
 
     private void loadNameAutocompleteValues(String filterValue) {
-        mViewModel.getNameAutocompleteList(filterValue).observe(this, new Observer<List<ProductTemplate>>() {
-            @Override
-            public void onChanged(@Nullable List<ProductTemplate> productTemplates) {
-                mNameAutocompleteAdapter.setTemplates(productTemplates);
-            }
+        mViewModel.getNameAutocompleteList(filterValue).observe(this, productTemplates -> {
+            mNameAutocompleteAdapter.setTemplates(productTemplates);
         });
     }
 }

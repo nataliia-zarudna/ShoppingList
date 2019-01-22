@@ -48,6 +48,8 @@ public abstract class ProductListFragment
 
     private static final String ARG_PRODUCT_LIST_ID = "products_list_id";
 
+    protected Menu mOptionsMenu;
+
     private LiveData<PagedList<CategoryProductItem>> mProducts;
     protected ItemTouchHelper mRecycleViewItemTouchHelper;
     private UUID mProductListID;
@@ -207,21 +209,64 @@ public abstract class ProductListFragment
             mRecycleViewItemTouchHelper.attachToRecyclerView(recyclerView);
         }
 
-        mViewModel.getProductListLiveData().observe(this, new Observer<ProductList>() {
-            @Override
-            public void onChanged(@Nullable ProductList productList) {
-                mViewModel.setProductListData(productList);
+        mViewModel.getProductListLiveData().observe(this, productList -> {
+            mViewModel.setProductListData(productList);
 
-                onLoadProductList(productList);
-                loadItems();
-            }
+            onLoadProductList(productList);
+            loadItems();
         });
 
         return recyclerView;
     }
 
     protected void onLoadProductList(ProductList productList) {
+        hideUnnecessaryMenuItems();
+    }
 
+    private void hideUnnecessaryMenuItems() {
+        ProductList productList = mViewModel.getProductList();
+        if (mOptionsMenu != null && productList != null) {
+            hideUsedGroupViewMenu(productList);
+            hideUsedSortingMenu(productList);
+            hideMarkAsMenu();
+        }
+    }
+
+    private void hideUsedGroupViewMenu(ProductList productList) {
+        if (productList.isGroupedView()) {
+            mOptionsMenu.findItem(R.id.menu_item_view_separately).setVisible(true);
+            mOptionsMenu.findItem(R.id.menu_item_view_by_categories).setVisible(false);
+        } else {
+            mOptionsMenu.findItem(R.id.menu_item_view_separately).setVisible(false);
+            mOptionsMenu.findItem(R.id.menu_item_view_by_categories).setVisible(true);
+        }
+    }
+
+    protected void hideUsedSortingMenu(ProductList productList) {
+        switch (productList.getSorting()) {
+            case ProductList.SORT_PRODUCTS_BY_NAME:
+                mOptionsMenu.findItem(R.id.menu_item_sort_by_name).setVisible(false);
+                mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_name).setVisible(true);
+                mOptionsMenu.findItem(R.id.menu_item_sort_by_status).setVisible(true);
+                mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_status).setVisible(false);
+                break;
+            case ProductList.SORT_PRODUCTS_BY_STATUS:
+                mOptionsMenu.findItem(R.id.menu_item_sort_by_name).setVisible(true);
+                mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_name).setVisible(false);
+                mOptionsMenu.findItem(R.id.menu_item_sort_by_status).setVisible(false);
+                mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_status).setVisible(true);
+                break;
+        }
+    }
+
+    private void hideMarkAsMenu() {
+        mViewModel.hasUnboughtProducts(hasUnbought -> {
+            if (hasUnbought) {
+                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(true);
+            } else {
+                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(false);
+            }
+        });
     }
 
     @Override
@@ -239,31 +284,35 @@ public abstract class ProductListFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.product_list_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        mOptionsMenu = menu;
+
+        hideUnnecessaryMenuItems();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.sort_by_name:
-                mViewModel.setSorting(ProductList.SORT_PRODUCTS_BY_NAME);
-                mProducts = mViewModel.getItems(DEFAULT_PAGE_SIZE);
-                mProducts.observe(this, this);
+            case R.id.menu_item_apply_sort_by_name:
+            case R.id.menu_item_apply_sort_by_status:
+                mViewModel.setUseCustomSorting(false);
+                reloadItems();
                 return true;
-            case R.id.sort_by_status:
+            case R.id.menu_item_sort_by_name:
+                mViewModel.setSorting(ProductList.SORT_PRODUCTS_BY_NAME);
+                reloadItems();
+                return true;
+            case R.id.menu_item_sort_by_status:
                 mViewModel.setSorting(ProductList.SORT_PRODUCTS_BY_STATUS);
-                mProducts = mViewModel.getItems(DEFAULT_PAGE_SIZE);
-                mProducts.observe(this, this);
+                reloadItems();
                 return true;
 
-            case R.id.view_by_categories:
+            case R.id.menu_item_view_by_categories:
                 mViewModel.setIsGroupedView(true);
-                mProducts = mViewModel.getItems(DEFAULT_PAGE_SIZE);
-                mProducts.observe(this, this);
+                reloadItems();
                 return true;
-            case R.id.view_separately:
+            case R.id.menu_item_view_separately:
                 mViewModel.setIsGroupedView(false);
-                mProducts = mViewModel.getItems(DEFAULT_PAGE_SIZE);
-                mProducts.observe(this, this);
+                reloadItems();
                 return true;
 
             case R.id.menu_item_remove_bought:
@@ -279,6 +328,11 @@ public abstract class ProductListFragment
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void reloadItems() {
+        mProducts = mViewModel.getItems(DEFAULT_PAGE_SIZE);
+        mProducts.observe(this, this);
     }
 
     @Override

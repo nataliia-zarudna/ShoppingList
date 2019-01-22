@@ -7,9 +7,11 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_btn"
-        android:layout_width="@dimen/fab_size_mini"
-        android:layout_height="@dimen/fab_size_mini"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin_mini"
+        app:fabSize="mini"
+        android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:src="@drawable/ic_content_copy_black" />
@@ -22,5 +24,6 @@
         app:layout_constraintBottom_toBottomOf="@id/fab_btn"
         app:layout_constraintRight_toLeftOf="@id/fab_btn"
         app:layout_constraintTop_toTopOf="@id/fab_btn"
+        android:textSize="14sp"
         tools:text="@string/copy_list_title" />
 </android.support.constraint.ConstraintLayout>
