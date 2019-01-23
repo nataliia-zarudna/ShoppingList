@@ -43,13 +43,10 @@ public class ReadProductListFragment extends ProductListFragment {
     }
 
     @Override
-    protected void hideUsedSortingMenu() {
-        super.hideUsedSortingMenu();
-        ProductList productList = mViewModel.getProductList();
-        if (mOptionsMenu != null && productList != null) {
-            mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_name).setVisible(false);
-            mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_status).setVisible(false);
-        }
+    protected void hideUsedSortingMenu(ProductList productList) {
+        super.hideUsedSortingMenu(productList);
+        mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_name).setVisible(false);
+        mOptionsMenu.findItem(R.id.menu_item_apply_sort_by_status).setVisible(false);
     }
 
     @Override

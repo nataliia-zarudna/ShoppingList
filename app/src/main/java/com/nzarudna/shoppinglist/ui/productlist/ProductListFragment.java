@@ -53,6 +53,7 @@ public abstract class ProductListFragment
     private LiveData<PagedList<CategoryProductItem>> mProducts;
     protected ItemTouchHelper mRecycleViewItemTouchHelper;
     private UUID mProductListID;
+    private boolean mProductJustMoved;
 
     protected void setProductListID(UUID productListID) {
         Bundle bundle = new Bundle();
@@ -72,6 +73,15 @@ public abstract class ProductListFragment
     protected void loadItems() {
         if (mViewModel.getProductList() != null) {
             super.loadItems();
+        }
+    }
+
+    @Override
+    public void onChanged(@Nullable PagedList<CategoryProductItem> items) {
+        if (!mProductJustMoved) {
+            super.onChanged(items);
+        } else {
+            mProductJustMoved = false;
         }
     }
 
@@ -196,6 +206,7 @@ public abstract class ProductListFragment
                             }
                         }
                         try {
+                            mProductJustMoved = true;
                             currentViewModel.onMoveItem(prevViewModel, nextViewModel);
                         } catch (ShoppingListException e) {
                             //TODO: handle error
