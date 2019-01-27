@@ -181,4 +181,14 @@ public interface ProductDao {
             "           ORDER BY status, name) * " + PRODUCT_ORDER_STEP +
             "        WHERE list_id = :listID")
     void updateProductOrdersByListIDSortByStatusAndName(UUID listID);
+
+    @Query("SELECT CASE" +
+            "         WHEN COUNT(1) > 0 THEN 1 " +
+            "         ELSE 0" +
+            "       END " +
+            "FROM products " +
+            "WHERE list_id = :listID " +
+            "   AND status <> :status " +
+            "LIMIT 1")
+    boolean hasProductsWithStatusNot(UUID listID, @Product.ProductStatus int status);
 }

@@ -23,8 +23,9 @@
             android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.itemName}"
+            android:text="@{viewModel.formatItemName}"
             android:textColor="@{viewModel.isGreyedProductName() ? @android:color/darker_gray : @android:color/black}"
+            android:textSize="18sp"
             tools:text="Chocolate" />
 
         <TextView
@@ -32,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{viewModel.productUnitInfo}"
+            android:textSize="14sp"
             android:visibility="@{!viewModel.productUnitInfo.isEmpty() ? View.VISIBLE : View.GONE}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/product_name"

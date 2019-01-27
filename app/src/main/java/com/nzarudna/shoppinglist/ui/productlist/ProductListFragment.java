@@ -271,11 +271,19 @@ public abstract class ProductListFragment
     }
 
     private void hideMarkAsMenu() {
-        mViewModel.hasUnboughtProducts(hasUnbought -> {
-            if (hasUnbought) {
-                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(true);
-            } else {
+        mViewModel.areAllProductsBought(allBought -> {
+            if (allBought) {
                 mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(false);
+            } else {
+                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(true);
+            }
+        });
+
+        mViewModel.areAllProductsActive(allActive -> {
+            if (allActive) {
+                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(false);
+            } else {
+                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(true);
             }
         });
     }

@@ -9,6 +9,7 @@ import android.support.annotation.WorkerThread;
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.ModelUtils;
+import com.nzarudna.shoppinglist.model.ResultCallback;
 import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
@@ -258,5 +259,9 @@ public class ShoppingList {
 
     public void updateProductsStatus(@Product.ProductStatus int status, AsyncListener asyncListener) {
         mAppExecutors.loadAsync(() -> mProductDao.updateStatus(status, mListID), asyncListener);
+    }
+
+    public void areAllProductsWithStatus(@Product.ProductStatus int status, ResultCallback<Boolean> resultCallback) {
+        mAppExecutors.loadAsync(() -> !mProductDao.hasProductsWithStatusNot(mListID, status), resultCallback);
     }
 }

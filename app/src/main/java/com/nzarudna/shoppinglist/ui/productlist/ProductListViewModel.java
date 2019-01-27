@@ -112,7 +112,11 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         mShoppingList.updateProductsStatus(status, null);
     }
 
-    public void hasUnboughtProducts(ResultCallback<Boolean> resultCallback) {
+    public void areAllProductsBought(ResultCallback<Boolean> resultCallback) {
+        mShoppingList.areAllProductsWithStatus(Product.BOUGHT, resultCallback);
+    }
 
+    public void areAllProductsActive(ResultCallback<Boolean> resultCallback) {
+        mShoppingList.areAllProductsWithStatus(Product.TO_BUY, resultCallback);
     }
 }
