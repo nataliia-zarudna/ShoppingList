@@ -165,7 +165,7 @@ public class ProductListsFragment
         return new DiffUtil.ItemCallback<ProductListWithStatistics>() {
             @Override
             public boolean areItemsTheSame(@NonNull ProductListWithStatistics oldItem, @NonNull ProductListWithStatistics newItem) {
-                return oldItem.getListID() == newItem.getListID();
+                return oldItem.getListID().equals(newItem.getListID());
             }
 
             @Override

@@ -131,4 +131,13 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
             shareTextCallback.onResult(ShareUtils.formatProductList(categoryProductItems));
         });
     }
+
+    public void removeList() {
+        mProductListRepository.removeList(mProductListID, null);
+    }
+
+    public void archiveList() {
+        mProductListRepository.updateListStatus(mProductListID, ProductList.STATUS_ARCHIVED, null);
+    }
+
 }

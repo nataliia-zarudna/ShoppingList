@@ -223,10 +223,12 @@ public abstract class ProductListFragment
         }
 
         mViewModel.getProductListLiveData().observe(this, productList -> {
-            mViewModel.setProductListData(productList);
+            if (productList != null) {
+                mViewModel.setProductListData(productList);
 
-            onLoadProductList(productList);
-            loadItems();
+                onLoadProductList(productList);
+                loadItems();
+            }
         });
 
         mViewModel.getProductStatisticsLiveData().observe(this, productListStatistics -> {
@@ -362,8 +364,22 @@ public abstract class ProductListFragment
                 mViewModel.markProductsAs(Product.ACTIVE);
                 return true;
 
+            case R.id.menu_item_remove:
+                mViewModel.removeList();
+                popBackStack();
+                return true;
+            case R.id.menu_item_archive:
+                mViewModel.archiveList();
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void popBackStack() {
+        if (getActivity() != null) {
+            getActivity().finish();
         }
     }
 
