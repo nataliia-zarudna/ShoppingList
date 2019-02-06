@@ -11,6 +11,7 @@ import android.support.v7.util.DiffUtil;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.nzarudna.shoppinglist.R;
@@ -32,6 +33,8 @@ public class ChooseTemplateFragment
         extends BaseRecyclerViewFragment<CategoryTemplateItemWithListStatistics, ChooseTemplateViewModel, CategoryTemplateItemViewModel> {
 
     private static final String ARG_LIST_ID = "com.nzarudna.shoppinglist.ui.productlist.edit.template.list_id";
+
+    private Menu mMenu;
 
     public static ChooseTemplateFragment getInstance(UUID listID) {
         ChooseTemplateFragment instance = new ChooseTemplateFragment();
@@ -105,6 +108,19 @@ public class ChooseTemplateFragment
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.choose_template_menu, menu);
+
+        mMenu = menu;
+        hideUnusedMenuItems();
+    }
+
+    private void hideUnusedMenuItems() {
+        if (mViewModel.isIsGroupedView()) {
+            mMenu.findItem(R.id.menu_item_view_by_categories).setVisible(false);
+            mMenu.findItem(R.id.menu_item_view_separately).setVisible(true);
+        } else {
+            mMenu.findItem(R.id.menu_item_view_by_categories).setVisible(true);
+            mMenu.findItem(R.id.menu_item_view_separately).setVisible(false);
+        }
     }
 
     @Override
@@ -113,10 +129,12 @@ public class ChooseTemplateFragment
             case R.id.menu_item_view_by_categories:
                 mViewModel.setIsGroupedView(true);
                 loadItems();
+                hideUnusedMenuItems();
                 return true;
             case R.id.menu_item_view_separately:
                 mViewModel.setIsGroupedView(false);
                 loadItems();
+                hideUnusedMenuItems();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

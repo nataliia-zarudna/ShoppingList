@@ -27,12 +27,22 @@ public class ChooseTemplateViewModel extends RecyclerViewModel<CategoryTemplateI
     ProductTemplateRepository mTemplateRepository;
     @Inject
     ProductListRepository mProductListRepository;
-    @Inject
-    SharedPreferences mSharedPreferences;
+
+    private SharedPreferences mSharedPreferences;
 
     private UUID mProductListID;
     private ShoppingList mShoppingList;
-    private Boolean mIsGroupedView;
+    private boolean mIsGroupedView;
+
+    @Inject
+    public void setSharedPreferences(SharedPreferences sharedPreferences) {
+        this.mSharedPreferences = sharedPreferences;
+        mIsGroupedView = mSharedPreferences.getBoolean(
+                SharedPreferencesConstants.DEFAULT_CHOOSE_TEMPLATES_IS_GROUPED_VIEW, false);
+    }
+
+    public ChooseTemplateViewModel() {
+    }
 
     public void setProductListID(UUID productListID) {
         this.mProductListID = productListID;
@@ -51,13 +61,12 @@ public class ChooseTemplateViewModel extends RecyclerViewModel<CategoryTemplateI
                 .apply();
     }
 
+    public boolean isIsGroupedView() {
+        return mIsGroupedView;
+    }
+
     @Override
     public LiveData<PagedList<CategoryTemplateItemWithListStatistics>> getItems(int pageSize) {
-        if (mIsGroupedView == null) {
-            mIsGroupedView = mSharedPreferences.getBoolean(
-                    SharedPreferencesConstants.DEFAULT_CHOOSE_TEMPLATES_IS_GROUPED_VIEW, false);
-        }
-
         DataSource.Factory<Integer, CategoryTemplateItemWithListStatistics> templatesDSFactory =
                 mTemplateRepository.getTemplates(mIsGroupedView, mProductListID);
         return new LivePagedListBuilder<>(templatesDSFactory, pageSize).build();

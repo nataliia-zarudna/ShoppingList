@@ -2,18 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_item_view"
+        android:id="@+id/menu_item_view_by_categories"
         android:icon="@drawable/ic_view_black_24dp"
-        android:title="@string/view_list_title"
-        app:showAsAction="ifRoom">
-
-        <menu>
-            <item
-                android:id="@+id/menu_item_view_by_categories"
-                android:title="@string/view_group_by_categories" />
-            <item
-                android:id="@+id/menu_item_view_separately"
-                android:title="@string/view_separate_items" />
-        </menu>
-    </item>
+        android:title="@string/view_group_by_categories"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_item_view_separately"
+        android:icon="@drawable/ic_list_black_24dp"
+        android:title="@string/view_separate_items"
+        app:showAsAction="ifRoom" />
 </menu>
