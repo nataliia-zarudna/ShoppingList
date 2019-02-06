@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
+import android.content.Intent;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -27,6 +28,7 @@ import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.ProductStatistics;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
@@ -227,6 +229,13 @@ public abstract class ProductListFragment
             loadItems();
         });
 
+        mViewModel.getProductStatisticsLiveData().observe(this, productListStatistics -> {
+            if (productListStatistics != null) {
+                mViewModel.setProductStatistics(productListStatistics.getProductStatistics());
+                hideUnnecessaryMenuItems();
+            }
+        });
+
         return recyclerView;
     }
 
@@ -236,10 +245,12 @@ public abstract class ProductListFragment
 
     private void hideUnnecessaryMenuItems() {
         ProductList productList = mViewModel.getProductList();
-        if (mOptionsMenu != null && productList != null) {
+        ProductStatistics productStatistics = mViewModel.getProductStatistics();
+        if (mOptionsMenu != null && productList != null && productStatistics != null) {
             hideUsedGroupViewMenu(productList);
             hideUsedSortingMenu(productList);
-            hideMarkAsMenu();
+            hideMarkAsMenu(productStatistics);
+            hideRemoveBought(productStatistics);
         }
     }
 
@@ -270,22 +281,26 @@ public abstract class ProductListFragment
         }
     }
 
-    private void hideMarkAsMenu() {
-        mViewModel.areAllProductsBought(allBought -> {
-            if (allBought) {
-                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(false);
-            } else {
-                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(true);
-            }
-        });
+    private void hideMarkAsMenu(ProductStatistics listStatistics) {
+        if (listStatistics.getBoughtProductsCount() == listStatistics.getAllProductsCount()) {
+            mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(false);
+        } else {
+            mOptionsMenu.findItem(R.id.menu_item_mark_all_as_bought).setVisible(true);
+        }
 
-        mViewModel.areAllProductsActive(allActive -> {
-            if (allActive) {
-                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(false);
-            } else {
-                mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(true);
-            }
-        });
+        if (listStatistics.getActiveProductsCount() == listStatistics.getAllProductsCount()) {
+            mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(false);
+        } else {
+            mOptionsMenu.findItem(R.id.menu_item_mark_all_as_active).setVisible(true);
+        }
+    }
+
+    private void hideRemoveBought(ProductStatistics listStatistics) {
+        if (listStatistics.getBoughtProductsCount() == 0) {
+            mOptionsMenu.findItem(R.id.menu_item_remove_bought).setVisible(false);
+        } else {
+            mOptionsMenu.findItem(R.id.menu_item_remove_bought).setVisible(true);
+        }
     }
 
     @Override
@@ -337,11 +352,14 @@ public abstract class ProductListFragment
             case R.id.menu_item_remove_bought:
                 mViewModel.removeBoughtProducts();
                 return true;
+            case R.id.menu_item_share:
+                shareProducts();
+                return true;
             case R.id.menu_item_mark_all_as_bought:
                 mViewModel.markProductsAs(Product.BOUGHT);
                 return true;
             case R.id.menu_item_mark_all_as_active:
-                mViewModel.markProductsAs(Product.TO_BUY);
+                mViewModel.markProductsAs(Product.ACTIVE);
                 return true;
 
             default:
@@ -366,7 +384,7 @@ public abstract class ProductListFragment
         try {
             Product product = getCurrentItemViewModel().getProduct();
             switch (product.getStatus()) {
-                case Product.TO_BUY:
+                case Product.ACTIVE:
                     menu.removeItem(R.id.mark_product_as_active_menu_item);
                     break;
                 case Product.BOUGHT:
@@ -389,7 +407,7 @@ public abstract class ProductListFragment
         try {
             switch (item.getItemId()) {
                 case R.id.mark_product_as_active_menu_item:
-                    getCurrentItemViewModel().markProductAs(Product.TO_BUY);
+                    getCurrentItemViewModel().markProductAs(Product.ACTIVE);
                     return true;
                 case R.id.mark_product_as_bought_menu_item:
                     getCurrentItemViewModel().markProductAs(Product.BOUGHT);
@@ -473,5 +491,16 @@ public abstract class ProductListFragment
         protected CategoryProductItemViewModel getItemViewModel() {
             return ProductListFragment.this.getListItemViewModel();
         }
+    }
+
+    public void shareProducts() {
+        mViewModel.getShareProductsText(shareText -> {
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.addCategory(Intent.CATEGORY_DEFAULT);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+        });
     }
 }

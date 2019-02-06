@@ -134,7 +134,7 @@ public class ProductListRepository {
 
                 Product newProduct = etalonProduct.clone();
                 newProduct.setListID(toListID);
-                newProduct.setStatus(Product.TO_BUY);
+                newProduct.setStatus(Product.ACTIVE);
 
                 productDao.insert(newProduct);
             }

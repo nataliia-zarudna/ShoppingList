@@ -7,15 +7,16 @@ import android.arch.paging.PagedList;
 import android.databinding.Bindable;
 
 import com.nzarudna.shoppinglist.BR;
-import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.ResultCallback;
-import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.product.Product;
+import com.nzarudna.shoppinglist.model.product.ProductStatistics;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
+import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
+import com.nzarudna.shoppinglist.utils.ShareUtils;
 
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
 
     @Bindable
     protected ProductList mProductList;
+    protected ProductStatistics mProductStatistics;
 
     protected UUID mProductListID;
     protected ShoppingList mShoppingList;
@@ -112,11 +114,21 @@ public abstract class ProductListViewModel extends RecyclerViewModel<CategoryPro
         mShoppingList.updateProductsStatus(status, null);
     }
 
-    public void areAllProductsBought(ResultCallback<Boolean> resultCallback) {
-        mShoppingList.areAllProductsWithStatus(Product.BOUGHT, resultCallback);
+    public LiveData<ProductListWithStatistics> getProductStatisticsLiveData() {
+        return mShoppingList.getProductListStatistics();
     }
 
-    public void areAllProductsActive(ResultCallback<Boolean> resultCallback) {
-        mShoppingList.areAllProductsWithStatus(Product.TO_BUY, resultCallback);
+    public ProductStatistics getProductStatistics() {
+        return mProductStatistics;
+    }
+
+    public void setProductStatistics(ProductStatistics productStatistics) {
+        this.mProductStatistics = productStatistics;
+    }
+
+    public void getShareProductsText(ResultCallback<String> shareTextCallback) {
+        mShoppingList.getAllUnboughtProducts(categoryProductItems -> {
+            shareTextCallback.onResult(ShareUtils.formatProductList(categoryProductItems));
+        });
     }
 }

@@ -20,24 +20,26 @@ import java.util.UUID;
 @Dao
 public interface ProductListDao {
 
-    String STATISTICS_QUERY =
-            "       SELECT list.list_id," +
-            "           list.name," +
-            "           COUNT(DISTINCT to_buy_product.product_id) AS to_buy_products_count, " +
-            "           COUNT(DISTINCT absent_product.product_id) AS absent_products_count, " +
-            "           COUNT(DISTINCT bought_product.product_id) AS bought_products_count " +
-            "       FROM product_lists list " +
-            "           LEFT JOIN products to_buy_product " +
-            "               ON to_buy_product.list_id = list.list_id " +
-            "                   AND to_buy_product.status = " + Product.TO_BUY +
-            "           LEFT JOIN products absent_product " +
-            "               ON absent_product.list_id = list.list_id " +
-            "                   AND absent_product.status = " + Product.ABSENT +
-            "           LEFT JOIN products bought_product " +
-            "               ON bought_product.list_id = list.list_id " +
-            "                   AND bought_product.status = " + Product.BOUGHT +
-            "       WHERE list.status = :status " +
-            "       GROUP BY list.list_id";
+    String QUERY_STATISTICS =
+            "       SELECT list.*," +
+                    "           SUM(CASE WHEN product.status = " + Product.ACTIVE + " THEN 1 ELSE 0 END) AS active_products_count, " +
+                    "           SUM(CASE WHEN product.status = " + Product.ABSENT + " THEN 1 ELSE 0 END) AS absent_products_count, " +
+                    "           SUM(CASE WHEN product.status = " + Product.BOUGHT + " THEN 1 ELSE 0 END) AS bought_products_count " +
+                    "       FROM product_lists list " +
+                    "           LEFT JOIN products product " +
+                    "               ON product.list_id = list.list_id " +
+                    "       WHERE list.status = :status " +
+                    "       GROUP BY list.list_id";
+
+    String QUERY_ONE_LIST_STATISTICS =
+            "       SELECT list.*," +
+                    "           SUM(CASE WHEN product.status = " + Product.ACTIVE + " THEN 1 ELSE 0 END) AS active_products_count, " +
+                    "           SUM(CASE WHEN product.status = " + Product.ABSENT + " THEN 1 ELSE 0 END) AS absent_products_count, " +
+                    "           SUM(CASE WHEN product.status = " + Product.BOUGHT + " THEN 1 ELSE 0 END) AS bought_products_count " +
+                    "       FROM product_lists list " +
+                    "           LEFT JOIN products product " +
+                    "               ON product.list_id = list.list_id " +
+                    "       WHERE list.list_id = :listID ";
 
     @Insert
     void insert(ProductList list);
@@ -63,23 +65,23 @@ public interface ProductListDao {
     @Query(value = "SELECT * FROM product_lists WHERE list_id = :listID")
     LiveData<ProductList> findByID(UUID listID);
 
-    @Query(value = STATISTICS_QUERY + " ORDER BY list.name")
+    @Query(value = QUERY_STATISTICS + " ORDER BY list.name")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByName(
             @ProductList.ProductListStatus int status);
 
-    @Query(value = STATISTICS_QUERY + " ORDER BY list.created_by, list.name")
+    @Query(value = QUERY_STATISTICS + " ORDER BY list.created_by, list.name")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByCreatedByAndName(
             @ProductList.ProductListStatus int status);
 
-    @Query(value = STATISTICS_QUERY + " ORDER BY list.created_at DESC")
+    @Query(value = QUERY_STATISTICS + " ORDER BY list.created_at DESC")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByCreatedAtDesc(
             @ProductList.ProductListStatus int status);
 
-    @Query(value = STATISTICS_QUERY + " ORDER BY list.modified_at DESC")
+    @Query(value = QUERY_STATISTICS + " ORDER BY list.modified_at DESC")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByModifiedAtDesc(
             @ProductList.ProductListStatus int status);
 
-    @Query(value = STATISTICS_QUERY + " ORDER BY list.assigned_id, list.name")
+    @Query(value = QUERY_STATISTICS + " ORDER BY list.assigned_id, list.name")
     DataSource.Factory<Integer, ProductListWithStatistics> findWithStatisticsByStatusSortByAssignedAndName(
             @ProductList.ProductListStatus int status);
 
@@ -96,4 +98,7 @@ public interface ProductListDao {
 
     @Query(value = "SELECT * FROM product_lists WHERE status = :status ORDER BY modified_at DESC")
     DataSource.Factory<Integer, ProductList> findByStatusSortByModifiedAtDesc(@ProductList.ProductListStatus int status);
+
+    @Query(value = QUERY_ONE_LIST_STATISTICS)
+    LiveData<ProductListWithStatistics> findOneListWithStatistics(UUID listID);
 }

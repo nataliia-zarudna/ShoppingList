@@ -30,14 +30,11 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
 
     @Override
     public String getItemName() {
-        return mItem.getName();
+        return mItem.getProductList().getName();
     }
 
     public String getBoughtToAllText() {
-        int allProductsCount = mItem.getToBuyProductsCount() +
-                mItem.getAbsentProductsCount() +
-                mItem.getBoughtProductsCount();
-        return mItem.getBoughtProductsCount() + "/" + allProductsCount;
+        return mItem.getProductStatistics().getBoughtProductsCount() + "/" + mItem.getProductStatistics().getAllProductsCount();
     }
 
     @Override

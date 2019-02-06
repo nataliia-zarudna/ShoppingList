@@ -717,7 +717,7 @@ public class ShoppingListTest extends BaseAsyncTest {
         Product product2 = new Product();
         product2.setName("Product 2");
         product2.setListID(MOCKED_PRODUCTS_LIST_ID);
-        product2.setStatus(Product.TO_BUY);
+        product2.setStatus(Product.ACTIVE);
         products.add(product2);
 
         Product product3 = new Product();
@@ -760,7 +760,7 @@ public class ShoppingListTest extends BaseAsyncTest {
         Product product2 = new Product();
         product2.setName("Product 2");
         product2.setListID(MOCKED_PRODUCTS_LIST_ID);
-        product2.setStatus(Product.TO_BUY);
+        product2.setStatus(Product.ACTIVE);
         products.add(product2);
 
         Product product3 = new Product();
@@ -802,7 +802,7 @@ public class ShoppingListTest extends BaseAsyncTest {
         Product product2 = new Product();
         product2.setName("Product 2");
         product2.setListID(MOCKED_PRODUCTS_LIST_ID);
-        product2.setStatus(Product.TO_BUY);
+        product2.setStatus(Product.ACTIVE);
         products.add(product2);
 
         Product product3 = new Product();

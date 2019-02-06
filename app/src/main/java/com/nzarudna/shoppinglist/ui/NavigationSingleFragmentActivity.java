@@ -48,63 +48,38 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                item.setChecked(true);
-                mDrawerLayout.closeDrawers();
+        navigationView.setNavigationItemSelectedListener(item -> {
 
+            item.setChecked(true);
+            mDrawerLayout.closeDrawers();
 
-                if (item.getItemId() == R.id.templates_item) {
-//                    Intent intent = new Intent(Intent.ACTION_SEND);
-////                    intent.addCategory(Intent.CATEGORY_DEFAULT);
-//                    intent.putExtra("sms", "123");
-//                    intent.putExtra("smsto", "+38099999999");
-//                    intent.setType("text/plain");
-//                    startActivityForResult(intent, 1);
-
-
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND, Uri.parse("sms:+380989606919"));
-//                    sendIntent.setAction(I);
-                    sendIntent.setData(Uri.parse("sms:+380989606919"));
-                    sendIntent.putExtra("sms_body", "ABC");
-                    sendIntent.setType("text/plain");
-                    startActivity(sendIntent);
-
-
-
-                    return true;
-                }
-
-
-                Class activityClass = null;
-                switch (item.getItemId()) {
-                    case R.id.shopping_lists_item:
-                        activityClass = ProductListsActivity.class;
-                        break;
-                    case R.id.templates_item:
-                        activityClass = TemplatesActivity.class;
-                        break;
-                    case R.id.users_item:
-                        activityClass = UsersActivity.class;
-                        break;
-                    case R.id.categories_item:
-                        activityClass = CategoriesActivity.class;
-                        break;
-                    case R.id.units_item:
-                        activityClass = UnitsActivity.class;
-                        break;
-                    case R.id.archive_item:
-                        activityClass = ArchivedListsActivity.class;
-                        break;
-                }
-                if (activityClass != null) {
-                    Intent intent = new Intent(NavigationSingleFragmentActivity.this, activityClass);
-                    startActivity(intent);
-                }
-
-                return true;
+            Class activityClass = null;
+            switch (item.getItemId()) {
+                case R.id.shopping_lists_item:
+                    activityClass = ProductListsActivity.class;
+                    break;
+                case R.id.templates_item:
+                    activityClass = TemplatesActivity.class;
+                    break;
+                case R.id.users_item:
+                    activityClass = UsersActivity.class;
+                    break;
+                case R.id.categories_item:
+                    activityClass = CategoriesActivity.class;
+                    break;
+                case R.id.units_item:
+                    activityClass = UnitsActivity.class;
+                    break;
+                case R.id.archive_item:
+                    activityClass = ArchivedListsActivity.class;
+                    break;
             }
+            if (activityClass != null) {
+                Intent intent = new Intent(NavigationSingleFragmentActivity.this, activityClass);
+                startActivity(intent);
+            }
+
+            return true;
         });
     }
 

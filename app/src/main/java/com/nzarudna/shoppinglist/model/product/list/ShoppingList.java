@@ -22,7 +22,9 @@ import com.nzarudna.shoppinglist.model.user.UserRepository;
 import com.nzarudna.shoppinglist.utils.AppExecutors;
 import com.nzarudna.shoppinglist.utils.ErrorHandler;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
@@ -243,6 +245,49 @@ public class ShoppingList {
         return resultProducts;
     }
 
+    public void getAllUnboughtProducts(ResultCallback<List<CategoryProductItem>> resultCallback) {
+        mAppExecutors.loadAsync(() -> {
+
+            List<CategoryProductItem> resultProducts = new ArrayList<>();
+
+            ProductList productList = mProductListDao.findByIDSync(mListID);
+            if (productList.isGroupedView()) {
+                if (productList.isUseCustomSorting()) {
+                    resultProducts = mProductDao.findByListIDSortByProductOrderWithCategory(mListID, Product.BOUGHT);
+                } else {
+                    switch (productList.getSorting()) {
+                        case ProductList.SORT_PRODUCTS_BY_NAME:
+                            resultProducts = mProductDao.findByListIDSortByNameWithCategory(mListID, Product.BOUGHT);
+                            break;
+                        case ProductList.SORT_PRODUCTS_BY_STATUS:
+                            resultProducts = mProductDao.findByListIDSortByStatusAndNameWithCategory(mListID, Product.BOUGHT);
+                            break;
+                        default:
+                            ErrorHandler.logError(TAG, "Unknown products sorting " + productList.getSorting());
+                    }
+                }
+            } else {
+                if (productList.isUseCustomSorting()) {
+                    resultProducts = mProductDao.findByListIDSortByProductOrder(mListID, Product.BOUGHT);
+                } else {
+                    switch (productList.getSorting()) {
+                        case ProductList.SORT_PRODUCTS_BY_NAME:
+                            resultProducts = mProductDao.findByListIDSortByName(mListID, Product.BOUGHT);
+                            break;
+                        case ProductList.SORT_PRODUCTS_BY_STATUS:
+                            resultProducts = mProductDao.findByListIDSortByStatusAndName(mListID, Product.BOUGHT);
+                            break;
+                        default:
+                            ErrorHandler.logError(TAG, "Unknown products sorting " + productList.getSorting());
+                    }
+                }
+            }
+
+            return resultProducts;
+
+        }, resultCallback);
+    }
+
     private void saveSortingAndView(boolean useCustomSorting, @ProductList.ProductSorting int sorting, boolean isGroupedView, AsyncListener asyncListener) {
         mAppExecutors.loadAsync(() -> {
 
@@ -263,5 +308,9 @@ public class ShoppingList {
 
     public void areAllProductsWithStatus(@Product.ProductStatus int status, ResultCallback<Boolean> resultCallback) {
         mAppExecutors.loadAsync(() -> !mProductDao.hasProductsWithStatusNot(mListID, status), resultCallback);
+    }
+
+    public LiveData<ProductListWithStatistics> getProductListStatistics() {
+        return mProductListDao.findOneListWithStatistics(mListID);
     }
 }

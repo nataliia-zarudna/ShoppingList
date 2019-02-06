@@ -49,11 +49,11 @@ import java.util.UUID;
 public class Product implements Cloneable, Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({TO_BUY, ABSENT, BOUGHT})
+    @IntDef({ACTIVE, ABSENT, BOUGHT})
     public @interface ProductStatus {
     }
 
-    public static final int TO_BUY = 1;
+    public static final int ACTIVE = 1;
     public static final int ABSENT = 2;
     public static final int BOUGHT = 3;
 
@@ -88,7 +88,7 @@ public class Product implements Cloneable, Parcelable {
 
     public Product() {
         this.productID = UUID.randomUUID();
-        this.status = TO_BUY;
+        this.status = ACTIVE;
         this.categoryID = Category.DEFAULT_CATEGORY_ID;
     }
 

@@ -19,8 +19,12 @@
   ],
   "categories": [
     {
+      "category_id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+      "name": "category_default"
+    },
+    {
       "category_id": "0ca52db4-f9b0-418a-99ed-ffda3784ee9e",
-      "name": "category_confectionery"
+      "name": "default_category_name"
     },
     {
       "category_id": "2790846a-9b29-447a-8d68-186d9716729f",

@@ -128,7 +128,7 @@ public class ProductDaoTest {
 
         Product product = insertProduct();
 
-        assertThat(product.getStatus(), is(Product.TO_BUY));
+        assertThat(product.getStatus(), is(Product.ACTIVE));
         assertThat(product.getCategoryID(), is(Category.DEFAULT_CATEGORY_ID));
     }
 
@@ -335,7 +335,7 @@ public class ProductDaoTest {
         products.get(1).setName("#3");
 
         products.get(2).setListID(mProductsListID_1);
-        products.get(2).setStatus(Product.TO_BUY);
+        products.get(2).setStatus(Product.ACTIVE);
         products.get(2).setName("#4");
 
         products.get(3).setListID(mProductsListID_1);
@@ -456,7 +456,7 @@ public class ProductDaoTest {
 
         products.get(3).setListID(mProductsListID_1);
         products.get(3).setName("#4");
-        products.get(3).setStatus(Product.TO_BUY);
+        products.get(3).setStatus(Product.ACTIVE);
         products.get(3).setCategoryID(mLesserCategoryID);
 
         products.get(4).setListID(mProductsListID_1);
@@ -656,7 +656,7 @@ public class ProductDaoTest {
         Product product3 = new Product();
         product3.setName("Product 4");
         product3.setListID(listID);
-        product3.setStatus(Product.TO_BUY);
+        product3.setStatus(Product.ACTIVE);
         products.add(product3);
 
         Product product4 = new Product();
@@ -694,25 +694,25 @@ public class ProductDaoTest {
         Product product1 = new Product();
         product1.setName("Product 2");
         product1.setListID(listID);
-        product1.setStatus(Product.TO_BUY);
+        product1.setStatus(Product.ACTIVE);
         products.add(product1);
 
         Product product2 = new Product();
         product2.setName("Product 1");
         product2.setListID(listID);
-        product2.setStatus(Product.TO_BUY);
+        product2.setStatus(Product.ACTIVE);
         products.add(product2);
 
         Product product3 = new Product();
         product3.setName("Product 4");
         product3.setListID(listID);
-        product3.setStatus(Product.TO_BUY);
+        product3.setStatus(Product.ACTIVE);
         products.add(product3);
 
         Product product4 = new Product();
         product4.setName("Product 3");
         product4.setListID(listID);
-        product4.setStatus(Product.TO_BUY);
+        product4.setStatus(Product.ACTIVE);
         products.add(product4);
 
         insertProducts(products);
@@ -743,7 +743,7 @@ public class ProductDaoTest {
         Product product1 = new Product();
         product1.setName("Product 1");
         product1.setListID(listID);
-        product1.setStatus(Product.TO_BUY);
+        product1.setStatus(Product.ACTIVE);
         products.add(product1);
 
         Product product2 = new Product();

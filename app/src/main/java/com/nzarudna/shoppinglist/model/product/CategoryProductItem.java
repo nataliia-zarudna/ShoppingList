@@ -107,6 +107,14 @@ public class CategoryProductItem implements Parcelable {
         this.unit = unit;
     }
 
+    public boolean isProduct() {
+        return TYPE_PRODUCT.equals(type);
+    }
+
+    public boolean isCategory() {
+        return TYPE_CATEGORY.equals(type);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

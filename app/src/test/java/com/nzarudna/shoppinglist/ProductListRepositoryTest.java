@@ -207,7 +207,7 @@ public class ProductListRepositoryTest extends BaseAsyncTest {
             etalonProducts.add(etalonProduct);
         }
         etalonProducts.get(1).setStatus(Product.ABSENT);
-        etalonProducts.get(2).setStatus(Product.TO_BUY);
+        etalonProducts.get(2).setStatus(Product.ACTIVE);
         when(mProductDao.findByListIDSync(etalonListID)).thenReturn(etalonProducts);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -222,7 +222,7 @@ public class ProductListRepositoryTest extends BaseAsyncTest {
 
         List<Product> expectedProducts = etalonProducts;
         for (final Product expectedProduct : expectedProducts) {
-            expectedProduct.setStatus(Product.TO_BUY);
+            expectedProduct.setStatus(Product.ACTIVE);
 
             verify(mProductDao).insert(
                     argThat(AssertUtils.getProductArgumentMatcheWithoutPKAndListID(expectedProduct)));

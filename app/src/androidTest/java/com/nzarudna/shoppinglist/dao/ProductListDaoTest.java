@@ -252,12 +252,12 @@ public class ProductListDaoTest {
 
         TestUtils.insertProductsLists(mSubjectDao, lists);
 
-        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.TO_BUY);
-        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ACTIVE);
+        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ABSENT);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ABSENT);
 
-        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ABSENT);
 
@@ -301,7 +301,7 @@ public class ProductListDaoTest {
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
 
-        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ABSENT);
 
@@ -346,13 +346,13 @@ public class ProductListDaoTest {
         TestUtils.insertProductsLists(mSubjectDao, lists);
 
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
-        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
 
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ABSENT);
 
-        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(3).getListID(), Product.ABSENT);
 
@@ -393,14 +393,14 @@ public class ProductListDaoTest {
         TestUtils.insertProductsLists(mSubjectDao, lists);
 
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
-        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
 
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.BOUGHT);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ABSENT);
         TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ABSENT);
-        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(1).getListID(), Product.ACTIVE);
 
 
         List<ProductListWithStatistics> activeLists = new ArrayList<>();
@@ -443,7 +443,7 @@ public class ProductListDaoTest {
         TestUtils.insertProductsLists(mSubjectDao, lists);
 
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
-        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.TO_BUY);
+        TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.ACTIVE);
         TestUtils.insertProduct(mProductDao, lists.get(0).getListID(), Product.BOUGHT);
 
         List<ProductListWithStatistics> activeLists = new ArrayList<>();

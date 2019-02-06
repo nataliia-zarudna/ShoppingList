@@ -72,17 +72,14 @@ public abstract class BaseEditTemplateDialogFragment<T extends Parcelable, VM ex
     private void configCategorySpinner(View fragmentView) {
         final Spinner categorySpinner = fragmentView.findViewById(R.id.category_spinner);
 
-        mViewModel.getCategories().observe(this, new Observer<List<Category>>() {
-            @Override
-            public void onChanged(@Nullable List<Category> categories) {
+        mViewModel.getCategories().observe(this, categories -> {
 
-                mCategoryAdapter =
-                        new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list, categories, CategoryItemViewModel.class);
-                categorySpinner.setAdapter(mCategoryAdapter);
+            mCategoryAdapter =
+                    new ViewModelArrayAdapter<>(getContext(), R.layout.item_base_list, categories, CategoryItemViewModel.class);
+            categorySpinner.setAdapter(mCategoryAdapter);
 
-                int selectedPosition = mViewModel.getTemplateCategoryIndex(categories);
-                categorySpinner.setSelection(selectedPosition);
-            }
+            int selectedPosition = mViewModel.getTemplateCategoryIndex(categories);
+            categorySpinner.setSelection(selectedPosition);
         });
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

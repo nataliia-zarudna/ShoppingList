@@ -17,8 +17,8 @@ public class ReadCategoryProductItemViewModel extends CategoryProductItemViewMod
         }
 
         Product product = mItem.getProduct();
-        int[] productStatusChain = new int[]{Product.TO_BUY, Product.BOUGHT, Product.ABSENT};
-        int newStatus = Product.TO_BUY;
+        int[] productStatusChain = new int[]{Product.ACTIVE, Product.BOUGHT, Product.ABSENT};
+        int newStatus = Product.ACTIVE;
         for (int i = 0; i < productStatusChain.length; i++) {
             if (productStatusChain[i] == product.getStatus()) {
                 newStatus = productStatusChain[(i + 1) % productStatusChain.length];

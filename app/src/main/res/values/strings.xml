@@ -91,4 +91,5 @@
     <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.\n%2$s.</string>
     <string name="async_success_result">Success</string>
     <string name="async_error_result">Error</string>
+    <string name="menu_share">Share</string>
 </resources>
