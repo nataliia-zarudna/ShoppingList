@@ -1,6 +1,7 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
 import android.arch.lifecycle.LiveData;
+import android.databinding.Bindable;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
@@ -13,6 +14,7 @@ import com.nzarudna.shoppinglist.model.template.ProductTemplateRepository;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.BaseEditTemplateViewModel;
+import com.nzarudna.shoppinglist.utils.Preferences;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,9 +31,18 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
     ProductTemplateRepository mTemplateRepository;
     @Inject
     ProductListRepository mProductListRepository;
+    @Inject
+    Preferences mPreferences;
+
+    @Bindable
+    private boolean detailsShow;
 
     private Product mProduct;
     private ShoppingList mShoppingList;
+
+    public void init() {
+        detailsShow = mPreferences.isEditProductDetailsShown();
+    }
 
     public void setListID(UUID listID) {
         mShoppingList = mProductListRepository.getShoppingList(listID);
@@ -121,5 +132,15 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
     @Override
     public void setCategoryID(UUID categoryID) {
         mProduct.setCategoryID(categoryID);
+    }
+
+    public boolean isDetailsShow() {
+        return detailsShow;
+    }
+
+    public void toggleDetails() {
+        detailsShow = !detailsShow;
+
+        mPreferences.setIsEditProductDetailsShown(detailsShow);
     }
 }

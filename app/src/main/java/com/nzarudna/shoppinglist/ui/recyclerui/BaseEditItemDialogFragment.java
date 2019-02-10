@@ -67,11 +67,17 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext())
-                .setTitle(mViewModel.getDialogTitle())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                 .setPositiveButton(getViewModel().getSaveButtonTitle(), null)
                 .setNegativeButton(R.string.cancel_btn, (dialogInterface, i) -> dismiss())
                 .setView(getCustomView());
+
+        View customTitleView = getCustomTitleView();
+        if (customTitleView != null) {
+            dialogBuilder.setCustomTitle(customTitleView);
+        } else {
+            dialogBuilder.setTitle(mViewModel.getDialogTitle());
+        }
 
         if (hasSaveAndNextButton()) {
             dialogBuilder.setNeutralButton(R.string.save_and_next_button, null);
@@ -133,5 +139,9 @@ public class BaseEditItemDialogFragment<T extends Parcelable, VM extends EditDia
     @NonNull
     protected Intent getResponseIntent() {
         return new Intent();
+    }
+
+    protected View getCustomTitleView() {
+        return null;
     }
 }

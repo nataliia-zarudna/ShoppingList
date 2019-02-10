@@ -1,14 +1,17 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
-import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
@@ -16,7 +19,6 @@ import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
 import com.nzarudna.shoppinglist.model.template.ProductTemplate;
 import com.nzarudna.shoppinglist.ui.templates.editdialog.BaseEditTemplateDialogFragment;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,6 +32,8 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
     private static final String ARG_LIST_ID = "listID";
 
     private ProductNameAutocompleteAdapter mNameAutocompleteAdapter;
+    private ConstraintLayout mDetailsView;
+    private ImageView mDetailsSwitch;
 
     public static EditProductDialogFragment newInstance() {
         return new EditProductDialogFragment();
@@ -44,8 +48,9 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
 
     @Override
     protected EditProductViewModel getViewModel() {
-        EditProductViewModel viewModel = new EditProductViewModel();
+        EditProductViewModel viewModel = ViewModelProviders.of(this).get(EditProductViewModel.class);
         ShoppingListApplication.getAppComponent().inject(viewModel);
+        viewModel.init();
         return viewModel;
     }
 
@@ -69,6 +74,7 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
     protected View getCustomView() {
         View dialogView = super.getCustomView();
 
+        mDetailsView = dialogView.findViewById(R.id.product_details);
         configNameEditView(dialogView);
 
         return dialogView;
@@ -111,5 +117,47 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
         mViewModel.getNameAutocompleteList(filterValue).observe(this, productTemplates -> {
             mNameAutocompleteAdapter.setTemplates(productTemplates);
         });
+    }
+
+    @Override
+    protected View getCustomTitleView() {
+        if (getActivity() == null) {
+            return null;
+        }
+
+        View titleView = getActivity().getLayoutInflater().inflate(R.layout.title_edit_product, null, false);
+
+        TextView title = titleView.findViewById(R.id.title);
+        title.setText(mViewModel.getDialogTitle());
+
+        mDetailsSwitch = titleView.findViewById(R.id.details_switch);
+        mDetailsSwitch.setOnClickListener(this::onToggleDetailsView);
+
+        setDetailsSwitchDrawable();
+
+        return titleView;
+    }
+
+    private void setDetailsSwitchDrawable() {
+        if (mViewModel.isDetailsShow()) {
+            mDetailsSwitch.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
+        } else {
+            mDetailsSwitch.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_less_black_24dp));
+        }
+    }
+
+    private void onToggleDetailsView(View view) {
+        // TODO: add animation
+
+        ViewGroup.LayoutParams layoutParams = mDetailsView.getLayoutParams();
+        if (mViewModel.isDetailsShow()) {
+            layoutParams.height = 1;
+        } else {
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        mDetailsView.setLayoutParams(layoutParams);
+
+        mViewModel.toggleDetails();
+        setDetailsSwitchDrawable();
     }
 }
