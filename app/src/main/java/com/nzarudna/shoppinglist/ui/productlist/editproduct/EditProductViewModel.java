@@ -3,6 +3,7 @@ package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 import android.arch.lifecycle.LiveData;
 import android.databinding.Bindable;
 
+import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -42,6 +43,7 @@ public class EditProductViewModel extends BaseEditTemplateViewModel<CategoryProd
 
     public void init() {
         detailsShow = mPreferences.isEditProductDetailsShown();
+        mPropertyChangeRegistry.notifyChange(this, BR._all);
     }
 
     public void setListID(UUID listID) {

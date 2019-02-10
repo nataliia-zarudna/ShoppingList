@@ -39,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
+            android:visibility="@{viewModel.detailsShow ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/validation_error">
 
             <android.support.v7.widget.AppCompatEditText

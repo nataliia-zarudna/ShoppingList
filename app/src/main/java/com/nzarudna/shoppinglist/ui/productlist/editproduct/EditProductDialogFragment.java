@@ -140,24 +140,21 @@ public class EditProductDialogFragment extends BaseEditTemplateDialogFragment<Ca
 
     private void setDetailsSwitchDrawable() {
         if (mViewModel.isDetailsShow()) {
-            mDetailsSwitch.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
-        } else {
             mDetailsSwitch.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_less_black_24dp));
+        } else {
+            mDetailsSwitch.setImageDrawable(getResources().getDrawable(R.drawable.ic_expand_more_black_24dp));
         }
     }
 
     private void onToggleDetailsView(View view) {
         // TODO: add animation
 
-        ViewGroup.LayoutParams layoutParams = mDetailsView.getLayoutParams();
-        if (mViewModel.isDetailsShow()) {
-            layoutParams.height = 1;
-        } else {
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        mDetailsView.setLayoutParams(layoutParams);
-
         mViewModel.toggleDetails();
+        if (mViewModel.isDetailsShow()) {
+            mDetailsView.setVisibility(View.VISIBLE);
+        } else {
+            mDetailsView.setVisibility(View.GONE);
+        }
         setDetailsSwitchDrawable();
     }
 }
