@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.productlists.ProductListsActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,6 +24,7 @@
                 <data android:host="familyshopping.ua/invite?token=111" android:scheme="https"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ui.productlists.ProductListsActivity" />
         <activity android:name=".ui.productlist.read.ReadProductListActivity" />
         <activity android:name=".ui.productlist.edit.EditProductListActivity" />
         <activity

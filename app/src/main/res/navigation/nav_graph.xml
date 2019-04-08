@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/productListsFragment">
+
+    <fragment
+        android:id="@+id/productListsFragment"
+        android:name="com.nzarudna.shoppinglist.ui.productlists.ProductListsFragment"
+        android:label="ProductListsFragment"
+        tools:layout="@layout/fragment_product_lists" />
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.nzarudna.shoppinglist.ui.users.UsersFragment"
+        android:label="UsersFragment" />
+</navigation>

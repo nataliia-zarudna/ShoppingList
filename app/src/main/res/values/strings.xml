@@ -39,7 +39,7 @@
     <string name="create_product_from_template_title">Create from Template</string>
     <string name="new_product_title">New product</string>
     <string name="choose_template_activity_name">Choose Templates</string>
-    <string name="shopping_lists_nav_item">Shopping Lists</string>
+    <string name="shopping_lists_nav_item">Shopping</string>
     <string name="archive_nav_item">Archive</string>
     <string name="templates_nav_item">Product Templates</string>
     <string name="categories_nav_item">Categories</string>
@@ -92,4 +92,5 @@
     <string name="async_success_result">Success</string>
     <string name="async_error_result">Error</string>
     <string name="menu_share">Share</string>
+    <string name="lists_nav_item">Lists</string>
 </resources>
