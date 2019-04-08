@@ -1,16 +1,16 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.PagedList;
-import android.databinding.Bindable;
-import android.support.annotation.StringRes;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import androidx.annotation.StringRes;
+import androidx.databinding.Bindable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 
 /**
  * Created by Nataliia on 07.03.2018.

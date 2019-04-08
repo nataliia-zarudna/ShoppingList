@@ -1,9 +1,5 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
-import android.arch.lifecycle.LiveData;
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.category.Category;
@@ -18,6 +14,10 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.Bindable;
+import androidx.lifecycle.LiveData;
 
 /**
  * Created by Nataliia on 06.03.2018.

@@ -1,13 +1,14 @@
 package com.nzarudna.shoppinglist.ui.users;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
 
 public class EditUserDialogFragment extends BaseEditItemDialogFragment<User, EditUserViewModel> {
 

@@ -1,8 +1,8 @@
 package com.nzarudna.shoppinglist.ui.units;
 
-import android.support.v4.app.Fragment;
-
 import com.nzarudna.shoppinglist.ui.NavigationSingleFragmentActivity;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Nataliia on 11.03.2018.

@@ -3,17 +3,12 @@ package com.nzarudna.shoppinglist.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.nzarudna.shoppinglist.R;
@@ -23,6 +18,12 @@ import com.nzarudna.shoppinglist.ui.productlists.ProductListsActivity;
 import com.nzarudna.shoppinglist.ui.templates.TemplatesActivity;
 import com.nzarudna.shoppinglist.ui.units.UnitsActivity;
 import com.nzarudna.shoppinglist.ui.users.UsersActivity;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -116,7 +117,7 @@ public abstract class NavigationSingleFragmentActivity extends SingleFragmentAct
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(Gravity.START);
+                mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

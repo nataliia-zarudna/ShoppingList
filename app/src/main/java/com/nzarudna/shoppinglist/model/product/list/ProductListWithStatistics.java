@@ -1,12 +1,13 @@
 package com.nzarudna.shoppinglist.model.product.list;
 
-import android.arch.persistence.room.Embedded;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.nzarudna.shoppinglist.model.product.ProductStatistics;
 
 import java.util.UUID;
+
+import androidx.room.Embedded;
 
 /**
  * Class to query product lists with statistics

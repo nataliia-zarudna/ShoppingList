@@ -1,10 +1,5 @@
 package com.nzarudna.shoppinglist.model.template;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.BaseRepository;
 import com.nzarudna.shoppinglist.model.ModelUtils;
@@ -19,6 +14,11 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 /**
  * Repository class for work with product templates

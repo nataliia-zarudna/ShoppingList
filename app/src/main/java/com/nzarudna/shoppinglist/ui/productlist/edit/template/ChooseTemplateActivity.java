@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.ui.SingleFragmentActivity;
 
 import java.util.UUID;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by Nataliia on 04.03.2018.

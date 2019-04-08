@@ -1,7 +1,7 @@
 package com.nzarudna.shoppinglist.model.category;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Embedded;
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
 
 /**
  * Category with statistics if there is any product/template

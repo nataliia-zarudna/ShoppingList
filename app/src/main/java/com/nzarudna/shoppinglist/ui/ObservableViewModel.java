@@ -1,8 +1,8 @@
 package com.nzarudna.shoppinglist.ui;
 
-import android.arch.lifecycle.ViewModel;
-import android.databinding.Observable;
-import android.databinding.PropertyChangeRegistry;
+import androidx.databinding.Observable;
+import androidx.databinding.PropertyChangeRegistry;
+import androidx.lifecycle.ViewModel;
 
 /**
  * Created by Nataliia on 06.03.2018.

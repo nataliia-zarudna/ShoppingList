@@ -1,7 +1,7 @@
 package com.nzarudna.shoppinglist.dao;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;

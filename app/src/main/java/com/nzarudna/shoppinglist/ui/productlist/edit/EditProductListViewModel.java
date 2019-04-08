@@ -1,11 +1,12 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.product.Product;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by nsirobaba on 1/22/18.

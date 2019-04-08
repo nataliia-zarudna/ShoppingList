@@ -1,11 +1,5 @@
 package com.nzarudna.shoppinglist.model.product.list;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.ModelUtils;
@@ -26,6 +20,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 import static com.nzarudna.shoppinglist.Constants.PRODUCT_ORDER_STEP;
 

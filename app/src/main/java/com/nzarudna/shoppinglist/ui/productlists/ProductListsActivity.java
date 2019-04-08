@@ -1,11 +1,12 @@
 package com.nzarudna.shoppinglist.ui.productlists;
 
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.nzarudna.shoppinglist.ui.NavigationSingleFragmentActivity;
 
 import java.util.UUID;
+
+import androidx.fragment.app.Fragment;
 
 public class ProductListsActivity extends NavigationSingleFragmentActivity {
 

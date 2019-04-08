@@ -1,10 +1,11 @@
 package com.nzarudna.shoppinglist.model;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
+
+import androidx.annotation.StringRes;
 
 public class ToastAsyncResultListener implements AsyncListener {
 

@@ -1,8 +1,5 @@
 package com.nzarudna.shoppinglist.ui.productlist.editproduct;
 
-import android.arch.lifecycle.LiveData;
-import android.databinding.Bindable;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
@@ -21,6 +18,9 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import androidx.databinding.Bindable;
+import androidx.lifecycle.LiveData;
 
 /**
  * Created by nsirobaba on 2/26/18.

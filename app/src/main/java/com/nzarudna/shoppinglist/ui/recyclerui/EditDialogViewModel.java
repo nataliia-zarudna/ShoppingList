@@ -1,9 +1,5 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
-import android.databinding.Bindable;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
@@ -13,6 +9,10 @@ import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.ui.ObservableViewModel;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.databinding.Bindable;
 
 /**
  * Created by Nataliia on 06.03.2018.

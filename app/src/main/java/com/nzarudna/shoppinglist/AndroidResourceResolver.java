@@ -1,10 +1,11 @@
 package com.nzarudna.shoppinglist;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import androidx.annotation.StringRes;
 
 /**
  * Resolves android resources, e.g. strings

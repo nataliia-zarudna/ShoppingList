@@ -2,11 +2,12 @@ package com.nzarudna.shoppinglist.ui.productlist.read;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.Fragment;
 
 import com.nzarudna.shoppinglist.ui.SingleFragmentActivity;
 
 import java.util.UUID;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Nataliia on 21.01.2018.

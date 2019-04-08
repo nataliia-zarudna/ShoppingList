@@ -1,10 +1,6 @@
 package com.nzarudna.shoppinglist.model.product.list;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ResourceResolver;
@@ -29,6 +25,11 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 /**
  * Shopping List Repository

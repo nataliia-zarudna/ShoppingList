@@ -1,9 +1,9 @@
 package com.nzarudna.shoppinglist.model.persistence.db;
 
-import android.arch.persistence.room.TypeConverter;
-
 import java.util.Date;
 import java.util.UUID;
+
+import androidx.room.TypeConverter;
 
 /**
  * Room type converters

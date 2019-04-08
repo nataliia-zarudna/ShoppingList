@@ -1,8 +1,5 @@
 package com.nzarudna.shoppinglist.model.unit;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-
 import com.nzarudna.shoppinglist.model.BaseRepository;
 import com.nzarudna.shoppinglist.model.ModelUtils;
 import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
@@ -12,6 +9,9 @@ import com.nzarudna.shoppinglist.utils.AppExecutors;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 /**
  * Created by nsirobaba on 2/27/18.

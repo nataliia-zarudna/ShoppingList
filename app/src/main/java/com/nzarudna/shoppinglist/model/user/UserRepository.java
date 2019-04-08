@@ -1,7 +1,5 @@
 package com.nzarudna.shoppinglist.model.user;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.model.BaseRepository;
@@ -14,6 +12,9 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 
 import static com.nzarudna.shoppinglist.Constants.PREF_SELF_USER_ID;
 

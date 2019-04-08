@@ -1,7 +1,6 @@
 package com.nzarudna.shoppinglist.utils;
 
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
-import com.nzarudna.shoppinglist.model.product.list.ProductList;
 
 import java.util.List;
 

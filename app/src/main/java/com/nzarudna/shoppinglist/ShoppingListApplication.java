@@ -1,7 +1,5 @@
 package com.nzarudna.shoppinglist;
 
-import android.app.Application;
-
 import com.facebook.stetho.Stetho;
 import com.nzarudna.shoppinglist.dependency.AppComponent;
 import com.nzarudna.shoppinglist.dependency.AppModule;
@@ -9,10 +7,12 @@ import com.nzarudna.shoppinglist.dependency.DaggerAppComponent;
 import com.nzarudna.shoppinglist.model.persistence.RoomDaoModule;
 import com.nzarudna.shoppinglist.model.persistence.db.AppDatabase;
 
+import androidx.multidex.MultiDexApplication;
+
 /**
  * Application class
  */
-public class ShoppingListApplication extends Application {
+public class ShoppingListApplication extends MultiDexApplication {
 
     private static final String DATABASE_NAME = "shopping_list";
 

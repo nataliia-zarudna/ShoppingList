@@ -2,8 +2,6 @@ package com.nzarudna.shoppinglist.utils;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
@@ -14,6 +12,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 @Singleton
 public class AppExecutors {

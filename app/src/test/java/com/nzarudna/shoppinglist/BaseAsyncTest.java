@@ -1,6 +1,6 @@
 package com.nzarudna.shoppinglist;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.nzarudna.shoppinglist.model.AsyncListener;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;

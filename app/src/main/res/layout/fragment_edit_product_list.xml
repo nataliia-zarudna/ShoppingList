@@ -12,7 +12,7 @@
         <import type="android.view.View" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -32,12 +32,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/show_create_product_menu"
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
@@ -46,7 +46,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_create_from_template"
             android:layout_width="@dimen/fab_size_mini"
             android:layout_height="@dimen/fab_size_mini"
@@ -69,7 +69,7 @@
             app:layout_constraintTop_toTopOf="@id/btn_create_from_template"
             tools:visibility="visible" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_new_product"
             android:layout_width="@dimen/fab_size_mini"
             android:layout_height="@dimen/fab_size_mini"
@@ -92,5 +92,5 @@
             app:layout_constraintTop_toTopOf="@id/btn_new_product"
             tools:visibility="visible" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

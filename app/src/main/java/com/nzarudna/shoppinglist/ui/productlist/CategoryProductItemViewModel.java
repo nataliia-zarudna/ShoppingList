@@ -2,8 +2,6 @@ package com.nzarudna.shoppinglist.ui.productlist;
 
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.StrikethroughSpan;
 
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.AsyncListener;
@@ -15,7 +13,6 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ShoppingList;
 import com.nzarudna.shoppinglist.ui.FormatUtils;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewModel;
-import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import javax.inject.Inject;
 

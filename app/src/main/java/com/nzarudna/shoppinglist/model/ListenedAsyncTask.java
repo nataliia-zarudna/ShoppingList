@@ -1,7 +1,8 @@
 package com.nzarudna.shoppinglist.model;
 
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by Nataliia on 16.03.2018.

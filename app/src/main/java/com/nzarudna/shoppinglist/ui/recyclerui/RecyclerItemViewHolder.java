@@ -1,11 +1,11 @@
 package com.nzarudna.shoppinglist.ui.recyclerui;
 
-import android.databinding.ViewDataBinding;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
-
 import com.nzarudna.shoppinglist.BR;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.ViewDataBinding;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Nataliia on 09.03.2018.

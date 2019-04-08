@@ -1,15 +1,16 @@
 package com.nzarudna.shoppinglist.model.product;
 
-import android.arch.persistence.room.Embedded;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.StringDef;
 
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.model.unit.Unit;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.StringDef;
+import androidx.room.Embedded;
 
 /**
  * Created by Nataliia on 28.01.2018.

@@ -1,10 +1,5 @@
 package com.nzarudna.shoppinglist.ui.users;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
 import android.net.Uri;
 
 import com.nzarudna.shoppinglist.model.user.User;
@@ -16,6 +11,12 @@ import com.nzarudna.shoppinglist.utils.UserUtils;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 /**
  * Created by Nataliia on 11.03.2018.

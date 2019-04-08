@@ -1,12 +1,12 @@
 package com.nzarudna.shoppinglist.ui.categories;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.category.Category;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by Nataliia on 09.03.2018.

@@ -1,14 +1,11 @@
 package com.nzarudna.shoppinglist.ui;
 
-import android.databinding.Bindable;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.SpannedString;
-import android.text.style.StrikethroughSpan;
 
 import com.nzarudna.shoppinglist.BR;
+
+import androidx.databinding.Bindable;
 
 /**
  * Created by Nataliia on 02.03.2018.

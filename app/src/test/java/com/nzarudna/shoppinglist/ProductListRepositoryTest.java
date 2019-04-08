@@ -1,7 +1,7 @@
 package com.nzarudna.shoppinglist;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.model.AsyncListener;

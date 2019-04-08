@@ -1,11 +1,5 @@
 package com.nzarudna.shoppinglist.ui.productlist;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
-import android.databinding.Bindable;
-
 import com.nzarudna.shoppinglist.BR;
 import com.nzarudna.shoppinglist.model.ResultCallback;
 import com.nzarudna.shoppinglist.model.product.CategoryProductItem;
@@ -21,6 +15,12 @@ import com.nzarudna.shoppinglist.utils.ShareUtils;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import androidx.databinding.Bindable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 /**
  * Created by Nataliia on 28.01.2018.

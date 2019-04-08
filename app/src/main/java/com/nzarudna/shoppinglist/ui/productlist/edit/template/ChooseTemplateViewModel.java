@@ -1,9 +1,5 @@
 package com.nzarudna.shoppinglist.ui.productlist.edit.template;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.SharedPreferencesConstants;
@@ -16,6 +12,11 @@ import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 import java.util.UUID;
 
 import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 /**
  * Created by Nataliia on 04.03.2018.

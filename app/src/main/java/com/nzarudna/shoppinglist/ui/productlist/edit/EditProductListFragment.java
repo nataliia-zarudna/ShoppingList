@@ -2,10 +2,7 @@ package com.nzarudna.shoppinglist.ui.productlist.edit;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +20,10 @@ import com.nzarudna.shoppinglist.ui.productlist.edit.template.ChooseTemplateActi
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
 /**
  * Created by Nataliia on 21.01.2018.

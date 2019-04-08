@@ -1,8 +1,6 @@
 package com.nzarudna.shoppinglist.ui.templates.editdialog;
 
-import android.arch.lifecycle.Observer;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -16,6 +14,9 @@ import com.nzarudna.shoppinglist.ui.productlist.editproduct.UnitItemViewModel;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseEditItemDialogFragment;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 
 /**
  * Created by Nataliia on 06.03.2018.

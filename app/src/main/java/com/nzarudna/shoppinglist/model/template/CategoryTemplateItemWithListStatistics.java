@@ -1,8 +1,8 @@
 package com.nzarudna.shoppinglist.model.template;
 
-import android.arch.persistence.room.ColumnInfo;
-
 import com.nzarudna.shoppinglist.model.category.Category;
+
+import androidx.room.ColumnInfo;
 
 /**
  * Item in grouped by categories template list

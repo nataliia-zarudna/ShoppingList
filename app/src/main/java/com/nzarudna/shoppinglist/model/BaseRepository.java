@@ -1,11 +1,11 @@
 package com.nzarudna.shoppinglist.model;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
-
 import com.nzarudna.shoppinglist.utils.AppExecutors;
 
 import javax.inject.Singleton;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 @Singleton
 public abstract class BaseRepository<T> {

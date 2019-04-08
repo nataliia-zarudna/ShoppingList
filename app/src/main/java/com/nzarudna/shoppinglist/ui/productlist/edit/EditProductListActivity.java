@@ -3,14 +3,15 @@ package com.nzarudna.shoppinglist.ui.productlist.edit;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ui.SingleFragmentActivity;
 
 import java.util.UUID;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
 
 /**
  * Created by Nataliia on 21.01.2018.

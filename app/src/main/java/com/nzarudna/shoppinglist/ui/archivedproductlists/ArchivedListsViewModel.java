@@ -1,9 +1,5 @@
 package com.nzarudna.shoppinglist.ui.archivedproductlists;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.DataSource;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 
 import com.nzarudna.shoppinglist.model.exception.ShoppingListException;
@@ -12,6 +8,11 @@ import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
 
 import javax.inject.Inject;
+
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 /**
  * Created by nsirobaba on 3/13/18.
