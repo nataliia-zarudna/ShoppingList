@@ -13,7 +13,7 @@ public class UserUtils {
     private static String TAG = UserUtils.class.getSimpleName();
 
     private static final String INVITATION_LINK = "https://familyshopping.ua/invite";
-    private static final String DYNAMIC_LINK_DOMAIN = "familyshopping.page.link";
+    private static final String DYNAMIC_LINK_DOMAIN = "https://familyshopping.page.link";
 
     private static final String PARAM_TOKEN = "token";
     private static final String PARAM_INVITOR_NAME = "invitor_name";
@@ -23,15 +23,15 @@ public class UserUtils {
                                            String invitorName,
                                            DynamicLinkListener dynamicLinkListener) {
 
-        Uri invitationUri = new Uri.Builder()
-                .appendEncodedPath(INVITATION_LINK)
+        Uri invitationUri = Uri.parse(INVITATION_LINK)
+                .buildUpon()
                 .appendQueryParameter(PARAM_TOKEN, invitorFirebaseToken)
                 .appendQueryParameter(PARAM_INVITOR_NAME, invitorName)
                 .build();
 
         FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setLink(invitationUri)
-                .setDynamicLinkDomain(DYNAMIC_LINK_DOMAIN)
+                .setDomainUriPrefix(DYNAMIC_LINK_DOMAIN)
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 .buildShortDynamicLink()
                 .addOnCompleteListener(executor, task -> {
@@ -46,6 +46,14 @@ public class UserUtils {
                         dynamicLinkListener.onBuildDynamicLinkError();
                     }
                 });
+    }
+
+    public static String getInvitorTokenFromInvitationLink(Uri deepLink) {
+        return deepLink.getQueryParameter(PARAM_TOKEN);
+    }
+
+    public static String getInvitorNameFromInvitationLink(Uri deepLink) {
+        return deepLink.getQueryParameter(PARAM_INVITOR_NAME);
     }
 
     public interface DynamicLinkListener {

@@ -1,5 +1,7 @@
 package com.nzarudna.shoppinglist.ui.users;
 
+import android.view.View;
+
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.AsyncResultListener;
 import com.nzarudna.shoppinglist.model.user.User;
@@ -24,7 +26,7 @@ public class EditUserViewModel extends EditDialogViewModel<User> {
 
     private User mCurrentUser;
 
-    public EditUserViewModel() {
+    public void init() {
         mAppExecutors.getDiscIO().execute(() -> {
             mCurrentUser = mUserRepository.getSelfUser();
         });
@@ -46,7 +48,7 @@ public class EditUserViewModel extends EditDialogViewModel<User> {
     }
 
     public boolean isUserCompleted() {
-        return mCurrentUser == null || mCurrentUser.getToken() != null;
+        return mItem == null || mItem.getToken() != null;
     }
 
     public String getCurrentUserName() {

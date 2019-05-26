@@ -1,20 +1,8 @@
 package com.nzarudna.shoppinglist.ui.templates;
 
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.nzarudna.shoppinglist.R;
-import com.nzarudna.shoppinglist.ShoppingListApplication;
-import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
-import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
-import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
-import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
-import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
-
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +10,17 @@ import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DiffUtil;
+
+import com.nzarudna.shoppinglist.R;
+import com.nzarudna.shoppinglist.ShoppingListApplication;
+import com.nzarudna.shoppinglist.model.template.CategoryTemplateItem;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListFragment;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
+import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateDialogFragment;
+import com.nzarudna.shoppinglist.ui.templates.editdialog.EditTemplateViewModel;
+
+import java.util.UUID;
 
 /**
  * Created by Nataliia on 06.03.2018.
@@ -151,8 +150,7 @@ public class TemplatesFragment extends BaseRecyclerViewFragment
 
     @Override
     public void onCreateProductList(UUID listID) {
-        Intent intent = EditProductListActivity.newIntent(getActivity(), listID);
-        startActivity(intent);
+        EditProductListFragment.navigateToEditProductListFragment(this, listID);
     }
 
     @Override

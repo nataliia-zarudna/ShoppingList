@@ -3,7 +3,7 @@ package com.nzarudna.shoppinglist.dao;
 import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 import androidx.paging.PagedList;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.nzarudna.shoppinglist.TestUtils;
 import com.nzarudna.shoppinglist.model.category.Category;

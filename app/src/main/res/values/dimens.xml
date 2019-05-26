@@ -14,4 +14,6 @@
     <dimen name="primaryTextBottomMargin">16dp</dimen>
     <dimen name="subTextSize">14sp</dimen>
     <dimen name="subTextBottomMargin">16dp</dimen>
+    <dimen name="dialog_side_margin">24dp</dimen>
+    <dimen name="dialog_bottom_margin">28dp</dimen>
 </resources>

@@ -1,22 +1,21 @@
 package com.nzarudna.shoppinglist.ui.archivedproductlists;
 
-import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
-import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListFragment;
+import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Created by nsirobaba on 3/13/18.
@@ -47,14 +46,12 @@ public class ArchivedListsFragment
 
     @Override
     public void openEditItemDialog(ProductList item) {
-        Intent intent = EditProductListActivity.newIntent(getActivity(), item.getListID());
-        startActivity(intent);
+        EditProductListFragment.navigateToEditProductListFragment(this, item.getListID());
     }
 
     @Override
     public void openReadProductListFragment(ProductList productList) {
-        Intent intent = ReadProductListActivity.newIntent(getActivity(), productList.getListID());
-        startActivity(intent);
+        ReadProductListFragment.navigateToReadProductListFragment(this, productList.getListID());
     }
 
     @Override

@@ -88,9 +88,13 @@
     <string name="users_activity_label">Users</string>
     <string name="invite_btn">Invite</string>
     <string name="invite_user_subject">Invitation to Family Shopping List</string>
-    <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.\n%2$s.</string>
+    <string name="invite_user_text">Please join me to share shopping lists.\nJust follow link %1$s.</string>
     <string name="async_success_result">Success</string>
     <string name="async_error_result">Error</string>
     <string name="menu_share">Share</string>
     <string name="lists_nav_item">Lists</string>
+    <string name="name">Name</string>
+    <string name="error_on_build_dynamic_link">Cannot share link</string>
+    <string name="user_is_added_msg">User has been added to your contacts</string>
+    <string name="library_nav_item">Library</string>
 </resources>

@@ -6,13 +6,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.nzarudna.shoppinglist.NavGraphDirections;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
 import com.nzarudna.shoppinglist.model.product.list.ProductListRepository;
 import com.nzarudna.shoppinglist.model.product.list.ProductListWithStatistics;
 import com.nzarudna.shoppinglist.ui.fabdialog.FABsDialog;
-import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
-import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListFragment;
+import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragment;
+import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragmentDirections;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.EditDialogViewModel;
 
@@ -21,6 +23,7 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DiffUtil;
 
 /**
@@ -131,19 +134,18 @@ public class ProductListsFragment
 
     @Override
     public void openEditItemDialog(ProductListWithStatistics item) {
-        startEditProductListActivity(item.getListID());
+        openProductListEditMode(item.getListID());
     }
 
     @Override
-    public void startProductListActivity(UUID productListID) {
-        Intent intent = ReadProductListActivity.newIntent(getActivity(), productListID);
-        startActivity(intent);
+    public void openProductListReadMode(UUID productListID) {
+        ReadProductListFragment.navigateToReadProductListFragment(this, productListID);
     }
 
+
     @Override
-    public void startEditProductListActivity(UUID productListID) {
-        Intent intent = EditProductListActivity.newIntent(getActivity(), productListID);
-        startActivity(intent);
+    public void openProductListEditMode(UUID productListID) {
+        EditProductListFragment.navigateToEditProductListFragment(this, productListID);
     }
 
     @Override

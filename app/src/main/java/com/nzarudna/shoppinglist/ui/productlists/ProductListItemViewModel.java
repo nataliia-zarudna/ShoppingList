@@ -40,7 +40,7 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
     @Override
     public void onItemClick() {
         if (mProductListItemViewModelObserver != null) {
-            mProductListItemViewModelObserver.startProductListActivity(mItem.getListID());
+            mProductListItemViewModelObserver.openProductListReadMode(mItem.getListID());
         }
     }
 
@@ -59,8 +59,8 @@ public class ProductListItemViewModel extends RecyclerItemViewModel<ProductListW
 
     public interface ProductListItemViewModelObserver {
 
-        void startProductListActivity(UUID productsListID);
+        void openProductListReadMode(UUID productsListID);
 
-        //void startEditProductListActivity(UUID productsListID);
+        //void openProductListEditMode(UUID productsListID);
     }
 }

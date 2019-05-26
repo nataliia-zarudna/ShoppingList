@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.users;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.ShoppingListApplication;
@@ -95,7 +96,7 @@ public class UsersFragment
             if (invitationLink != null) {
                 startSendLinkApp(invitationLink);
             } else {
-//                Toast.makeText(getActivity(), R.string.error_on_build_dynamic_link, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.error_on_build_dynamic_link, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -104,7 +105,8 @@ public class UsersFragment
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.invite_user_subject));
         intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.invite_user_text, invitationLink));
+        intent.setType("text/plain");
 
-        startActivityForResult(intent, REQUEST_CODE_SEND_INVITATION_LINK);
+        startActivity(intent);
     }
 }

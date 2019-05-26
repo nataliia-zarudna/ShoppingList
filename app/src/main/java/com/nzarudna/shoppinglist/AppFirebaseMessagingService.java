@@ -6,6 +6,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
+import com.nzarudna.shoppinglist.utils.Preferences;
 
 import javax.inject.Inject;
 
@@ -27,8 +28,7 @@ public class AppFirebaseMessagingService extends FirebaseMessagingService {
         super.onNewToken(token);
         Log.d(TAG, "New firebase token " + token);
 
-        User selfUser = mUserRepository.getSelfUser();
-        selfUser.setToken(token);
+        mUserRepository.saveToken(mUserRepository.getSelfUserID(), token);
 
         //TODO send new token to other users
     }

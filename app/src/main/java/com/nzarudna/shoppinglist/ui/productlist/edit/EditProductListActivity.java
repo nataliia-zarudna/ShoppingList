@@ -48,7 +48,7 @@ public class EditProductListActivity extends SingleFragmentActivity {
     protected Fragment getFragment() {
 
         UUID productListID = (UUID) getIntent().getSerializableExtra(EXTRA_PRODUCTS_LIST_ID);
-        mEditProductListFragment = EditProductListFragment.getInstance(productListID);
-        return mEditProductListFragment;
+        //mEditProductListFragment = EditProductListFragment.getInstance(productListID);
+        return null;//mEditProductListFragment;
     }
 }

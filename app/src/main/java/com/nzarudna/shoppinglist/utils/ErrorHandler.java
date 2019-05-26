@@ -4,6 +4,8 @@ import android.util.Log;
 
 public class ErrorHandler {
 
+    public static final String DEFAULT_TAG = ErrorHandler.class.getSimpleName();
+
     public static void logError(String tag, String message, Throwable e) {
         Log.e(tag, message, e);
         // TODO add Crashlytics
@@ -11,5 +13,9 @@ public class ErrorHandler {
     public static void logError(String tag, String message) {
         Log.e(tag, message);
         // TODO add Crashlytics
+    }
+
+    public static void logError(Exception e) {
+        Log.e(DEFAULT_TAG, "Error occurred", e);
     }
 }

@@ -19,6 +19,8 @@ import com.nzarudna.shoppinglist.model.product.ProductStatistics;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductDialogFragment;
 import com.nzarudna.shoppinglist.ui.productlist.editproduct.EditProductViewModel;
+import com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragmentArgs;
+import com.nzarudna.shoppinglist.ui.productlists.ProductListsFragmentDirections;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerAdapter;
 import com.nzarudna.shoppinglist.ui.recyclerui.BaseRecyclerViewFragment;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerItemViewHolder;
@@ -66,7 +68,7 @@ public abstract class ProductListFragment
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        mProductListID = (UUID) getArguments().getSerializable(ARG_PRODUCT_LIST_ID);
+        mProductListID = ReadProductListFragmentArgs.fromBundle(getArguments()).getProductListID();
 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);

@@ -89,7 +89,7 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
     @Override
     public void onAsyncSuccess(ProductList productList) {
         if (mProductListViewModelObserver != null) {
-            mProductListViewModelObserver.startEditProductListActivity(productList.getListID());
+            mProductListViewModelObserver.openProductListEditMode(productList.getListID());
         }
     }
 
@@ -107,7 +107,7 @@ public class ProductListsViewModel extends RecyclerViewModel<ProductListWithStat
 
     public interface ProductListViewModelObserver {
 
-        void startEditProductListActivity(UUID productListID);
+        void openProductListEditMode(UUID productListID);
 
         void showFABMenu();
     }

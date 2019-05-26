@@ -9,8 +9,8 @@
         android:title="@string/users_nav_item"
         android:icon="@drawable/ic_bottom_nav_users" />
 
-    <item android:id="@+id/bottom_item_templates"
-        android:title="@string/templates_nav_item"
+    <item android:id="@+id/libraryFragment"
+        android:title="@string/library_nav_item"
         android:icon="@drawable/ic_bottom_nav_templates" />
 
     <item android:id="@+id/bottom_item_settings"

@@ -5,14 +5,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.nzarudna.shoppinglist.NavGraphDirections;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.model.product.list.ProductList;
 import com.nzarudna.shoppinglist.ui.productlist.CategoryProductItemViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListFragment;
 import com.nzarudna.shoppinglist.ui.productlist.ProductListViewModel;
 import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListActivity;
+import com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListFragment;
 
 import java.util.UUID;
+
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 /**
  * Created by Nataliia on 25.02.2018.
@@ -20,10 +25,10 @@ import java.util.UUID;
 
 public class ReadProductListFragment extends ProductListFragment {
 
-    public static ProductListFragment getInstance(UUID productListID) {
-        ReadProductListFragment instance = new ReadProductListFragment();
-        instance.setProductListID(productListID);
-        return instance;
+    public static void navigateToReadProductListFragment(Fragment fragment, UUID productListID) {
+        NavGraphDirections.OpenListReadMode openListReadModeDirection
+                = NavGraphDirections.openListReadMode(productListID);
+        NavHostFragment.findNavController(fragment).navigate(openListReadModeDirection);
     }
 
     @Override
@@ -59,8 +64,7 @@ public class ReadProductListFragment extends ProductListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_edit_list:
-                Intent intent = EditProductListActivity.newIntent(getActivity(), mViewModel.getProductListID());
-                startActivity(intent);
+                EditProductListFragment.navigateToEditProductListFragment(this, mViewModel.getProductListID());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

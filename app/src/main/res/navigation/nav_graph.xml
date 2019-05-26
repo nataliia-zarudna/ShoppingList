@@ -5,13 +5,70 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/productListsFragment">
 
+    <action
+        android:id="@+id/openListReadMode"
+        app:destination="@id/readProductListFragment" />
+    <action
+        android:id="@+id/openListEditMode"
+        app:destination="@id/editProductListFragment" />
+
     <fragment
         android:id="@+id/productListsFragment"
         android:name="com.nzarudna.shoppinglist.ui.productlists.ProductListsFragment"
         android:label="ProductListsFragment"
         tools:layout="@layout/fragment_product_lists" />
+
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.nzarudna.shoppinglist.ui.users.UsersFragment"
-        android:label="UsersFragment" />
+        android:label="UsersFragment"
+        tools:layout="@layout/fragment_recycler_view" />
+
+    <fragment
+        android:id="@+id/readProductListFragment"
+        android:name="com.nzarudna.shoppinglist.ui.productlist.read.ReadProductListFragment"
+        android:label="ReadProductListFragment"
+        tools:layout="@layout/fragment_recycler_view">
+        <argument
+            android:name="productListID"
+            app:argType="java.util.UUID" />
+        <action
+            android:id="@+id/openListEditMode"
+            app:destination="@id/editProductListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProductListFragment"
+        android:name="com.nzarudna.shoppinglist.ui.productlist.edit.EditProductListFragment"
+        android:label="EditProductListFragment">
+        <argument
+            android:name="productListID"
+            app:argType="java.util.UUID" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.nzarudna.shoppinglist.ui.library.LibraryFragment"
+        android:label="LibraryFragment" />
+
+    <fragment
+        android:id="@+id/templatesFragment"
+        android:name="com.nzarudna.shoppinglist.ui.templates.TemplatesFragment"
+        android:label="TemplatesFragment" />
+
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:name="com.nzarudna.shoppinglist.ui.categories.CategoriesFragment"
+        android:label="CategoriesFragment" />
+
+    <fragment
+        android:id="@+id/unitsFragment"
+        android:name="com.nzarudna.shoppinglist.ui.units.UnitsFragment"
+        android:label="UnitsFragment" />
+
+    <fragment
+        android:id="@+id/archivedListsFragment"
+        android:name="com.nzarudna.shoppinglist.ui.archivedproductlists.ArchivedListsFragment"
+        android:label="ArchivedListsFragment" />
+
 </navigation>

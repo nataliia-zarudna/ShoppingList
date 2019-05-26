@@ -2,19 +2,20 @@ package com.nzarudna.shoppinglist.model.user;
 
 import android.content.SharedPreferences;
 
+import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+
 import com.nzarudna.shoppinglist.model.BaseRepository;
 import com.nzarudna.shoppinglist.model.ModelUtils;
 import com.nzarudna.shoppinglist.model.exception.EmptyNameException;
 import com.nzarudna.shoppinglist.model.exception.UniqueNameConstraintException;
 import com.nzarudna.shoppinglist.utils.AppExecutors;
+import com.nzarudna.shoppinglist.utils.ErrorHandler;
 
 import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import androidx.lifecycle.LiveData;
-import androidx.paging.DataSource;
 
 import static com.nzarudna.shoppinglist.Constants.PREF_SELF_USER_ID;
 
@@ -42,7 +43,7 @@ public class UserRepository extends BaseRepository<User> {
 
     @Override
     protected User create(User user) throws Exception {
-        validateUserName(user.getName());
+        validateUserName(user.getName(), true);
 
         mUserDao.insert(user);
         return user;
@@ -50,10 +51,16 @@ public class UserRepository extends BaseRepository<User> {
 
     @Override
     protected User update(User user) throws Exception {
-        validateUserName(user.getName());
+        if (!isSelfUser(user)) {
+            validateUserName(user.getName(), false);
+        }
 
         mUserDao.update(user);
         return user;
+    }
+
+    private boolean isSelfUser(User user) {
+        return user.getUserID().equals(getSelfUserID());
     }
 
     @Override
@@ -88,11 +95,23 @@ public class UserRepository extends BaseRepository<User> {
         return mUserDao.findByExcludeID(getSelfUserID());
     }
 
-    private void validateUserName(String name) throws EmptyNameException, UniqueNameConstraintException {
+    private void validateUserName(String name, boolean isNew) throws EmptyNameException, UniqueNameConstraintException {
         ModelUtils.validateNameIsNotEmpty(name);
 
-        if (mUserDao.isUsersWithSameNameExists(name)) {
+        if (isNew && mUserDao.isUsersWithSameNameExists(name)) {
             throw new UniqueNameConstraintException("User with name '" + name + "' already exists");
         }
+    }
+
+    public void saveToken(UUID userID, String token) {
+        mAppExecutors.getDiscIO().execute(() -> {
+            User selfUser = getUser(userID);
+            selfUser.setToken(token);
+            try {
+                update(selfUser);
+            } catch (Exception e) {
+                ErrorHandler.logError(e);
+            }
+        });
     }
 }

@@ -23,6 +23,10 @@ public abstract class BaseRepository<T> {
         mAppExecutors.loadAsync(() -> create(entity), listener);
     }
 
+    public void createAsync(T entity) {
+        mAppExecutors.loadAsync(() -> create(entity), (AsyncResultListener) null);
+    }
+
     @WorkerThread
     protected abstract T update(T entity) throws Exception;
 

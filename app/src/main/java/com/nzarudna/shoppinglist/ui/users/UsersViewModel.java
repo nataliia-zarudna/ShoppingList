@@ -2,6 +2,7 @@ package com.nzarudna.shoppinglist.ui.users;
 
 import android.net.Uri;
 
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.nzarudna.shoppinglist.model.user.User;
 import com.nzarudna.shoppinglist.model.user.UserRepository;
 import com.nzarudna.shoppinglist.ui.recyclerui.RecyclerViewModel;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
@@ -67,5 +69,16 @@ public class UsersViewModel extends RecyclerViewModel<User> {
         });
 
         return invitationLinkLiveData;
+    }
+
+    public void createUserFromInvitationLink(@NonNull PendingDynamicLinkData pendingDynamicLinkData) {
+        Uri deepLink = pendingDynamicLinkData.getLink();
+        String invitorFirebaseToken = UserUtils.getInvitorTokenFromInvitationLink(deepLink);
+        String invitorName = UserUtils.getInvitorNameFromInvitationLink(deepLink);
+
+        User user = new User();
+        user.setName(invitorName);
+        user.setToken(invitorFirebaseToken);
+        mUserRepository.createAsync(user);
     }
 }

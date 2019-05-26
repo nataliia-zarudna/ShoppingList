@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.nzarudna.shoppinglist.NavGraphDirections;
 import com.nzarudna.shoppinglist.R;
 import com.nzarudna.shoppinglist.databinding.ToolbarEditTitleBinding;
 import com.nzarudna.shoppinglist.ui.fabdialog.FABsDialog;
@@ -24,6 +25,8 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 /**
  * Created by Nataliia on 21.01.2018.
@@ -40,10 +43,10 @@ public class EditProductListFragment extends ProductListFragment {
     private View mFragmentView;
     private ImageButton mShowCreationMenuBtn;
 
-    public static EditProductListFragment getInstance(UUID productListID) {
-        EditProductListFragment instance = new EditProductListFragment();
-        instance.setProductListID(productListID);
-        return instance;
+    public static void navigateToEditProductListFragment(Fragment fragment, UUID productListID) {
+        NavGraphDirections.OpenListEditMode openListEditModeDirection
+                = NavGraphDirections.openListEditMode(productListID);
+        NavHostFragment.findNavController(fragment).navigate(openListEditModeDirection);
     }
 
     @Override

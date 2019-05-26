@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 
 public class ReadProductListActivity extends SingleFragmentActivity {
 
-    private static final String EXTRA_PRODUCTS_LIST_ID = "extra_products_list_id";
+    private static final String EXTRA_PRODUCTS_LIST_ID = "products_list_id";
 
     public static Intent newIntent(Context packageContext, UUID productListID) {
         Intent intent = new Intent(packageContext, ReadProductListActivity.class);
@@ -27,6 +27,6 @@ public class ReadProductListActivity extends SingleFragmentActivity {
     protected Fragment getFragment() {
 
         UUID productListID = (UUID) getIntent().getSerializableExtra(EXTRA_PRODUCTS_LIST_ID);
-        return ReadProductListFragment.getInstance(productListID);
+        return null;//ReadProductListFragment.getInstance(productListID);
     }
 }
